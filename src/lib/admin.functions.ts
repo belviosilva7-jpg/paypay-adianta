@@ -51,7 +51,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     const reason = data.isCorrect ? "Não se qualifica" : "Dados incorretos";
     
     const { error } = await supabaseAdmin
-      .from("pending_applications")
+      .from("pending_applications" as any)
       .update({ 
         status, 
         rejection_reason: reason,
@@ -190,7 +190,7 @@ export const getApplications = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     const { data: apps, error } = await supabaseAdmin
-      .from("pending_applications")
+      .from("pending_applications" as any)
       .select("*")
       .order("created_at", { ascending: false });
     
@@ -204,7 +204,7 @@ export const checkApplicationStatus = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     const { data: app, error } = await supabaseAdmin
-      .from("pending_applications")
+      .from("pending_applications" as any)
       .select("status, rejection_reason")
       .eq("nif", data.nif.toUpperCase())
       .order("created_at", { ascending: false })
