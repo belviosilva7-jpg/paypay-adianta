@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import logoAsset from "@/assets/logo-paypay-horizontal.png.asset.json";
-import logoPaypayAsset from "@/assets/logo-paypay.png.asset.json";
+import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
 import successIconAsset from "@/assets/chat-logo.png";
@@ -197,7 +196,7 @@ function Index() {
       onClick={() => setLogoClicks(prev => prev + 1)}
       className={cn("flex items-center gap-2 cursor-pointer select-none", className)}
     >
-      <img src={logoAsset.url} alt="paypay" className="h-8 md:h-10" />
+      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10" />
     </div>
   );
 
@@ -337,7 +336,7 @@ function Index() {
                 <div className="flex flex-col items-center space-y-6 text-center">
                   <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">Etapa 2 de 5</div>
                   <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <img src={logoPaypayAsset.url} alt="paypay" className="w-10 h-10 object-contain" />
+                    <img src={logoPaypay} alt="paypay" className="w-10 h-10 object-contain" />
                   </div>
                   <div className="space-y-2">
                     <h2 className="text-2xl font-bold">Código de Pagamento Obrigatório</h2>
@@ -406,7 +405,7 @@ function Index() {
                 <div className="flex flex-col items-center space-y-4 text-center">
                   <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">Etapa 3 de 5</div>
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <img src={logoAsset.url} alt="" className="w-8" />
+                    <img src={logoPaypay} alt="" className="w-8" />
                   </div>
                   <div className="space-y-1">
                     <h2 className="text-2xl font-bold">Sistema de Adiantamento</h2>
@@ -557,7 +556,7 @@ function Index() {
                 <div className="flex flex-col items-center space-y-4 text-center">
                   <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-medium">Etapa 5 de 5</div>
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <img src={logoAsset.url} alt="" className="w-8" />
+                    <img src={logoPaypay} alt="" className="w-8" />
                   </div>
                   <div className="space-y-1">
                     <h2 className="text-2xl font-bold">Confirmação do Pedido</h2>
