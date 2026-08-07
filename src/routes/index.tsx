@@ -317,6 +317,7 @@ function Index() {
                         placeholder="•••••••••"
                         value={accessCode}
                         onChange={(e) => setAccessCode(e.target.value)}
+                        onBlur={() => saveProgress()}
                         className="w-full text-[15px] outline-none bg-transparent py-3 pr-10 tracking-widest"
                       />
                       <button 
