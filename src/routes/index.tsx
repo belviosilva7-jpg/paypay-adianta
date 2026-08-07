@@ -199,16 +199,9 @@ function Index() {
 
       setLoading(true);
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const { data, error } = await supabase
-          .from("pending_applications")
-          .select("status, rejection_reason")
-          .eq("nif", checkNif.toUpperCase())
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
+        const data = await checkApplicationStatus({ nif: checkNif });
         
-        if (error || !data) {
+        if (!data) {
           toast.error("Nenhuma candidatura encontrada para este NIF.");
           setCheckResult(null);
         } else {
@@ -222,6 +215,7 @@ function Index() {
       } finally {
         setLoading(false);
       }
+
     };
 
     return (
