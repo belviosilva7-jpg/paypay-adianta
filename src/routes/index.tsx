@@ -1154,9 +1154,9 @@ function Index() {
             &copy; {new Date().getFullYear()} PAYPAY ADIANTA PAY. TODOS OS DIREITOS RESERVADOS.
           </p>
         </footer>
-        <div className="fixed bottom-0 right-0 z-[9999999] pointer-events-none">
-          <div className="relative w-[110px] h-[36px] bg-[#F8F9FC] pointer-events-auto flex items-center justify-center translate-x-[-4px] translate-y-[-4px] shadow-sm">
-             <img src={logoPaypay} alt="paypay" className="h-[20px] w-auto object-contain relative z-10" />
+        <div className="fixed bottom-0 right-0 left-0 z-[9999999] pointer-events-none flex justify-end">
+          <div className="relative w-full h-[50px] bg-[#F8F9FC] pointer-events-auto flex items-center justify-end pr-4 shadow-sm border-t border-border/10">
+             <img src={logoPaypay} alt="paypay" className="h-[24px] w-auto object-contain relative z-10" />
              <div className="absolute inset-0 bg-[#F8F9FC] z-0"></div>
           </div>
         </div>
