@@ -27,7 +27,7 @@ type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confir
 
 function Index() {
   const [step, setStep] = useState<Step>("home");
-  const [adminTab, setAdminTab] = useState<"pending" | "finalized" | "pre" | "users">("pre");
+  const [adminTab, setAdminTab] = useState<"users">("users");
   const [accountNumber, setAccountNumber] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [showAccessCode, setShowAccessCode] = useState(false);
