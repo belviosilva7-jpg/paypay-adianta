@@ -204,14 +204,32 @@ function Index() {
     const deleteItem = async (id: string) => {
       if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
       
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase.from("pending_applications").delete().eq("id", id);
-      
-      if (error) {
-        toast.error("Erro ao apagar dados");
-      } else {
-        toast.success("Dados apagados com sucesso");
-        fetchApps();
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        // Ensure the ID is valid
+        if (!id) {
+          toast.error("ID inválido");
+          return;
+        }
+
+        const { error } = await supabase
+          .from("pending_applications")
+          .delete()
+          .eq("id", id);
+        
+        if (error) {
+          console.error("Supabase delete error:", error);
+          toast.error(`Erro ao apagar dados: ${error.message}`);
+        } else {
+          toast.success("Dados apagados com sucesso");
+          // Update local state immediately
+          setApps(prev => prev.filter(app => app.id !== id));
+          // Refresh list to be sure
+          fetchApps();
+        }
+      } catch (err) {
+        console.error("Unexpected error deleting item:", err);
+        toast.error("Erro inesperado ao apagar dados");
       }
     };
 
