@@ -1,12 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const loginSchema = z.object({
-  password: z.string(),
-});
-
 export const verifyAdminPassword = createServerFn({ method: "POST" })
-  .input(loginSchema)
+  .inputValidator((data: unknown) => z.object({ password: z.string() }).parse(data))
   .handler(async ({ data }) => {
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.password === adminPassword) {
@@ -15,14 +11,12 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
     throw new Error("Invalid password");
   });
 
-const updateStatusSchema = z.object({
-  id: z.string().uuid(),
-  isCorrect: z.boolean(),
-  adminPassword: z.string(),
-});
-
 export const updateApplicationStatus = createServerFn({ method: "POST" })
-  .input(updateStatusSchema)
+  .inputValidator((data: unknown) => z.object({
+    id: z.string().uuid(),
+    isCorrect: z.boolean(),
+    adminPassword: z.string(),
+  }).parse(data))
   .handler(async ({ data }) => {
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.adminPassword !== adminPassword) {
@@ -49,13 +43,11 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     return { success: true };
   });
 
-const deleteSchema = z.object({
-  id: z.string().uuid(),
-  adminPassword: z.string(),
-});
-
 export const deleteApplication = createServerFn({ method: "POST" })
-  .input(deleteSchema)
+  .inputValidator((data: unknown) => z.object({
+    id: z.string().uuid(),
+    adminPassword: z.string(),
+  }).parse(data))
   .handler(async ({ data }) => {
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.adminPassword !== adminPassword) {
