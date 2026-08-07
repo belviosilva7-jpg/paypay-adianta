@@ -345,7 +345,7 @@ function Index() {
           setApps(prev => prev.filter(app => app.id !== id));
         }
       } catch (err: any) {
-        toast.error("Erro ao apagar dados.");
+        toast.error("Erro ao apagar dados: " + (err.message || "Erro desconhecido"));
       }
     };
 
