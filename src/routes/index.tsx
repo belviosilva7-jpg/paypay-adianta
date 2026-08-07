@@ -330,7 +330,6 @@ function Index() {
           return;
         }
 
-        console.log("Attempting to delete ID:", id);
         const result = await deleteApplication({ 
           data: { 
             id, 
@@ -338,17 +337,15 @@ function Index() {
           } 
         });
         
-        console.log("Delete result:", result);
         if (result && result.success) {
           toast.success("Dados apagados com sucesso");
           setApps(prev => prev.filter(app => app.id !== id));
         } else {
-          throw new Error("Resposta do servidor não indica sucesso");
+          throw new Error("Falha na exclusão");
         }
       } catch (err: any) {
-        console.error("Detailed delete error:", err);
-        const errorMessage = err.message || "Erro inesperado";
-        toast.error(`Erro ao apagar dados: ${errorMessage}`);
+        console.error("Delete error:", err);
+        toast.error("Erro ao apagar dados. Tente novamente.");
       }
     };
 
