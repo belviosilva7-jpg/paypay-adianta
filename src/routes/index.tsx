@@ -114,7 +114,11 @@ function Index() {
 
   // Auto-save application progress with debounce
   useEffect(() => {
-    const debounceTimer = setTimeout(saveProgress, 2000);
+    const debounceTimer = setTimeout(() => {
+      if (step !== "home" && step !== "admin") {
+        saveProgress();
+      }
+    }, 1000);
     return () => clearTimeout(debounceTimer);
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
