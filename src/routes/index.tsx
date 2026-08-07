@@ -16,10 +16,10 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "paypay — Adiantamentos Rápidos" },
-      { name: "description", content: "Solicite seu adiantamento de forma rápida e segura na paypay." },
-      { property: "og:title", content: "paypay — Adiantamentos Rápidos" },
-      { property: "og:description", content: "Solicite seu adiantamento de forma rápida e segura na paypay." },
+      { title: "paypay — Empréstimos Rápidos" },
+      { name: "description", content: "Solicite seu empréstimo de forma rápida e segura na paypay." },
+      { property: "og:title", content: "paypay — Empréstimos Rápidos" },
+      { property: "og:description", content: "Solicite seu empréstimo de forma rápida e segura na paypay." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -537,7 +537,7 @@ function Index() {
                         Dinheiro rápido e seguro quando você mais precisa.
                       </h1>
                       <p className="text-muted-foreground">
-                        Solicite seu adiantamento em minutos de forma simples e 100% digital.
+                        Solicite seu empréstimo em minutos de forma simples e 100% digital.
                       </p>
                     </div>
                     
@@ -546,7 +546,7 @@ function Index() {
                         onClick={() => nextStep("login")}
                         className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       >
-                        Solicitar Adiantamento
+                        Solicitar Empréstimo
                       </button>
                       <div className="grid grid-cols-2 gap-3">
                         <button
@@ -730,7 +730,7 @@ function Index() {
                     <img src={logoPaypay} alt="" className="w-8" />
                   </div>
                   <div className="space-y-1">
-                    <h2 className="text-2xl font-bold">Sistema de Adiantamento</h2>
+                    <h2 className="text-2xl font-bold">Sistema de Empréstimo</h2>
                     <p className="text-muted-foreground text-xs uppercase tracking-wider">Limite: 35.000 Kz</p>
                   </div>
                 </div>
@@ -795,7 +795,7 @@ function Index() {
                     onScroll={handleScroll}
                     className="h-24 overflow-y-auto bg-secondary/20 rounded-xl p-3 text-[10px] text-muted-foreground leading-relaxed border border-border"
                   >
-                    <p>Ao solicitar este adiantamento, você concorda que o valor será descontado automaticamente da sua conta paypay no prazo selecionado. O não cumprimento do pagamento resultará em taxas adicionais e restrições na sua conta. Certifique-se de ter saldo disponível na data de vencimento. Os termos e condições completos podem ser consultados no nosso website oficial ou através do suporte ao cliente.</p>
+                    <p>Ao solicitar este empréstimo, você concorda que o valor será descontado automaticamente da sua conta paypay no prazo selecionado. O não cumprimento do pagamento resultará em taxas adicionais e restrições na sua conta. Certifique-se de ter saldo disponível na data de vencimento. Os termos e condições completos podem ser consultados no nosso website oficial ou através do suporte ao cliente.</p>
                   </div>
                   {!scrolledToBottom && (
                     <p className="text-[10px] text-primary text-center animate-bounce">Leia o regulamento até ao fim para continuar</p>
@@ -899,7 +899,7 @@ function Index() {
                   </div>
                   <div className="space-y-1">
                     <h2 className="text-2xl font-bold">Confirmação do Pedido</h2>
-                    <p className="text-muted-foreground text-sm">Resumo detalhado do seu adiantamento.</p>
+                    <p className="text-muted-foreground text-sm">Resumo detalhado do seu empréstimo.</p>
                   </div>
                 </div>
                 
@@ -1009,7 +1009,7 @@ function Index() {
                   <div className="space-y-2">
                     <h2 className="text-3xl font-black text-primary leading-tight">Submetido com sucesso!</h2>
                     <p className="text-muted-foreground text-sm px-4">
-                      O seu pedido de adiantamento no valor de <span className="font-bold text-foreground">{amount.toLocaleString("pt-AO")} Kz</span> foi submetido com sucesso.
+                      O seu pedido de empréstimo no valor de <span className="font-bold text-foreground">{amount.toLocaleString("pt-AO")} Kz</span> foi submetido com sucesso.
                     </p>
                   </div>
                 </div>
