@@ -8,6 +8,8 @@ import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
 import successIconAsset from "@/assets/chat-logo.png";
+import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus } from "@/lib/admin.functions";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
