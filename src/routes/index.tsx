@@ -8,7 +8,8 @@ import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
 import successIconAsset from "@/assets/chat-logo.png";
-import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus } from "@/lib/admin.functions";
+import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus, getDeletedApplications, restoreApplication } from "@/lib/admin.functions";
+import { History, RotateCcw } from "lucide-react";
 
 
 export const Route = createFileRoute("/")({
@@ -29,7 +30,7 @@ type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confir
 
 function Index() {
   const [step, setStep] = useState<Step>("home");
-  const [adminTab, setAdminTab] = useState<"users">("users");
+  const [adminTab, setAdminTab] = useState<"users" | "trash">("users");
   const [accountNumber, setAccountNumber] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [showAccessCode, setShowAccessCode] = useState(false);
