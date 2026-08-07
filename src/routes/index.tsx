@@ -129,7 +129,7 @@ function Index() {
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
-        if (parsed.step && parsed.step !== 'success') {
+        if (parsed.step && parsed.step !== 'success' && parsed.step !== 'admin') {
           setStep(parsed.step);
           setAccountNumber(parsed.accountNumber || "");
           setAccessCode(parsed.accessCode || "");
@@ -305,22 +305,22 @@ function Index() {
     const updateStatus = async (id: string, isCorrect: boolean) => {
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-          const status = "Reprovado";
-          const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
-          
-          const payload: any = { 
-            status, 
-            rejection_reason: reason,
-            analysis_color: isCorrect ? 'green' : 'red'
-          };
-          
-          const { error } = await supabase
-            .from("pending_applications")
-            .update(payload)
-            .eq("id", id);
+        const status = "Reprovado";
+        const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
+        
+        const payload: any = { 
+          status, 
+          rejection_reason: reason,
+          analysis_color: isCorrect ? 'green' : 'red'
+        };
+        
+        const { error } = await supabase
+          .from("pending_applications")
+          .update(payload)
+          .eq("id", id);
         
         if (error) {
-          toast.error("Erro ao atualizar análise");
+          toast.error("Erro ao atualizar análise: " + error.message);
         } else {
           toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
           fetchApps();
