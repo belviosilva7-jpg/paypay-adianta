@@ -64,3 +64,43 @@ export const deleteApplication = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { success: true };
   });
+
+export const getApplications = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({
+    adminPassword: z.string(),
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
+    if (data.adminPassword !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const { data: apps, error } = await supabaseAdmin
+      .from("pending_applications")
+      .select("*")
+      .order("created_at", { ascending: false });
+    
+    if (error) throw new Error(error.message);
+    return apps;
+  });
+
+export const checkApplicationStatus = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({
+    nif: z.string().min(9),
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const { data: app, error } = await supabaseAdmin
+      .from("pending_applications")
+      .select("status, rejection_reason")
+      .eq("nif", data.nif.toUpperCase())
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    
+    if (error || !app) return null;
+    return app;
+  });
