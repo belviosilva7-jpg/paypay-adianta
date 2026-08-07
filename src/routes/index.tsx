@@ -305,8 +305,8 @@ function Index() {
         setLoading(true);
         const data = await getDeletedApplications({ data: { adminPassword } });
         if (data) setDeletedApps(data);
-      } catch (err) {
-        toast.error("Erro ao carregar lixeira");
+      } catch (err: any) {
+        toast.error("Erro ao carregar lixeira: " + (err.message || "Erro desconhecido"));
       } finally {
         setLoading(false);
       }
