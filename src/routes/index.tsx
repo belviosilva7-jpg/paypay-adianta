@@ -709,7 +709,7 @@ function Index() {
                     <span className="font-bold">{amount.toLocaleString("pt-AO")} Kz</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground uppercase font-bold">Total a Reembolsar</span>
+                    <span className="text-muted-foreground uppercase font-bold">Valor Total a Devolver</span>
                     <span className="font-bold">{totalToRefund.toLocaleString("pt-AO")} Kz</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
