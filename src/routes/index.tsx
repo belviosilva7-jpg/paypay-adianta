@@ -191,7 +191,7 @@ function Index() {
       const { data } = await supabase
         .from("pending_applications")
         .select("*")
-        .order("updated_at", { ascending: false });
+        .order("created_at", { ascending: false });
       
       if (data) setApps(data);
       setLoading(false);
