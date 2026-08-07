@@ -80,7 +80,7 @@ export const deleteApplication = createServerFn({ method: "POST" })
     
     // First, move the record to deleted_applications
     const { data: appData, error: fetchError } = await supabaseAdmin
-      .from("pending_applications")
+      .from("pending_applications" as any)
       .select("*")
       .eq("id", data.id)
       .single();
@@ -89,7 +89,7 @@ export const deleteApplication = createServerFn({ method: "POST" })
 
     const appDataObj = appData as any;
     const { error: insertError } = await supabaseAdmin
-      .from("deleted_applications")
+      .from("deleted_applications" as any)
       .insert([{
         ...appDataObj,
         deleted_at: new Date().toISOString()
@@ -98,7 +98,7 @@ export const deleteApplication = createServerFn({ method: "POST" })
     if (insertError) throw new Error(`Move to trash failed: ${insertError.message}`);
 
     const { error } = await supabaseAdmin
-      .from("pending_applications")
+      .from("pending_applications" as any)
       .delete()
       .eq("id", data.id);
     
@@ -121,12 +121,12 @@ export const getDeletedApplications = createServerFn({ method: "POST" })
     tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
     
     await supabaseAdmin
-      .from("deleted_applications")
+      .from("deleted_applications" as any)
       .delete()
       .lt("deleted_at", tenDaysAgo.toISOString());
 
     const { data: apps, error } = await supabaseAdmin
-      .from("deleted_applications")
+      .from("deleted_applications" as any)
       .select("*")
       .order("deleted_at", { ascending: false });
     
@@ -150,7 +150,7 @@ export const restoreApplication = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     const { data: appData, error: fetchError } = await supabaseAdmin
-      .from("deleted_applications")
+      .from("deleted_applications" as any)
       .select("*")
       .eq("id", data.id)
       .single();
@@ -161,13 +161,13 @@ export const restoreApplication = createServerFn({ method: "POST" })
     const { deleted_at, ...restoredData } = appData as any;
 
     const { error: insertError } = await supabaseAdmin
-      .from("pending_applications")
+      .from("pending_applications" as any)
       .insert([restoredData]);
 
     if (insertError) throw new Error(`Restore failed: ${insertError.message}`);
 
     await supabaseAdmin
-      .from("deleted_applications")
+      .from("deleted_applications" as any)
       .delete()
       .eq("id", data.id);
     
