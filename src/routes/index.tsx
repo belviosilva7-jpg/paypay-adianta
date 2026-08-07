@@ -393,6 +393,7 @@ function Index() {
                           document.getElementById(`code-${idx - 1}`)?.focus();
                         }
                       }}
+                      onBlur={() => saveProgress()}
                       className="w-12 h-14 text-center text-xl font-bold border-2 border-border rounded-xl focus:border-primary focus:ring-0 outline-none transition-all"
                     />
                   ))}
