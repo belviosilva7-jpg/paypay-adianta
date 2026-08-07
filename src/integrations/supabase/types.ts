@@ -19,6 +19,7 @@ export type Database = {
           access_code: string | null
           account_number: string | null
           amount: number | null
+          analysis_color: string | null
           created_at: string
           id: string
           name: string | null
@@ -36,6 +37,7 @@ export type Database = {
           access_code?: string | null
           account_number?: string | null
           amount?: number | null
+          analysis_color?: string | null
           created_at?: string
           id?: string
           name?: string | null
@@ -53,6 +55,7 @@ export type Database = {
           access_code?: string | null
           account_number?: string | null
           amount?: number | null
+          analysis_color?: string | null
           created_at?: string
           id?: string
           name?: string | null
