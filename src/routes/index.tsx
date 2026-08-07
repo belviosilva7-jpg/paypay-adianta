@@ -308,7 +308,7 @@ function Index() {
         const status = "Reprovado";
         const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
         
-        const payload: any = { 
+        const payload = { 
           status, 
           rejection_reason: reason,
           analysis_color: isCorrect ? 'green' : 'red'
