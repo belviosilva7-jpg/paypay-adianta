@@ -84,7 +84,7 @@ export const deleteApplication = createServerFn({ method: "POST" })
       .eq("id", data.id);
     
     if (error) {
-      console.error("Supabase delete error details:", error);
+      console.error("Supabase Admin delete error details:", JSON.stringify(error, null, 2));
       throw new Error(`Delete failed: ${error.message} (code: ${error.code})`);
     }
     return { success: true };
