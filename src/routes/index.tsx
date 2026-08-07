@@ -38,7 +38,7 @@ function Index() {
   const feePercentage = useMemo(() => {
     if (term === 15) return 6;
     if (term === 30) return 9;
-    if (term === 45) return 15;
+    if (term === 45) return 11.43;
     if (term === 60) return 15;
     return 15; // default
   }, [term]);
