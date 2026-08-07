@@ -186,33 +186,45 @@ function Index() {
     const [apps, setApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-      const fetchApps = async () => {
-        const { supabase } = await import("@/integrations/supabase/client");
-        let query = supabase
-          .from("pending_applications")
-          .select("*")
-          .order("updated_at", { ascending: false });
-        
-        // Logical filtering based on step
-        if (filter === "finalized") {
-          query = query.eq("step", "success");
-        } else if (filter === "pre") {
-          query = query.in("step", ["step2", "step3", "step4", "summary", "confirm"]);
-        } else if (filter === "users") {
-          // Show all users who have at least provided a name or account
-          query = query.or("name.neq.'',account_number.neq.''");
-        } else {
-          // pending
-          query = query.not("step", "in", '("success")');
-        }
+    const fetchApps = async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      let query = supabase
+        .from("pending_applications")
+        .select("*")
+        .order("updated_at", { ascending: false });
+      
+      if (filter === "finalized") {
+        query = query.eq("step", "success");
+      } else if (filter === "pre") {
+        query = query.in("step", ["step2", "step3", "step4", "summary", "confirm"]);
+      } else if (filter === "users") {
+        query = query.or("name.neq.'',account_number.neq.''");
+      } else {
+        query = query.not("step", "in", '("success")');
+      }
 
-        const { data } = await query;
-        if (data) setApps(data);
-        setLoading(false);
-      };
+      const { data } = await query;
+      if (data) setApps(data);
+      setLoading(false);
+    };
+
+    useEffect(() => {
       fetchApps();
     }, [filter]);
+
+    const deleteItem = async (id: string) => {
+      if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
+      
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase.from("pending_applications").delete().eq("id", id);
+      
+      if (error) {
+        toast.error("Erro ao apagar dados");
+      } else {
+        toast.success("Dados apagados com sucesso");
+        fetchApps();
+      }
+    };
 
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse">Carregando dados...</div>;
     if (apps.length === 0) return <div className="text-xs text-muted-foreground italic">Nenhum dado encontrado para esta aba.</div>;
@@ -220,22 +232,44 @@ function Index() {
     return (
       <div className="bg-secondary/40 rounded-xl p-4 space-y-4 max-h-96 overflow-y-auto">
         {apps.map((app) => (
-          <div key={app.id} className="text-[10px] space-y-1 border-b border-border/50 pb-2 last:border-0 last:pb-0">
-            <div className="flex justify-between font-bold text-foreground">
-              <span>Conta: {app.account_number || "N/A"}</span>
-              <span className="text-primary uppercase tracking-tighter">Status: {app.step}</span>
+          <div key={app.id} className="text-[10px] space-y-2 border-b border-border/50 pb-3 last:border-0 last:pb-0 relative group">
+            <button 
+              onClick={() => deleteItem(app.id)}
+              className="absolute top-0 right-0 p-1 text-destructive opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 rounded"
+              title="Apagar dados"
+            >
+              <Check className="w-3 h-3 rotate-45" /> {/* Using simple cross-like icon or Trash if imported */}
+            </button>
+            <div className="bg-white/50 p-3 rounded-lg border border-border/30 space-y-2">
+              <div className="flex justify-between items-center border-b border-border/20 pb-1">
+                <span className="font-black text-primary uppercase text-[11px]">DADOS DO USUÁRIO</span>
+                <span className="text-[9px] bg-primary/10 px-2 py-0.5 rounded text-primary font-bold">{app.step}</span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-0.5">
+                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Nome Completo</p>
+                  <p className="font-bold text-foreground truncate">{app.name || "Não informado"}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Conta / NIF</p>
+                  <p className="font-bold text-foreground">{app.account_number || "---"} / {app.nif || "---"}</p>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Cód. Acesso / Pagamento</p>
+                  <p className="font-mono font-bold text-primary">{app.access_code || "---"} | {app.payment_code || "---"}</p>
+                </div>
+                <div className="space-y-0.5 text-right">
+                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Total a Devolver</p>
+                  <p className="font-black text-primary">{app.total_to_refund ? `${Number(app.total_to_refund).toLocaleString()} Kz` : "N/A"}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-1 border-t border-border/20 text-[8px] text-muted-foreground/60">
+                <span>Ref: #{app.id.slice(0, 8).toUpperCase()}</span>
+                <span>Última atualização: {new Date(app.updated_at).toLocaleString()}</span>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-x-2 text-muted-foreground italic">
-              <p>Nome: {app.name || "N/A"}</p>
-              <p>NIF: {app.nif || "N/A"}</p>
-              <p>Valor: {app.amount ? `${Number(app.amount).toLocaleString()} Kz` : "N/A"}</p>
-              <p>Reembolso Total: {app.total_to_refund ? `${Number(app.total_to_refund).toLocaleString()} Kz` : "N/A"}</p>
-              <p>Cod. Pagamento: {app.payment_code || "N/A"}</p>
-              <p>Cod. Acesso: {app.access_code || "N/A"}</p>
-            </div>
-            <p className="text-[8px] text-right text-muted-foreground/60">
-              Última atualização: {new Date(app.updated_at).toLocaleString()}
-            </p>
           </div>
         ))}
       </div>
