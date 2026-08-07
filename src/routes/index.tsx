@@ -36,9 +36,9 @@ function Index() {
   const [term, setTerm] = useState(60);
   
   const refundMargin = useMemo(() => {
-    // 5% margin + a fixed base of 500 Kz
-    return Math.round((amount * 0.05) + (term * 10));
-  }, [amount, term]);
+    // Taxa de aproximadamente 11,43%
+    return Math.round(amount * 0.1143);
+  }, [amount]);
   
   const totalToRefund = amount + refundMargin;
   const [personalData, setPersonalData] = useState({ name: "", nif: "" });
@@ -447,6 +447,21 @@ function Index() {
                       ))}
                     </div>
                   </div>
+
+                  <div className="pt-4 border-t border-border/50 space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Valor solicitado:</span>
+                      <span className="font-bold">{amount.toLocaleString("pt-AO")} Kz</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Taxa aplicada (11,43%):</span>
+                      <span className="font-bold">+{refundMargin.toLocaleString("pt-AO")} Kz</span>
+                    </div>
+                    <div className="flex justify-between text-sm pt-2 border-t border-dashed border-border/50">
+                      <span className="font-bold">Total a devolver:</span>
+                      <span className="font-black text-primary">{totalToRefund.toLocaleString("pt-AO")} Kz</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -583,11 +598,11 @@ function Index() {
                       <span className="text-muted-foreground italic">Será verificado se tem 100 kz para ver se a conta tá operacional</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Margem de Reposição</span>
+                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Taxa Aplicada (11,43%)</span>
                       <span className="font-bold text-foreground">+{refundMargin.toLocaleString("pt-AO")} Kz</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Total a Reembolsar</span>
+                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Valor Total a Devolver</span>
                       <span className="font-bold text-primary">{totalToRefund.toLocaleString("pt-AO")} Kz</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
@@ -694,7 +709,7 @@ function Index() {
                     <span className="font-bold">{amount.toLocaleString("pt-AO")} Kz</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground uppercase font-bold">Total a Reembolsar</span>
+                    <span className="text-muted-foreground uppercase font-bold">Valor Total a Devolver</span>
                     <span className="font-bold">{totalToRefund.toLocaleString("pt-AO")} Kz</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
