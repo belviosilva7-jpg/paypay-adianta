@@ -163,6 +163,8 @@ function Index() {
   // Handle secret admin access
   useEffect(() => {
     if (logoClicks >= 7) {
+      setAdminAuthenticated(false); // Reset authentication status first
+      setAdminPassword(""); // Clear password field
       setStep("admin");
       setLogoClicks(0);
       toast.info("Acesso Administrativo - Por favor, insira a senha");
