@@ -286,6 +286,7 @@ function Index() {
 
   const AdminDataList = () => {
     const [apps, setApps] = useState<any[]>([]);
+    const [deletedApps, setDeletedApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchApps = async () => {
@@ -299,11 +300,24 @@ function Index() {
       }
     };
 
+    const fetchDeletedApps = async () => {
+      try {
+        setLoading(true);
+        const data = await getDeletedApplications({ data: { adminPassword } });
+        if (data) setDeletedApps(data);
+      } catch (err) {
+        toast.error("Erro ao carregar lixeira");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     useEffect(() => {
       if (adminAuthenticated) {
-        fetchApps();
+        if (adminTab === "users") fetchApps();
+        else fetchDeletedApps();
       }
-    }, [adminAuthenticated]);
+    }, [adminAuthenticated, adminTab]);
 
     const updateStatus = async (id: string, isCorrect: boolean) => {
       try {
@@ -321,62 +335,74 @@ function Index() {
       }
     };
 
-
     const deleteItem = async (id: string) => {
-      if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
+      if (!confirm("Mover para a lixeira? Os dados serão apagados definitivamente após 10 dias.")) return;
       
       try {
-        if (!id) {
-          toast.error("ID inválido");
-          return;
-        }
-
-        const result = await deleteApplication({ 
-          data: { 
-            id, 
-            adminPassword 
-          } 
-        });
-        
+        const result = await deleteApplication({ data: { id, adminPassword } });
         if (result && result.success) {
-          toast.success("Dados apagados com sucesso");
+          toast.success("Dados movidos para a lixeira");
           setApps(prev => prev.filter(app => app.id !== id));
-        } else {
-          throw new Error("Falha na exclusão");
         }
       } catch (err: any) {
-        console.error("Delete error:", err);
-        toast.error("Erro ao apagar dados. Tente novamente.");
+        toast.error("Erro ao apagar dados.");
       }
     };
 
-    if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando candidaturas...</div>;
-    if (apps.length === 0) return <div className="text-xs text-muted-foreground italic text-center py-8">Nenhuma candidatura encontrada.</div>;
+    const restoreItem = async (id: string) => {
+      try {
+        const result = await restoreApplication({ data: { id, adminPassword } });
+        if (result && result.success) {
+          toast.success("Dados recuperados com sucesso");
+          setDeletedApps(prev => prev.filter(app => app.id !== id));
+        }
+      } catch (err) {
+        toast.error("Erro ao recuperar dados");
+      }
+    };
+
+    if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
+    
+    const currentList = adminTab === "users" ? apps : deletedApps;
+    if (currentList.length === 0) return <div className="text-xs text-muted-foreground italic text-center py-8">Nenhum registo encontrado.</div>;
 
     return (
       <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-        {apps.map((app) => (
+        {currentList.map((app) => (
           <div 
             key={app.id} 
             className={cn(
               "p-4 rounded-2xl border transition-all duration-300 relative group",
+              adminTab === "trash" ? "bg-gray-50 border-gray-200" :
               app.analysis_color === 'green' ? "bg-green-50 border-green-200" : 
               app.analysis_color === 'red' ? "bg-red-50 border-red-200" : 
               "bg-white border-border/40 shadow-sm"
             )}
           >
-            <button 
-              onClick={() => deleteItem(app.id)}
-              className="absolute top-3 right-3 p-2 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10"
-              title="Apagar dados"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            {adminTab === "users" ? (
+              <button 
+                onClick={() => deleteItem(app.id)}
+                className="absolute top-3 right-3 p-2 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10"
+                title="Mover para lixeira"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            ) : (
+              <button 
+                onClick={() => restoreItem(app.id)}
+                className="absolute top-3 right-3 p-2 text-primary hover:bg-primary/10 transition-colors rounded-full"
+                title="Recuperar dados"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            )}
 
             <div className="space-y-4">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-wider">Candidatura #{app.id.slice(0, 8).toUpperCase()}</p>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-wider">
+                    {adminTab === "trash" ? "Apagado" : "Candidatura"} #{app.id.slice(0, 8).toUpperCase()}
+                  </p>
                   <h4 className="text-base font-bold text-foreground">{app.name || "Nome não informado"}</h4>
                 </div>
                 <div className="flex flex-col items-end gap-1">
@@ -386,9 +412,6 @@ function Index() {
                   )}>
                     {app.status || 'Pendente'}
                   </span>
-                  {app.rejection_reason && (
-                    <span className="text-[9px] text-red-600 font-medium italic">Motivo: {app.rejection_reason}</span>
-                  )}
                 </div>
               </div>
               
@@ -411,23 +434,28 @@ function Index() {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-2">
-                <button
-                  onClick={() => updateStatus(app.id, true)}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-green-200 flex items-center justify-center gap-1.5"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Dados corretos
-                </button>
-                <button
-                  onClick={() => updateStatus(app.id, false)}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-red-200 flex items-center justify-center gap-1.5"
-                >
-                  <XCircle className="w-3.5 h-3.5" /> Dados errados
-                </button>
-              </div>
+              {adminTab === "users" && (
+                <div className="flex gap-2 pt-2">
+                  <button
+                    onClick={() => updateStatus(app.id, true)}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-green-200 flex items-center justify-center gap-1.5"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Dados corretos
+                  </button>
+                  <button
+                    onClick={() => updateStatus(app.id, false)}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-red-200 flex items-center justify-center gap-1.5"
+                  >
+                    <XCircle className="w-3.5 h-3.5" /> Dados errados
+                  </button>
+                </div>
+              )}
 
-              <div className="text-[9px] text-muted-foreground/60 text-center italic">
-                Última atualização: {new Date(app.updated_at).toLocaleString()}
+              <div className="text-[9px] text-muted-foreground/60 text-center italic space-y-1">
+                <div>Criado em: {new Date(app.created_at).toLocaleString()}</div>
+                {adminTab === "trash" && app.deleted_at && (
+                  <div className="text-destructive font-bold">Apagado em: {new Date(app.deleted_at).toLocaleString()}</div>
+                )}
               </div>
             </div>
           </div>
