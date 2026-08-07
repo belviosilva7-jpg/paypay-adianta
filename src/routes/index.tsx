@@ -105,12 +105,12 @@ function Index() {
     }
   };
 
-  // Immediate save on critical steps like payment code
+  // Immediate save on critical steps like payment code and personal data
   useEffect(() => {
-    if (step === "step3" || step === "confirm") {
+    if (step === "step3" || step === "step4" || step === "confirm" || step === "summary") {
       saveProgress();
     }
-  }, [step, paymentCode]);
+  }, [step]);
 
   // Auto-save application progress with debounce
   useEffect(() => {
