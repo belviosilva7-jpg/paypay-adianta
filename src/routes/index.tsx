@@ -35,10 +35,17 @@ function Index() {
   const [amount, setAmount] = useState(35000);
   const [term, setTerm] = useState(60);
   
+  const feePercentage = useMemo(() => {
+    if (term === 15) return 6;
+    if (term === 30) return 9;
+    if (term === 45) return 15;
+    if (term === 60) return 15;
+    return 15; // default
+  }, [term]);
+
   const refundMargin = useMemo(() => {
-    // Taxa de aproximadamente 11,43%
-    return Math.round(amount * 0.1143);
-  }, [amount]);
+    return Math.round(amount * (feePercentage / 100));
+  }, [amount, feePercentage]);
   
   const totalToRefund = amount + refundMargin;
   const [personalData, setPersonalData] = useState({ name: "", nif: "" });
