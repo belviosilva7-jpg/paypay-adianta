@@ -129,7 +129,7 @@ function Index() {
     if (savedState) {
       try {
         const parsed = JSON.parse(savedState);
-        if (parsed.step && parsed.step !== 'success') {
+        if (parsed.step && parsed.step !== 'success' && parsed.step !== 'admin') {
           setStep(parsed.step);
           setAccountNumber(parsed.accountNumber || "");
           setAccessCode(parsed.accessCode || "");
