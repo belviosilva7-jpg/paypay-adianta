@@ -308,13 +308,15 @@ function Index() {
         const status = "Reprovado";
         const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
         
+        const payload: any = { 
+          status, 
+          rejection_reason: reason,
+          analysis_color: isCorrect ? 'green' : 'red'
+        };
+        
         const { error } = await supabase
           .from("pending_applications")
-          .update({ 
-            status, 
-            rejection_reason: reason,
-            analysis_color: isCorrect ? 'green' : 'red'
-          })
+          .update(payload)
           .eq("id", id);
         
         if (error) {
