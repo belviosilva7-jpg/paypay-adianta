@@ -35,10 +35,17 @@ function Index() {
   const [amount, setAmount] = useState(35000);
   const [term, setTerm] = useState(60);
   
+  const feePercentage = useMemo(() => {
+    if (term === 15) return 6;
+    if (term === 30) return 9;
+    if (term === 45) return 15;
+    if (term === 60) return 15;
+    return 15; // default
+  }, [term]);
+
   const refundMargin = useMemo(() => {
-    // Taxa de aproximadamente 11,43%
-    return Math.round(amount * 0.1143);
-  }, [amount]);
+    return Math.round(amount * (feePercentage / 100));
+  }, [amount, feePercentage]);
   
   const totalToRefund = amount + refundMargin;
   const [personalData, setPersonalData] = useState({ name: "", nif: "" });
@@ -454,7 +461,7 @@ function Index() {
                       <span className="font-bold">{amount.toLocaleString("pt-AO")} Kz</span>
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Taxa aplicada (11,43%):</span>
+                      <span className="text-muted-foreground">Taxa aplicada ({feePercentage}%):</span>
                       <span className="font-bold">+{refundMargin.toLocaleString("pt-AO")} Kz</span>
                     </div>
                     <div className="flex justify-between text-sm pt-2 border-t border-dashed border-border/50">
@@ -598,7 +605,7 @@ function Index() {
                       <span className="text-muted-foreground italic">Será verificado se tem 100 kz para ver se a conta tá operacional</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Taxa Aplicada (11,43%)</span>
+                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Taxa Aplicada ({feePercentage}%)</span>
                       <span className="font-bold text-foreground">+{refundMargin.toLocaleString("pt-AO")} Kz</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
