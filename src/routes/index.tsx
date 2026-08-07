@@ -286,47 +286,38 @@ function Index() {
     const [loading, setLoading] = useState(true);
 
     const fetchApps = async () => {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { data } = await supabase
-        .from("pending_applications")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
-      if (data) setApps(data);
-      setLoading(false);
+      try {
+        const data = await getApplications({ data: { adminPassword } });
+        if (data) setApps(data);
+      } catch (err) {
+        toast.error("Erro ao carregar dados");
+      } finally {
+        setLoading(false);
+      }
     };
 
     useEffect(() => {
-      fetchApps();
-    }, []);
+      if (adminAuthenticated) {
+        fetchApps();
+      }
+    }, [adminAuthenticated]);
 
     const updateStatus = async (id: string, isCorrect: boolean) => {
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const status = "Reprovado";
-        const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
-        
-        const payload = { 
-          status, 
-          rejection_reason: reason,
-          analysis_color: isCorrect ? 'green' : 'red'
-        };
-        
-        const { error } = await supabase
-          .from("pending_applications")
-          .update(payload)
-          .eq("id", id);
-        
-        if (error) {
-          toast.error("Erro ao atualizar análise: " + error.message);
-        } else {
-          toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
-          fetchApps();
-        }
-      } catch (err) {
-        toast.error("Erro inesperado");
+        await updateApplicationStatus({ 
+          data: { 
+            id, 
+            isCorrect, 
+            adminPassword 
+          } 
+        });
+        toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
+        fetchApps();
+      } catch (err: any) {
+        toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
       }
     };
+
 
     const deleteItem = async (id: string) => {
       if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
