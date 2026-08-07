@@ -202,7 +202,7 @@ function Index() {
 
       setLoading(true);
       try {
-        const data = await checkApplicationStatus({ data: { nif: checkNif } });
+        const data = await checkApplicationStatus({ data: { nif: checkNif } }) as any;
         
         if (!data) {
           toast.error("Nenhuma candidatura encontrada para este NIF.");
