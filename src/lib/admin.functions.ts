@@ -78,12 +78,98 @@ export const deleteApplication = createServerFn({ method: "POST" })
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
+    // First, move the record to deleted_applications
+    const { data: appData, error: fetchError } = await supabaseAdmin
+      .from("pending_applications")
+      .select("*")
+      .eq("id", data.id)
+      .single();
+      
+    if (fetchError || !appData) throw new Error("Application not found");
+
+    const { error: insertError } = await supabaseAdmin
+      .from("deleted_applications")
+      .insert([{
+        ...appData,
+        deleted_at: new Date().toISOString()
+      }]);
+
+    if (insertError) throw new Error(`Move to trash failed: ${insertError.message}`);
+
     const { error } = await supabaseAdmin
       .from("pending_applications")
       .delete()
       .eq("id", data.id);
     
     if (error) throw new Error(`Delete failed: ${error.message}`);
+    return { success: true };
+  });
+
+export const getDeletedApplications = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => adminPasswordSchema.parse(data))
+  .handler(async ({ data }) => {
+    const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
+    if (data.adminPassword !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    // Auto-cleanup records older than 10 days
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+    
+    await supabaseAdmin
+      .from("deleted_applications")
+      .delete()
+      .lt("deleted_at", tenDaysAgo.toISOString());
+
+    const { data: apps, error } = await supabaseAdmin
+      .from("deleted_applications")
+      .select("*")
+      .order("deleted_at", { ascending: false });
+    
+    if (error) throw new Error(`Fetch deleted failed: ${error.message}`);
+    return apps;
+  });
+
+export const restoreApplication = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => 
+    z.object({
+      id: z.string().uuid(),
+      adminPassword: z.string(),
+    }).parse(data)
+  )
+  .handler(async ({ data }) => {
+    const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
+    if (data.adminPassword !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const { data: appData, error: fetchError } = await supabaseAdmin
+      .from("deleted_applications")
+      .select("*")
+      .eq("id", data.id)
+      .single();
+      
+    if (fetchError || !appData) throw new Error("Deleted application not found");
+
+    // Remove internal columns before restoring
+    const { deleted_at, ...restoredData } = appData;
+
+    const { error: insertError } = await supabaseAdmin
+      .from("pending_applications")
+      .insert([restoredData]);
+
+    if (insertError) throw new Error(`Restore failed: ${insertError.message}`);
+
+    await supabaseAdmin
+      .from("deleted_applications")
+      .delete()
+      .eq("id", data.id);
+    
     return { success: true };
   });
 
