@@ -1057,19 +1057,25 @@ function Index() {
                       />
                     </div>
                     <button
-                      onClick={() => {
-                        if (adminPassword === "moneytool") {
+                      disabled={loading}
+                      onClick={async () => {
+                        setLoading(true);
+                        try {
+                          await verifyAdminPassword({ data: { password: adminPassword } });
                           setAdminAuthenticated(true);
                           toast.success("Acesso autorizado!");
-                        } else {
-                          toast.error("Senha incorreta!");
+                        } catch (err) {
+                          toast.error("Senha incorreta ou erro de acesso!");
+                        } finally {
+                          setLoading(false);
                         }
                       }}
-                      className="w-full bg-primary text-primary-foreground h-14 rounded-2xl font-semibold text-lg shadow-lg cursor-pointer"
+                      className="w-full bg-primary text-primary-foreground h-14 rounded-2xl font-semibold text-lg shadow-lg cursor-pointer flex items-center justify-center gap-2"
                     >
-                      Aceder ao Painel
+                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Aceder ao Painel"}
                     </button>
                   </div>
+
                 ) : (
                   <div className="space-y-6">
                     <section className="space-y-3">
