@@ -543,6 +543,7 @@ function Index() {
                       placeholder="Inserir Nome Completo"
                       value={personalData.name}
                       onChange={(e) => setPersonalData({ ...personalData, name: e.target.value })}
+                      onBlur={() => saveProgress()}
                       className="w-full text-sm outline-none bg-transparent py-2"
                     />
                   </div>
