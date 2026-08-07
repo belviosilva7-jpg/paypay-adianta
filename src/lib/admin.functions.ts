@@ -158,11 +158,16 @@ export const restoreApplication = createServerFn({ method: "POST" })
     if (fetchError || !appData) throw new Error("Deleted application not found");
 
     // Remove internal columns before restoring
-    const { deleted_at, ...restoredData } = appData as any;
+    const { deleted_at, id, created_at, updated_at, ...restoredData } = appData as any;
 
     const { error: insertError } = await supabaseAdmin
       .from("pending_applications" as any)
-      .insert([restoredData]);
+      .insert([{
+        ...restoredData,
+        id,
+        created_at,
+        updated_at
+      }]);
 
     if (insertError) throw new Error(`Restore failed: ${insertError.message}`);
 
