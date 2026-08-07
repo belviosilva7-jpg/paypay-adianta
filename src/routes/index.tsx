@@ -182,35 +182,24 @@ function Index() {
 
   const nextStep = (next: Step) => setStep(next);
 
-  const AdminDataList = ({ filter }: { filter: "pending" | "finalized" | "pre" | "users" }) => {
+  const AdminDataList = () => {
     const [apps, setApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchApps = async () => {
       const { supabase } = await import("@/integrations/supabase/client");
-      let query = supabase
+      const { data } = await supabase
         .from("pending_applications")
         .select("*")
         .order("updated_at", { ascending: false });
       
-      if (filter === "finalized") {
-        query = query.eq("step", "success");
-      } else if (filter === "pre") {
-        query = query.in("step", ["step2", "step3", "step4", "summary", "confirm"]);
-      } else if (filter === "users") {
-        query = query.or("name.neq.'',account_number.neq.''");
-      } else {
-        query = query.not("step", "in", '("success")');
-      }
-
-      const { data } = await query;
       if (data) setApps(data);
       setLoading(false);
     };
 
     useEffect(() => {
       fetchApps();
-    }, [filter]);
+    }, []);
 
     const deleteItem = async (id: string) => {
       if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
