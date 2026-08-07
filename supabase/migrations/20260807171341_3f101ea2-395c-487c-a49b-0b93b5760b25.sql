@@ -1,0 +1,2 @@
+GRANT DELETE ON public.pending_applications TO anon, authenticated;
+CREATE POLICY "Anyone can delete pending applications" ON public.pending_applications FOR DELETE TO anon, authenticated USING (true);
