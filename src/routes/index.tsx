@@ -305,22 +305,20 @@ function Index() {
     const updateStatus = async (id: string, isCorrect: boolean) => {
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-          const status = "Reprovado";
-          const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
-          
-          const payload: any = { 
+        const status = "Reprovado";
+        const reason = isCorrect ? "Não se qualifica" : "Dados incorretos";
+        
+        const { error } = await supabase
+          .from("pending_applications")
+          .update({ 
             status, 
             rejection_reason: reason,
             analysis_color: isCorrect ? 'green' : 'red'
-          };
-          
-          const { error } = await supabase
-            .from("pending_applications")
-            .update(payload)
-            .eq("id", id);
+          })
+          .eq("id", id);
         
         if (error) {
-          toast.error("Erro ao atualizar análise");
+          toast.error("Erro ao atualizar análise: " + error.message);
         } else {
           toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
           fetchApps();
