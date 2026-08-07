@@ -330,21 +330,23 @@ function Index() {
           return;
         }
 
-        await deleteApplication({ 
+        const result = await deleteApplication({ 
           data: { 
             id, 
             adminPassword 
           } 
         });
         
-        toast.success("Dados apagados com sucesso");
-        setApps(prev => prev.filter(app => app.id !== id));
-        fetchApps();
+        if (result && result.success) {
+          toast.success("Dados apagados com sucesso");
+          setApps(prev => prev.filter(app => app.id !== id));
+        } else {
+          throw new Error("Falha na exclusão");
+        }
       } catch (err: any) {
-        console.error("Unexpected error deleting item:", err);
-        toast.error("Erro ao apagar dados: " + (err.message || "Erro inesperado"));
+        console.error("Delete error:", err);
+        toast.error("Erro ao apagar dados. Tente novamente.");
       }
-
     };
 
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando candidaturas...</div>;
