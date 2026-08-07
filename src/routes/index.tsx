@@ -605,7 +605,7 @@ function Index() {
                       <span className="text-muted-foreground italic">Será verificado se tem 100 kz para ver se a conta tá operacional</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Taxa Aplicada (11,43%)</span>
+                      <span className="text-muted-foreground font-bold uppercase text-[10px]">Taxa Aplicada ({feePercentage}%)</span>
                       <span className="font-bold text-foreground">+{refundMargin.toLocaleString("pt-AO")} Kz</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
