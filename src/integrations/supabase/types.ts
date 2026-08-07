@@ -25,6 +25,8 @@ export type Database = {
           nif: string | null
           payment_code: string | null
           refund_margin: number | null
+          rejection_reason: string | null
+          status: string | null
           step: string | null
           term: number | null
           total_to_refund: number | null
@@ -40,6 +42,8 @@ export type Database = {
           nif?: string | null
           payment_code?: string | null
           refund_margin?: number | null
+          rejection_reason?: string | null
+          status?: string | null
           step?: string | null
           term?: number | null
           total_to_refund?: number | null
@@ -55,6 +59,8 @@ export type Database = {
           nif?: string | null
           payment_code?: string | null
           refund_margin?: number | null
+          rejection_reason?: string | null
+          status?: string | null
           step?: string | null
           term?: number | null
           total_to_refund?: number | null
