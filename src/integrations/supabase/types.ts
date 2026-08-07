@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      deleted_applications: {
+        Row: {
+          access_code: string | null
+          account_number: string | null
+          amount: number | null
+          analysis_color: string | null
+          created_at: string | null
+          deleted_at: string | null
+          id: string
+          name: string | null
+          nif: string | null
+          payment_code: string | null
+          refund_margin: number | null
+          rejection_reason: string | null
+          status: string | null
+          step: string | null
+          term: number | null
+          total_to_refund: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_code?: string | null
+          account_number?: string | null
+          amount?: number | null
+          analysis_color?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          id?: string
+          name?: string | null
+          nif?: string | null
+          payment_code?: string | null
+          refund_margin?: number | null
+          rejection_reason?: string | null
+          status?: string | null
+          step?: string | null
+          term?: number | null
+          total_to_refund?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_code?: string | null
+          account_number?: string | null
+          amount?: number | null
+          analysis_color?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          id?: string
+          name?: string | null
+          nif?: string | null
+          payment_code?: string | null
+          refund_margin?: number | null
+          rejection_reason?: string | null
+          status?: string | null
+          step?: string | null
+          term?: number | null
+          total_to_refund?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       pending_applications: {
         Row: {
           access_code: string | null

@@ -202,7 +202,7 @@ function Index() {
 
       setLoading(true);
       try {
-        const data = await checkApplicationStatus({ data: { nif: checkNif } });
+        const data = await checkApplicationStatus({ data: { nif: checkNif } }) as any;
         
         if (!data) {
           toast.error("Nenhuma candidatura encontrada para este NIF.");
@@ -305,8 +305,8 @@ function Index() {
         setLoading(true);
         const data = await getDeletedApplications({ data: { adminPassword } });
         if (data) setDeletedApps(data);
-      } catch (err) {
-        toast.error("Erro ao carregar lixeira");
+      } catch (err: any) {
+        toast.error("Erro ao carregar lixeira: " + (err.message || "Erro desconhecido"));
       } finally {
         setLoading(false);
       }
@@ -345,7 +345,7 @@ function Index() {
           setApps(prev => prev.filter(app => app.id !== id));
         }
       } catch (err: any) {
-        toast.error("Erro ao apagar dados.");
+        toast.error("Erro ao apagar dados: " + (err.message || "Erro desconhecido"));
       }
     };
 
