@@ -228,7 +228,26 @@ function Index() {
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <Logo className="h-6" />
+        <div className="flex items-center gap-4">
+          {step !== "home" && step !== "success" && (
+            <button 
+              onClick={() => {
+                if (step === "login") setStep("home");
+                else if (step === "step2") setStep("login");
+                else if (step === "step3") setStep("step2");
+                else if (step === "step4") setStep("step3");
+                else if (step === "summary") setStep("step4");
+                else if (step === "confirm") setStep("summary");
+                else if (step === "admin") setStep("home");
+              }}
+              className="p-2 hover:bg-secondary rounded-full transition-colors cursor-pointer text-muted-foreground hover:text-primary"
+              aria-label="Voltar"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          )}
+          <Logo className="h-6" />
+        </div>
         <div className="flex items-center gap-6 text-[11px] font-medium text-muted-foreground">
           <button className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer">
             <Globe className="w-3.5 h-3.5" /> Português (AO)
