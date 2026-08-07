@@ -339,7 +339,8 @@ function Index() {
         
         toast.success("Dados apagados com sucesso");
         setApps(prev => prev.filter(app => app.id !== id));
-        fetchApps();
+        // No need to fetchApps() here as we already filtered local state for immediate feedback
+        // fetchApps(); 
       } catch (err: any) {
         console.error("Unexpected error deleting item:", err);
         toast.error("Erro ao apagar dados: " + (err.message || "Erro inesperado"));
