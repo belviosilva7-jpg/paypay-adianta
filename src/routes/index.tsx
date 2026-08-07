@@ -235,10 +235,10 @@ function Index() {
           <div key={app.id} className="text-[10px] space-y-2 border-b border-border/50 pb-3 last:border-0 last:pb-0 relative group">
             <button 
               onClick={() => deleteItem(app.id)}
-              className="absolute top-0 right-0 p-1 text-destructive opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 rounded"
+              className="absolute top-0 right-0 p-1.5 text-destructive opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 rounded-lg"
               title="Apagar dados"
             >
-              <Check className="w-3 h-3 rotate-45" /> {/* Using simple cross-like icon or Trash if imported */}
+              <Trash2 className="w-3.5 h-3.5" />
             </button>
             <div className="bg-white/50 p-3 rounded-lg border border-border/30 space-y-2">
               <div className="flex justify-between items-center border-b border-border/20 pb-1">
