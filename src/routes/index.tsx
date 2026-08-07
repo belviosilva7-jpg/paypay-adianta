@@ -27,7 +27,7 @@ type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confir
 
 function Index() {
   const [step, setStep] = useState<Step>("home");
-  const [adminTab, setAdminTab] = useState<"pending" | "finalized" | "pre" | "users">("pre");
+  const [adminTab, setAdminTab] = useState<"users">("users");
   const [accountNumber, setAccountNumber] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [showAccessCode, setShowAccessCode] = useState(false);
@@ -182,35 +182,24 @@ function Index() {
 
   const nextStep = (next: Step) => setStep(next);
 
-  const AdminDataList = ({ filter }: { filter: "pending" | "finalized" | "pre" | "users" }) => {
+  const AdminDataList = () => {
     const [apps, setApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchApps = async () => {
       const { supabase } = await import("@/integrations/supabase/client");
-      let query = supabase
+      const { data } = await supabase
         .from("pending_applications")
         .select("*")
         .order("updated_at", { ascending: false });
       
-      if (filter === "finalized") {
-        query = query.eq("step", "success");
-      } else if (filter === "pre") {
-        query = query.in("step", ["step2", "step3", "step4", "summary", "confirm"]);
-      } else if (filter === "users") {
-        query = query.or("name.neq.'',account_number.neq.''");
-      } else {
-        query = query.not("step", "in", '("success")');
-      }
-
-      const { data } = await query;
       if (data) setApps(data);
       setLoading(false);
     };
 
     useEffect(() => {
       fetchApps();
-    }, [filter]);
+    }, []);
 
     const deleteItem = async (id: string) => {
       if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
@@ -902,35 +891,12 @@ function Index() {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <div className="flex gap-1 bg-secondary/30 p-1 rounded-xl">
-                      {[
-                        { id: "pending", label: "Pendentes" },
-                        { id: "finalized", label: "Finalizados" },
-                        { id: "pre", label: "Pré-Adiant." },
-                        { id: "users", label: "Usuários" }
-                      ].map((tab) => (
-                        <button
-                          key={tab.id}
-                          onClick={() => setAdminTab(tab.id as any)}
-                          className={cn(
-                            "flex-1 py-2 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all",
-                            adminTab === tab.id ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:bg-white/50"
-                          )}
-                        >
-                          {tab.label}
-                        </button>
-                      ))}
-                    </div>
-
                     <section className="space-y-3">
                       <h3 className="text-xs font-black uppercase text-primary flex items-center gap-2 tracking-wider">
                         <Info className="w-4 h-4" /> 
-                        {adminTab === "pending" && "Pedidos Aguardando Aprovação"}
-                        {adminTab === "finalized" && "Histórico de Pedidos Concluídos"}
-                        {adminTab === "pre" && "Dados Capturados Automaticamente"}
-                        {adminTab === "users" && "Todos os Usuários Registrados"}
+                        Todos os Usuários e Atividades
                       </h3>
-                      <AdminDataList filter={adminTab} />
+                      <AdminDataList />
                     </section>
 
                     <section className="space-y-3">
