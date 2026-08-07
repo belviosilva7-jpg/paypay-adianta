@@ -447,6 +447,21 @@ function Index() {
                       ))}
                     </div>
                   </div>
+
+                  <div className="pt-4 border-t border-border/50 space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Valor solicitado:</span>
+                      <span className="font-bold">{amount.toLocaleString("pt-AO")} Kz</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-muted-foreground">Taxa aplicada (11,43%):</span>
+                      <span className="font-bold">+{refundMargin.toLocaleString("pt-AO")} Kz</span>
+                    </div>
+                    <div className="flex justify-between text-sm pt-2 border-t border-dashed border-border/50">
+                      <span className="font-bold">Total a devolver:</span>
+                      <span className="font-black text-primary">{totalToRefund.toLocaleString("pt-AO")} Kz</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
