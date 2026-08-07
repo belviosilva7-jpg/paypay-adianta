@@ -201,11 +201,20 @@ function Index() {
   const Logo = ({ className }: { className?: string }) => (
     <div 
       onClick={() => setLogoClicks(prev => prev + 1)}
-      className={cn("flex items-center gap-2 cursor-pointer select-none relative", className)}
+      className={cn("flex items-center gap-2 cursor-pointer select-none relative overflow-hidden", className)}
     >
-      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10" />
-      <div className="absolute inset-0 z-10 opacity-30 pointer-events-none flex items-center justify-center overflow-hidden">
-        <img src={logoPaypay} alt="" className="w-full h-full object-contain scale-150 rotate-12" />
+      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10 invisible" />
+      <img 
+        src={logoPaypay} 
+        alt="paypay" 
+        className="absolute inset-0 w-full h-full object-contain z-20" 
+      />
+      <div className="absolute inset-0 z-10 opacity-20 pointer-events-none flex items-center justify-center">
+        <img 
+          src={logoPaypay} 
+          alt="" 
+          className="w-full h-full object-contain scale-125 rotate-6" 
+        />
       </div>
     </div>
   );
