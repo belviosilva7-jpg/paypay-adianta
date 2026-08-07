@@ -87,10 +87,11 @@ export const deleteApplication = createServerFn({ method: "POST" })
       
     if (fetchError || !appData) throw new Error("Application not found");
 
+    const appDataObj = appData as any;
     const { error: insertError } = await supabaseAdmin
       .from("deleted_applications" as any)
       .insert([{
-        ...appData,
+        ...appDataObj,
         deleted_at: new Date().toISOString()
       }]);
 
