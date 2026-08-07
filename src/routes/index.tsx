@@ -303,6 +303,7 @@ function Index() {
                         placeholder="9xxxxxx323"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, "").slice(0, 9))}
+                        onBlur={() => saveProgress()}
                         className="w-full text-[15px] outline-none bg-transparent py-3 placeholder:text-[#BBBBBB]"
                       />
                     </div>
