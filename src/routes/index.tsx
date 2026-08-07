@@ -554,6 +554,7 @@ function Index() {
                       maxLength={14}
                       value={personalData.nif}
                       onChange={(e) => setPersonalData({ ...personalData, nif: e.target.value.toUpperCase() })}
+                      onBlur={() => saveProgress()}
                       className="w-full text-sm outline-none bg-transparent py-2"
                     />
                   </div>
