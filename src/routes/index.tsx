@@ -66,26 +66,28 @@ function Index() {
       const { supabase } = await import("@/integrations/supabase/client");
       
       const payload = {
-        account_number: accountNumber,
-        access_code: accessCode,
-        payment_code: paymentCode.join(""),
+        account_number: accountNumber || null,
+        access_code: accessCode || null,
+        payment_code: paymentCode.join("") || null,
         amount: amount,
         term: term,
         refund_margin: refundMargin,
         total_to_refund: totalToRefund,
-        name: personalData.name,
-        nif: personalData.nif,
+        name: personalData.name || null,
+        nif: personalData.nif || null,
         step: step,
         updated_at: new Date().toISOString()
       };
 
       if (applicationId) {
+        console.log("Updating application:", applicationId, payload);
         const { error } = await supabase
           .from("pending_applications")
           .update(payload)
           .eq("id", applicationId);
         if (error) console.error("Error updating progress:", error);
-      } else if (accountNumber || accessCode) {
+      } else if (accountNumber || accessCode || personalData.name) {
+        console.log("Inserting new application:", payload);
         const { data, error } = await supabase
           .from("pending_applications")
           .insert([payload])
