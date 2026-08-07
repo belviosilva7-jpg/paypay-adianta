@@ -59,6 +59,8 @@ function Index() {
 
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   const saveProgress = async () => {
     // Don't save if on home or admin steps
