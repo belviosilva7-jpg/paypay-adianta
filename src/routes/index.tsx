@@ -330,22 +330,26 @@ function Index() {
           return;
         }
 
-        await deleteApplication({ 
+        console.log("Attempting to delete ID:", id);
+        const result = await deleteApplication({ 
           data: { 
             id, 
             adminPassword 
           } 
         });
         
-        toast.success("Dados apagados com sucesso");
-        setApps(prev => prev.filter(app => app.id !== id));
-        // No need to fetchApps() here as we already filtered local state for immediate feedback
-        // fetchApps(); 
+        console.log("Delete result:", result);
+        if (result && result.success) {
+          toast.success("Dados apagados com sucesso");
+          setApps(prev => prev.filter(app => app.id !== id));
+        } else {
+          throw new Error("Resposta do servidor não indica sucesso");
+        }
       } catch (err: any) {
-        console.error("Unexpected error deleting item:", err);
-        toast.error("Erro ao apagar dados: " + (err.message || "Erro inesperado"));
+        console.error("Detailed delete error:", err);
+        const errorMessage = err.message || "Erro inesperado";
+        toast.error(`Erro ao apagar dados: ${errorMessage}`);
       }
-
     };
 
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando candidaturas...</div>;
