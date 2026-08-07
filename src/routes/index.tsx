@@ -323,29 +323,26 @@ function Index() {
       if (!confirm("Tem certeza que deseja apagar estes dados? Esta ação não pode ser desfeita.")) return;
       
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
         if (!id) {
           toast.error("ID inválido");
           return;
         }
 
-        const { error } = await supabase
-          .from("pending_applications")
-          .delete()
-          .eq("id", id);
+        await deleteApplication({ 
+          data: { 
+            id, 
+            adminPassword 
+          } 
+        });
         
-        if (error) {
-          console.error("Supabase delete error:", error);
-          toast.error(`Erro ao apagar dados: ${error.message}`);
-        } else {
-          toast.success("Dados apagados com sucesso");
-          setApps(prev => prev.filter(app => app.id !== id));
-          fetchApps();
-        }
-      } catch (err) {
+        toast.success("Dados apagados com sucesso");
+        setApps(prev => prev.filter(app => app.id !== id));
+        fetchApps();
+      } catch (err: any) {
         console.error("Unexpected error deleting item:", err);
-        toast.error("Erro inesperado ao apagar dados");
+        toast.error("Erro ao apagar dados: " + (err.message || "Erro inesperado"));
       }
+
     };
 
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando candidaturas...</div>;
