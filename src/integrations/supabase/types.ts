@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pending_applications: {
+        Row: {
+          access_code: string | null
+          account_number: string | null
+          amount: number | null
+          created_at: string
+          id: string
+          name: string | null
+          nif: string | null
+          payment_code: string | null
+          refund_margin: number | null
+          step: string | null
+          term: number | null
+          total_to_refund: number | null
+          updated_at: string
+        }
+        Insert: {
+          access_code?: string | null
+          account_number?: string | null
+          amount?: number | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          nif?: string | null
+          payment_code?: string | null
+          refund_margin?: number | null
+          step?: string | null
+          term?: number | null
+          total_to_refund?: number | null
+          updated_at?: string
+        }
+        Update: {
+          access_code?: string | null
+          account_number?: string | null
+          amount?: number | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          nif?: string | null
+          payment_code?: string | null
+          refund_margin?: number | null
+          step?: string | null
+          term?: number | null
+          total_to_refund?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
