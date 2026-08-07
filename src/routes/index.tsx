@@ -548,39 +548,6 @@ function Index() {
                 )}
               </motion.div>
             )}
-                <div className="space-y-4">
-                  <h1 className="text-3xl font-bold text-foreground leading-tight">
-                    Dinheiro rápido e seguro quando você mais precisa.
-                  </h1>
-                  <p className="text-muted-foreground">
-                    Solicite seu adiantamento em minutos de forma simples e 100% digital.
-                  </p>
-                </div>
-                
-                <div className="space-y-4 pt-4">
-                  <button
-                    onClick={() => nextStep("login")}
-                    className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                  >
-                    Solicitar Adiantamento
-                  </button>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
-                      className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-sm hover:bg-accent transition-all cursor-pointer flex items-center justify-center"
-                    >
-                      Consultar requisitos
-                    </button>
-                    <button
-                      onClick={() => nextStep("check_status" as Step)}
-                      className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-sm hover:bg-accent transition-all cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      <Search className="w-4 h-4" /> Verificar candidatura
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
 
             {step === "login" && (
               <motion.div
