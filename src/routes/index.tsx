@@ -36,9 +36,9 @@ function Index() {
   const [term, setTerm] = useState(60);
   
   const refundMargin = useMemo(() => {
-    // 5% margin + a fixed base of 500 Kz
-    return Math.round((amount * 0.05) + (term * 10));
-  }, [amount, term]);
+    // Taxa de aproximadamente 11,43%
+    return Math.round(amount * 0.1143);
+  }, [amount]);
   
   const totalToRefund = amount + refundMargin;
   const [personalData, setPersonalData] = useState({ name: "", nif: "" });
