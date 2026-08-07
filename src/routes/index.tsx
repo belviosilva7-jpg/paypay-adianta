@@ -917,39 +917,6 @@ function Index() {
                       <AdminDataList />
                     </section>
 
-                    <section className="space-y-3">
-                      <h3 className="text-xs font-black uppercase text-primary flex items-center gap-2 tracking-wider">
-                        <User className="w-4 h-4" /> Gestão de Usuários (Carlinhos)
-                      </h3>
-                      <div className="bg-secondary/40 rounded-xl p-4 space-y-4">
-                        {[
-                          { name: "Pastor José dos Campos", account: "923 441 002", usage: "35.000 Kz", code: "PAY-89231" },
-                          { name: "Usuário Secundário", account: "912 334 556", usage: "12.500 Kz", code: "PAY-11234" }
-                        ].map((user, i) => (
-                          <div key={i} className="space-y-2 border-b border-border/50 pb-3 last:border-0 last:pb-0">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <p className="font-bold text-foreground text-sm cursor-pointer hover:text-primary transition-colors" onClick={() => toast.info(`Acedendo a: ${user.name}`)}>
-                                  {user.name}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Nº Conta: {user.account}</p>
-                              </div>
-                              <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase">Gestor: Carlinhos</span>
-                            </div>
-                            <div className="flex gap-2">
-                              <div className="flex-1 bg-white/50 p-2 rounded-lg border border-border/30">
-                                <p className="text-[9px] text-muted-foreground uppercase font-bold leading-none mb-1">Limite em Uso</p>
-                                <p className="text-xs font-black text-primary">{user.usage}</p>
-                              </div>
-                              <div className="flex-1 bg-white/50 p-2 rounded-lg border border-border/30">
-                                <p className="text-[9px] text-muted-foreground uppercase font-bold leading-none mb-1">Ref. Pagamento</p>
-                                <p className="text-xs font-mono font-bold">{user.code}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
                   </div>
                 )}
               </motion.div>
