@@ -474,7 +474,7 @@ function Index() {
     };
 
     const permanentDelete = async (id: string) => {
-      const permanentPassword = prompt("Digite a senha moneytooll para remover permanentemente:");
+      const permanentPassword = prompt("Digite a senha para remover permanentemente:");
       if (!permanentPassword) return;
 
       try {
