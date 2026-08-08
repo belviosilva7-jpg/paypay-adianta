@@ -223,7 +223,7 @@ function Index() {
 
   const StatusCheckArea = ({ onBack, compact = false }: { onBack: () => void; compact?: boolean }) => {
     const [checkNif, setCheckNif] = useState("");
-    const [checkResult, setCheckResult] = useState<{ status: string; reason: string } | null>(null);
+    const [checkResult, setCheckResult] = useState<{ status: string; reason: string; color?: string } | null>(null);
     const [loading, setLoading] = useState(false);
 
     const handleCheck = async () => {
