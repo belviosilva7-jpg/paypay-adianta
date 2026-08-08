@@ -66,7 +66,7 @@ function Index() {
       setTimeout(() => setNotification(null), 5000);
     };
 
-    const interval = setInterval(showRandomNotification, 30000);
+    const interval = setInterval(showRandomNotification, 20000);
     const firstTimeout = setTimeout(showRandomNotification, 3000);
 
     return () => {
@@ -695,10 +695,10 @@ function Index() {
       <AnimatePresence>
         {notification && (
           <motion.div
-            initial={{ opacity: 0, y: -100, x: "-50%" }}
-            animate={{ opacity: 1, y: 20, x: "-50%" }}
-            exit={{ opacity: 0, y: -100, x: "-50%" }}
-            className="fixed top-0 left-1/2 z-[100] w-[90%] max-w-[320px] bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
+            className="fixed top-20 right-4 z-[100] w-[90%] max-w-[320px] bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
           >
             <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
               <CheckCircle2 className="w-6 h-6 text-primary" />
