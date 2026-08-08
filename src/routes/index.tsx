@@ -690,7 +690,31 @@ function Index() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10">
+    <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
+      {/* Dynamic Notifications */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -100, x: "-50%" }}
+            animate={{ opacity: 1, y: 20, x: "-50%" }}
+            exit={{ opacity: 0, y: -100, x: "-50%" }}
+            className="fixed top-0 left-1/2 z-[100] w-[90%] max-w-[320px] bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
+          >
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <p className="text-[13px] font-bold text-foreground leading-tight truncate">
+                {notification.name}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Recebeu um empréstimo de <span className="font-bold text-primary">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-4">
           {step !== "home" && step !== "success" && (
