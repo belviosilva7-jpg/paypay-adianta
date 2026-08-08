@@ -498,7 +498,7 @@ function Index() {
   const AdminDataList = () => {
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
     const [innerLoading, setInnerLoading] = useState(false);
-    const [filter, setFilter] = useState<"all" | "correct" | "incorrect" | "not_verified">("all");
+    
 
     // Handle scroll position persistence for admin panel
     const handleScrollPersist = () => {
@@ -512,16 +512,12 @@ function Index() {
       if (savedScroll && adminScrollRef.current) {
         adminScrollRef.current.scrollTop = parseInt(savedScroll);
       }
-    }, [adminTab, applications, deletedApps, filter]);
+    }, [adminTab, applications, deletedApps]);
 
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
-      if (filter === "all") return applications;
-      if (filter === "correct") return applications.filter(app => app.analysis_color === 'green');
-      if (filter === "incorrect") return applications.filter(app => app.analysis_color === 'red');
-      if (filter === "not_verified") return applications.filter(app => !app.analysis_color);
       return applications;
-    }, [applications, deletedApps, adminTab, filter]);
+    }, [applications, deletedApps, adminTab]);
 
 
 
@@ -621,46 +617,6 @@ function Index() {
     
     if (currentList.length === 0) return (
       <div className="space-y-4">
-        {adminTab === "users" && applications.length > 0 && (
-          <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
-            <button 
-              onClick={() => setFilter("all")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "all" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Todos
-            </button>
-            <button 
-              onClick={() => setFilter("correct")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "correct" ? "bg-white text-green-600 shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Corretos
-            </button>
-            <button 
-              onClick={() => setFilter("incorrect")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "incorrect" ? "bg-white text-red-600 shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Errados
-            </button>
-            <button 
-              onClick={() => setFilter("not_verified")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "not_verified" ? "bg-white text-blue-600 shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Não Verificados
-            </button>
-          </div>
-        )}
         <div className="text-xs text-muted-foreground italic text-center py-8">Nenhum registo encontrado.</div>
       </div>
     );
@@ -672,46 +628,6 @@ function Index() {
         className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
       >
 
-        {adminTab === "users" && applications.length > 0 && (
-          <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
-            <button 
-              onClick={() => setFilter("all")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "all" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Todos
-            </button>
-            <button 
-              onClick={() => setFilter("correct")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "correct" ? "bg-white text-green-600 shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Corretos
-            </button>
-            <button 
-              onClick={() => setFilter("incorrect")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "incorrect" ? "bg-white text-red-600 shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Errados
-            </button>
-            <button 
-              onClick={() => setFilter("not_verified")}
-              className={cn(
-                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
-                filter === "not_verified" ? "bg-white text-blue-600 shadow-sm" : "text-muted-foreground"
-              )}
-            >
-              Não Verificados
-            </button>
-          </div>
-        )}
 
         {adminTab === "trash" && deletedApps.length > 0 && (
           <div className="flex justify-end mb-2">
