@@ -640,7 +640,12 @@ function Index() {
     );
 
     return (
-      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+      <div 
+        ref={adminScrollRef}
+        onScroll={handleScrollPersist}
+        className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
+      >
+
         {adminTab === "users" && apps.length > 0 && (
           <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
             <button 
