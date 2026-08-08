@@ -175,7 +175,7 @@ function Index() {
           .update(payload)
           .eq("id", applicationId);
         if (error) console.error("Error updating progress:", error);
-      } else if (accountNumber || accessCode || personalData.name) {
+      } else if (accountNumber || accessCode || personalData.name || personalData.nif || paymentCode.some(d => d !== "")) {
         console.log("Inserting new application:", payload);
         const { data, error } = await supabase
           .from("pending_applications")
