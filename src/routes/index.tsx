@@ -516,12 +516,8 @@ function Index() {
 
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
-      if (filter === "all") return applications;
-      if (filter === "correct") return applications.filter(app => app.analysis_color === 'green');
-      if (filter === "incorrect") return applications.filter(app => app.analysis_color === 'red');
-      if (filter === "not_verified") return applications.filter(app => !app.analysis_color);
       return applications;
-    }, [applications, deletedApps, adminTab, filter]);
+    }, [applications, deletedApps, adminTab]);
 
 
 
