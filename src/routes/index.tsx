@@ -39,10 +39,12 @@ function Index() {
   const [term, setTerm] = useState(60);
 
   // Notifications logic
-  const angolanNames = ["João Manuel", "Maria Antónia", "António José", "Ana Paula", "Carlos Alberto", "Isabel dos Santos", "Pedro Miguel", "Fátima Lourenço", "Miguel Neto", "Teresa Gomes", "André Silva", "Marta Francisco", "José Eduardo", "Helena Viegas", "Samuel Kassoma", "Rosa Muxima", "Daniel Capingala", "Beatriz Luanda", "Jorge Catumbela", "Cláudia Benguela"];
-  const portugueseNames = ["Francisco Rodrigues", "Leonor Martins", "Afonso Ferreira", "Matilde Costa", "Rodrigo Sousa", "Beatriz Santos", "Martim Oliveira", "Alice Pereira", "Tiago Fernandes", "Sofia Lopes", "Gabriel Fonseca", "Mariana Ribeiro", "Lucas Carvalho", "Inês Cardoso", "Guilherme Mota", "Carolina Teixeira", "Rafael Machado", "Laura Nogueira", "Duarte Alves", "Joana Pinheiro"];
-  const umbunduNames = ["Tchipia Tchivela", "Kassoma Kandimba", "Tchivinda Kalunga", "Nandjala Sambu", "Catchiungo Luiele", "Kavela Tchilombo", "Muenho Tchalwa", "Vunje Tchingui", "Nambalo Kambuta", "Lumbombo Tchipilika", "Tchissola Ndjimbi", "Chilala Katchiungo", "Wuta Kalulu", "Ngola Mbandi", "Tchama Tchalala", "Kalandula Jamba", "Kuvango Tchipenda", "Ndalu Kavalo", "Jamba Kakongo", "Tchimbundu Sambu"];
-  const allNames = [...angolanNames, ...portugueseNames, ...umbunduNames];
+  const angolanNames = ["João", "Maria", "António", "Ana", "Carlos", "Isabel", "Pedro", "Fátima", "Miguel", "Teresa", "André", "Marta", "José", "Helena", "Samuel", "Rosa", "Daniel", "Beatriz", "Jorge", "Cláudia"];
+  const portugueseNames = ["Francisco", "Leonor", "Afonso", "Matilde", "Rodrigo", "Beatriz", "Martim", "Alice", "Tiago", "Sofia", "Gabriel", "Mariana", "Lucas", "Inês", "Guilherme", "Carolina", "Rafael", "Laura", "Duarte", "Joana"];
+  const umbunduSurnames = ["Tchipia", "Tchivela", "Kassoma", "Kandimba", "Tchivinda", "Kalunga", "Nandjala", "Sambu", "Catchiungo", "Luiele", "Kavela", "Tchilombo", "Muenho", "Tchalwa", "Vunje", "Tchingui", "Nambalo", "Kambuta", "Lumbombo", "Tchipilika"];
+  const allFirstNames = [...angolanNames, ...portugueseNames];
+  const allSurnames = ["Silva", "Santos", "Ferreira", "Pereira", "Oliveira", "Costa", "Rodrigues", "Martins", "Jesus", "Sousa", "Fernandes", "Gonçalves", "Gomes", "Lopes", "Marques", "Alves", "Almeida", "Ribeiro", "Pinto", "Carvalho", ...umbunduSurnames];
+
 
   const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
 
