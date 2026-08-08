@@ -397,29 +397,7 @@ function Index() {
       setCustomRejectionReason(isCorrect ? "Não se qualifica" : "Dados incorretos");
     };
 
-    const handleConfirmStatusUpdate = async () => {
-      const { appId, isCorrect } = rejectionDialog;
-      if (!appId) return;
-
-      try {
-        setLoading(true);
-        await updateApplicationStatus({ 
-          data: { 
-            id: appId, 
-            isCorrect, 
-            customReason: customRejectionReason,
-            adminPassword 
-          } 
-        });
-        toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
-        setRejectionDialog({ isOpen: false, appId: "", isCorrect: false });
-        fetchApps();
-      } catch (err: any) {
-        toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
-      } finally {
-        setLoading(false);
-      }
-    };
+    const handleDialogConfirm = () => handleConfirmStatusUpdate(fetchApps);
 
     const deleteItem = async (id: string) => {
       if (!confirm("Mover para a lixeira? Os dados serão apagados definitivamente após 10 dias.")) return;
