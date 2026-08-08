@@ -512,7 +512,7 @@ function Index() {
       if (savedScroll && adminScrollRef.current) {
         adminScrollRef.current.scrollTop = parseInt(savedScroll);
       }
-    }, [adminTab, applications, deletedApps, filter]);
+    }, [adminTab, applications, deletedApps]);
 
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
