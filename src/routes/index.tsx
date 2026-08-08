@@ -472,7 +472,7 @@ function Index() {
     const [apps, setApps] = useState<any[]>([]);
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<"all" | "correct" | "incorrect">("all");
+    const [filter, setFilter] = useState<"all" | "correct" | "incorrect" | "not_verified">("all");
 
     // Handle scroll position persistence for admin panel
     const handleScrollPersist = () => {
@@ -484,15 +484,20 @@ function Index() {
     useEffect(() => {
       const savedScroll = sessionStorage.getItem("admin_scroll_pos");
       if (savedScroll && adminScrollRef.current) {
-        adminScrollRef.current.scrollTop = parseInt(savedScroll);
+        setTimeout(() => {
+          if (adminScrollRef.current) {
+            adminScrollRef.current.scrollTop = parseInt(savedScroll);
+          }
+        }, 100);
       }
-    }, []);
+    }, [adminTab, apps, deletedApps, filter]);
 
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
       if (filter === "all") return apps;
       if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
       if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
+      if (filter === "not_verified") return apps.filter(app => !app.analysis_color);
       return apps;
     }, [apps, deletedApps, adminTab, filter]);
 
