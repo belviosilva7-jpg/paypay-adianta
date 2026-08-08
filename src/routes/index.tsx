@@ -1531,7 +1531,6 @@ function Index() {
 
                 ) : (
                   <div className="space-y-6">
-                    </div>
 
                     <section className="space-y-3">
                       <h3 className="text-xs font-black uppercase text-primary flex items-center gap-2 tracking-wider">
