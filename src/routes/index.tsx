@@ -369,22 +369,31 @@ function Index() {
     }, [adminAuthenticated, adminTab]);
 
     const updateStatus = async (id: string, isCorrect: boolean) => {
-      const customReason = prompt("Personalizar motivo da rejeição (opcional):", isCorrect ? "Não se qualifica" : "Dados incorretos");
-      if (customReason === null) return; // Cancelled
+      setRejectionDialog({ isOpen: true, appId: id, isCorrect });
+      setCustomRejectionReason(isCorrect ? "Não se qualifica" : "Dados incorretos");
+    };
+
+    const handleConfirmStatusUpdate = async () => {
+      const { appId, isCorrect } = rejectionDialog;
+      if (!appId) return;
 
       try {
+        setLoading(true);
         await updateApplicationStatus({ 
           data: { 
-            id, 
+            id: appId, 
             isCorrect, 
-            customReason,
+            customReason: customRejectionReason,
             adminPassword 
           } 
         });
         toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
+        setRejectionDialog({ isOpen: false, appId: "", isCorrect: false });
         fetchApps();
       } catch (err: any) {
         toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
+      } finally {
+        setLoading(false);
       }
     };
 
