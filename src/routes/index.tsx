@@ -472,6 +472,15 @@ function Index() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<"all" | "correct" | "incorrect">("all");
 
+    const filteredApps = useMemo(() => {
+      if (adminTab !== "users") return deletedApps;
+      if (filter === "all") return apps;
+      if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
+      if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
+      return apps;
+    }, [apps, deletedApps, adminTab, filter]);
+
+
     const fetchApps = async () => {
       try {
         const data = await getApplications({ data: { adminPassword } });
