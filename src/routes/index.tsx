@@ -597,7 +597,7 @@ function Index() {
                       <div className="grid grid-cols-2 gap-4 pt-4">
                         <div className="bg-white rounded-2xl shadow-sm p-4 border border-border/40 flex items-center justify-between group hover:border-primary transition-colors cursor-pointer" onClick={() => setStep("check_status")}>
                           <div className="flex flex-col text-left">
-                            <h3 className="text-[11px] font-bold text-foreground">Consultar</h3>
+                            <h3 className="text-[11px] font-bold text-foreground">Consultar Empréstimo</h3>
                             <p className="text-[9px] text-muted-foreground">Estado do pedido</p>
                           </div>
                           <Search className="w-4 h-4 text-primary" />
