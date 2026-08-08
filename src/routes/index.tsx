@@ -370,7 +370,7 @@ function Index() {
                 )}>
                   {checkResult.status === "Reprovado" ? <AlertTriangle className="w-5 h-5" /> :
                    <Info className="w-5 h-5" />}
-                  <span className="font-black uppercase text-sm">Status: Reprovado</span>
+                  <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
                 </div>
                 <div className="space-y-1">
                   <p className={cn(
