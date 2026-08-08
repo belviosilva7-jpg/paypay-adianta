@@ -84,7 +84,7 @@ function Index() {
           adminPassword 
         } 
       });
-      toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
+      toast.success("Candidatura Reprovada com sucesso");
       setRejectionDialog({ isOpen: false, appId: "", isCorrect: false });
       if (onConfirm) onConfirm();
     } catch (err: any) {
@@ -292,24 +292,20 @@ function Index() {
               )}
               <div className={cn(
                 "p-3 rounded-xl border space-y-2 text-left",
-                checkResult.color === 'green' || checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : 
                 checkResult.color === 'red' || checkResult.status === "Reprovado" ? "bg-red-50 border-red-100" :
                 "bg-blue-50 border-blue-100"
               )}>
                 <div className={cn(
                   "flex items-center gap-2",
-                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-600" : 
                   checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-600" :
                   "text-blue-600"
                 )}>
-                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-4 h-4" /> : 
-                   checkResult.status === "Reprovado" ? <AlertTriangle className="w-4 h-4" /> :
+                  {checkResult.status === "Reprovado" ? <AlertTriangle className="w-4 h-4" /> :
                    <Info className="w-4 h-4" />}
                   <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
                 </div>
                 <p className={cn(
                   "text-[11px] font-bold leading-tight",
-                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-700" : 
                   checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-700" :
                   "text-blue-700"
                 )}>“{checkResult.reason}”</p>
@@ -364,31 +360,26 @@ function Index() {
               )}
               <div className={cn(
                 "p-4 rounded-2xl border space-y-3",
-                checkResult.color === 'green' || checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : 
                 checkResult.color === 'red' || checkResult.status === "Reprovado" ? "bg-red-50 border-red-100" :
                 "bg-blue-50 border-blue-100"
               )}>
                 <div className={cn(
                   "flex items-center gap-2 justify-center",
-                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-600" : 
                   checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-600" :
                   "text-blue-600"
                 )}>
-                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-5 h-5" /> : 
-                   checkResult.status === "Reprovado" ? <AlertTriangle className="w-5 h-5" /> :
+                  {checkResult.status === "Reprovado" ? <AlertTriangle className="w-5 h-5" /> :
                    <Info className="w-5 h-5" />}
                   <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
                 </div>
                 <div className="space-y-1">
                   <p className={cn(
                     "text-[10px] uppercase font-black",
-                    checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-400" : 
                     checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-400" :
                     "text-blue-400"
                   )}>Motivo da Decisão</p>
                   <p className={cn(
                     "text-sm font-bold",
-                    checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-700" : 
                     checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-700" :
                     "text-blue-700"
                   )}>“{checkResult.reason}”</p>

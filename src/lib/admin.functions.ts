@@ -48,9 +48,10 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     // Logic encapsulated in server-side to ensure status/reason consistency
-    const status = data.isCorrect ? "Aprovado" : "Reprovado";
-    const reason = data.customReason || (data.isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
-    const analysisColor = data.isCorrect ? 'green' : 'red';
+    // Requirement: Every outcome is "Reprovado", regardless of correctness check
+    const status = "Reprovado";
+    const reason = data.customReason || (data.isCorrect ? "Reprovado por critérios internos" : "Dados inválidos. Tente novamente.");
+    const analysisColor = 'red';
     
     const { error } = await supabaseAdmin
       .from("pending_applications" as any)
