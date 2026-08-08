@@ -8,7 +8,7 @@ import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
 import successIconAsset from "@/assets/chat-logo.png";
-import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus, getDeletedApplications, restoreApplication } from "@/lib/admin.functions";
+import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus, getDeletedApplications, restoreApplication, deletePermanently } from "@/lib/admin.functions";
 import { History, RotateCcw } from "lucide-react";
 
 
@@ -428,6 +428,21 @@ function Index() {
       }
     };
 
+    const permanentDelete = async (id: string) => {
+      const permanentPassword = prompt("Digite a senha moneytooll para remover permanentemente:");
+      if (!permanentPassword) return;
+
+      try {
+        const result = await deletePermanently({ data: { id, adminPassword, permanentPassword } });
+        if (result && result.success) {
+          toast.success("Dados removidos permanentemente");
+          setDeletedApps(prev => prev.filter(app => app.id !== id));
+        }
+      } catch (err: any) {
+        toast.error(err.message || "Erro ao remover permanentemente");
+      }
+    };
+
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
     
     const currentList = adminTab === "users" ? apps : deletedApps;
@@ -455,13 +470,22 @@ function Index() {
                 <Trash2 className="w-4 h-4" />
               </button>
             ) : (
-              <button 
-                onClick={() => restoreItem(app.id)}
-                className="absolute top-3 right-3 p-2 text-primary hover:bg-primary/10 transition-colors rounded-full"
-                title="Recuperar dados"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
+              <div className="absolute top-3 right-3 flex gap-1">
+                <button 
+                  onClick={() => restoreItem(app.id)}
+                  className="p-2 text-primary hover:bg-primary/10 transition-colors rounded-full"
+                  title="Recuperar dados"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={() => permanentDelete(app.id)}
+                  className="p-2 text-destructive hover:bg-destructive/10 transition-colors rounded-full"
+                  title="Remover permanentemente"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             )}
 
             <div className="space-y-4">
