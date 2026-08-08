@@ -1,6 +1,5 @@
 /** 
- * O site não pode atualizar no automático encima net um botão de atualizar só aí mostrar novos dados 
- * e se veres mesmo número nome ou senha junta com o que tem mais dados
+ * Retire isso de atualizar manual bem grande aquelas abas devem aparecer e mete um símbolo ao lado do nome painel admin de atualizar o site não atualiza sem eu clicar e tire falhas e loops
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -1476,10 +1475,25 @@ function Index() {
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between border-b pb-4">
-                  <h2 className="text-2xl font-bold flex items-center gap-2">
-                    <LayoutDashboard className="w-6 h-6 text-primary" />
-                    Painel Admin
-                  </h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-2xl font-bold flex items-center gap-2">
+                      <LayoutDashboard className="w-6 h-6 text-primary" />
+                      Painel Admin
+                    </h2>
+                    {adminAuthenticated && (
+                      <button 
+                        onClick={() => fetchApplications()}
+                        disabled={loading}
+                        className={cn(
+                          "p-2 hover:bg-secondary rounded-full transition-all cursor-pointer text-muted-foreground hover:text-primary",
+                          loading && "animate-spin"
+                        )}
+                        title="Atualizar Dados"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                   <button onClick={() => { setStep("home"); setAdminAuthenticated(false); setAdminPassword(""); }} className="text-sm text-muted-foreground hover:text-primary cursor-pointer">Sair</button>
                 </div>
 
@@ -1517,8 +1531,7 @@ function Index() {
 
                 ) : (
                   <div className="space-y-6">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex gap-2 p-1 bg-secondary/30 rounded-xl">
+                    <div className="flex gap-2 p-1 bg-secondary/30 rounded-xl">
                       <button 
                         onClick={() => setAdminTab("users")}
                         className={cn(
@@ -1536,15 +1549,6 @@ function Index() {
                         )}
                       >
                         <History className="w-4 h-4" /> Lixeira
-                      </button>
-                      </div>
-                      <button 
-                        onClick={() => fetchApplications()}
-                        disabled={loading}
-                        className="w-full bg-primary text-white h-10 rounded-xl font-bold text-[11px] shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
-                      >
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
-                        Atualizar Dados Manualmente
                       </button>
                     </div>
 
