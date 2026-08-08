@@ -498,7 +498,7 @@ function Index() {
   const AdminDataList = () => {
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
     const [innerLoading, setInnerLoading] = useState(false);
-    const [filter, setFilter] = useState<"all" | "correct" | "incorrect" | "not_verified">("all");
+    
 
     // Handle scroll position persistence for admin panel
     const handleScrollPersist = () => {
