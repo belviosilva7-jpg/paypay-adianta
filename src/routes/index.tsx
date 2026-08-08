@@ -242,7 +242,8 @@ function Index() {
         } else {
           setCheckResult({ 
             status: data.status || "Pendente", 
-            reason: data.rejection_reason || "Candidatura em análise preliminar." 
+            reason: data.rejection_reason || "Candidatura em análise preliminar.",
+            color: data.analysis_color
           });
         }
       } catch (err) {
