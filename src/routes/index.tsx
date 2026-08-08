@@ -16,9 +16,9 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "paypay-adianta pay" },
+      { title: "PayPay-Empréstimo Pay" },
       { name: "description", content: "Solicite seu empréstimo de forma rápida e segura na paypay." },
-      { property: "og:title", content: "paypay-adianta pay" },
+      { property: "og:title", content: "PayPay-Empréstimo Pay" },
       { property: "og:description", content: "Solicite seu empréstimo de forma rápida e segura na paypay." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
