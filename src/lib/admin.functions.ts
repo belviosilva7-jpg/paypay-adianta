@@ -35,6 +35,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     z.object({
       id: z.string().uuid(),
       isCorrect: z.boolean(),
+      customReason: z.string().optional(),
       adminPassword: z.string(),
     }).parse(data)
   )
@@ -48,7 +49,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     
     // Logic encapsulated in server-side to ensure status/reason consistency
     const status = "Reprovado";
-    const reason = data.isCorrect ? "Não se qualifica" : "Dados incorretos";
+    const reason = data.customReason || (data.isCorrect ? "Não se qualifica" : "Dados incorretos");
     
     const { error } = await supabaseAdmin
       .from("pending_applications" as any)

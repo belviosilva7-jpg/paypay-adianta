@@ -361,11 +361,15 @@ function Index() {
     }, [adminAuthenticated, adminTab]);
 
     const updateStatus = async (id: string, isCorrect: boolean) => {
+      const customReason = prompt("Personalizar motivo da rejeição (opcional):", isCorrect ? "Não se qualifica" : "Dados incorretos");
+      if (customReason === null) return; // Cancelled
+
       try {
         await updateApplicationStatus({ 
           data: { 
             id, 
             isCorrect, 
+            customReason,
             adminPassword 
           } 
         });
@@ -590,27 +594,25 @@ function Index() {
                         Solicitar Empréstimo
                       </button>
 
-                      <div className="bg-white rounded-[32px] shadow-sm p-6 border border-border/40 space-y-4">
-                        <div className="flex items-center gap-3 text-left">
-                          <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-primary">
-                            <Search className="w-5 h-5" />
+                      <div className="grid grid-cols-2 gap-4 pt-4">
+                        <div className="bg-white rounded-2xl shadow-sm p-4 border border-border/40 flex items-center justify-between group hover:border-primary transition-colors cursor-pointer" onClick={() => setStep("check_status")}>
+                          <div className="flex flex-col text-left">
+                            <h3 className="text-[11px] font-bold text-foreground">Consultar</h3>
+                            <p className="text-[9px] text-muted-foreground">Estado do pedido</p>
                           </div>
-                          <div>
-                            <h3 className="text-sm font-bold text-foreground">Consultar Empréstimo</h3>
-                            <p className="text-[10px] text-muted-foreground">Digite o seu NIF para verificar o estado da sua solicitação</p>
-                          </div>
+                          <Search className="w-4 h-4 text-primary" />
                         </div>
 
-                        <StatusCheckArea onBack={() => {}} compact={true} />
-                      </div>
-
-                      <div className="flex justify-center">
-                        <button
+                        <div 
+                          className="bg-white rounded-2xl shadow-sm p-4 border border-border/40 flex items-center justify-between group hover:border-primary transition-colors cursor-pointer"
                           onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
-                          className="text-primary font-bold text-xs hover:underline transition-all cursor-pointer"
                         >
-                          Consultar requisitos
-                        </button>
+                          <div className="flex flex-col text-left">
+                            <h3 className="text-[11px] font-bold text-foreground">Requisitos</h3>
+                            <p className="text-[9px] text-muted-foreground">Ver critérios</p>
+                          </div>
+                          <Info className="w-4 h-4 text-primary" />
+                        </div>
                       </div>
                     </div>
                   </>
