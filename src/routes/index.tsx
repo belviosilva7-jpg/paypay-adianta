@@ -223,7 +223,7 @@ function Index() {
 
   const StatusCheckArea = ({ onBack, compact = false }: { onBack: () => void; compact?: boolean }) => {
     const [checkNif, setCheckNif] = useState("");
-    const [checkResult, setCheckResult] = useState<{ status: string; reason: string } | null>(null);
+    const [checkResult, setCheckResult] = useState<{ status: string; reason: string; color?: string } | null>(null);
     const [loading, setLoading] = useState(false);
 
     const handleCheck = async () => {
@@ -242,7 +242,8 @@ function Index() {
         } else {
           setCheckResult({ 
             status: data.status || "Pendente", 
-            reason: data.rejection_reason || "Candidatura em análise preliminar." 
+            reason: data.rejection_reason || "Candidatura em análise preliminar.",
+            color: data.analysis_color
           });
         }
       } catch (err) {
@@ -283,7 +284,7 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-2"
             >
-              {checkResult.status !== "Aprovado" && (
+              {checkResult.status === "Reprovado" && (
                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-600 px-1">
                   <XCircle className="w-3 h-3" />
                   <span>Dados inválidos. Verifique e tente novamente.</span>
@@ -291,18 +292,26 @@ function Index() {
               )}
               <div className={cn(
                 "p-3 rounded-xl border space-y-2 text-left",
-                checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
+                checkResult.color === 'green' || checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : 
+                checkResult.color === 'red' || checkResult.status === "Reprovado" ? "bg-red-50 border-red-100" :
+                "bg-blue-50 border-blue-100"
               )}>
                 <div className={cn(
                   "flex items-center gap-2",
-                  checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
+                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-600" : 
+                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-600" :
+                  "text-blue-600"
                 )}>
-                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-4 h-4" /> : 
+                   checkResult.status === "Reprovado" ? <AlertTriangle className="w-4 h-4" /> :
+                   <Info className="w-4 h-4" />}
                   <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
                 </div>
                 <p className={cn(
                   "text-[11px] font-bold leading-tight",
-                  checkResult.status === "Aprovado" ? "text-green-700" : "text-red-700"
+                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-700" : 
+                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-700" :
+                  "text-blue-700"
                 )}>“{checkResult.reason}”</p>
               </div>
             </motion.div>
@@ -347,7 +356,7 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="pt-4 border-t border-border/10 space-y-4"
             >
-              {checkResult.status !== "Aprovado" && (
+              {checkResult.status === "Reprovado" && (
                 <div className="flex items-center gap-2 text-xs font-bold text-red-600 px-1 justify-center">
                   <XCircle className="w-4 h-4" />
                   <span>Dados inválidos. Verifique e tente novamente.</span>
@@ -355,23 +364,33 @@ function Index() {
               )}
               <div className={cn(
                 "p-4 rounded-2xl border space-y-3",
-                checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
+                checkResult.color === 'green' || checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : 
+                checkResult.color === 'red' || checkResult.status === "Reprovado" ? "bg-red-50 border-red-100" :
+                "bg-blue-50 border-blue-100"
               )}>
                 <div className={cn(
                   "flex items-center gap-2 justify-center",
-                  checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
+                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-600" : 
+                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-600" :
+                  "text-blue-600"
                 )}>
-                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
+                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-5 h-5" /> : 
+                   checkResult.status === "Reprovado" ? <AlertTriangle className="w-5 h-5" /> :
+                   <Info className="w-5 h-5" />}
                   <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
                 </div>
                 <div className="space-y-1">
                   <p className={cn(
                     "text-[10px] uppercase font-black",
-                    checkResult.status === "Aprovado" ? "text-green-400" : "text-red-400"
+                    checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-400" : 
+                    checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-400" :
+                    "text-blue-400"
                   )}>Motivo da Decisão</p>
                   <p className={cn(
                     "text-sm font-bold",
-                    checkResult.status === "Aprovado" ? "text-green-700" : "text-red-700"
+                    checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-700" : 
+                    checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-700" :
+                    "text-blue-700"
                   )}>“{checkResult.reason}”</p>
                 </div>
               </div>

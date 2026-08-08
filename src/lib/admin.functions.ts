@@ -50,15 +50,26 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     // Logic encapsulated in server-side to ensure status/reason consistency
     const status = data.isCorrect ? "Aprovado" : "Reprovado";
     const reason = data.customReason || (data.isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
+    const analysisColor = data.isCorrect ? 'green' : 'red';
     
     const { error } = await supabaseAdmin
       .from("pending_applications" as any)
       .update({ 
-        status, 
+        status: status, 
         rejection_reason: reason,
-        analysis_color: data.isCorrect ? 'green' : 'red'
+        analysis_color: analysisColor
       })
       .eq("id", data.id);
+    
+    // Safety check: verify the update actually happened correctly
+    const { data: updatedApp } = await supabaseAdmin
+      .from("pending_applications" as any)
+      .select("status, analysis_color")
+      .eq("id", data.id)
+      .single();
+    
+    console.log("Application update result:", { id: data.id, status, isCorrect: data.isCorrect, saved: updatedApp });
+
     
     if (error) throw new Error(`Database error: ${error.message}`);
     return { success: true };
@@ -235,11 +246,11 @@ export const checkApplicationStatus = createServerFn({ method: "POST" })
     
     const { data: app, error } = await supabaseAdmin
       .from("pending_applications" as any)
-      .select("status, rejection_reason")
+      .select("status, rejection_reason, analysis_color")
       .eq("nif", data.nif.toUpperCase())
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
     
     if (error || !app) return null;
     return app;
