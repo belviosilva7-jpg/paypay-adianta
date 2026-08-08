@@ -39,10 +39,12 @@ function Index() {
   const [term, setTerm] = useState(60);
 
   // Notifications logic
-  const angolanNames = ["João Manuel", "Maria Antónia", "António José", "Ana Paula", "Carlos Alberto", "Isabel dos Santos", "Pedro Miguel", "Fátima Lourenço", "Miguel Neto", "Teresa Gomes", "André Silva", "Marta Francisco", "José Eduardo", "Helena Viegas", "Samuel Kassoma", "Rosa Muxima", "Daniel Capingala", "Beatriz Luanda", "Jorge Catumbela", "Cláudia Benguela"];
-  const portugueseNames = ["Francisco Rodrigues", "Leonor Martins", "Afonso Ferreira", "Matilde Costa", "Rodrigo Sousa", "Beatriz Santos", "Martim Oliveira", "Alice Pereira", "Tiago Fernandes", "Sofia Lopes", "Gabriel Fonseca", "Mariana Ribeiro", "Lucas Carvalho", "Inês Cardoso", "Guilherme Mota", "Carolina Teixeira", "Rafael Machado", "Laura Nogueira", "Duarte Alves", "Joana Pinheiro"];
-  const umbunduNames = ["Tchipia Tchivela", "Kassoma Kandimba", "Tchivinda Kalunga", "Nandjala Sambu", "Catchiungo Luiele", "Kavela Tchilombo", "Muenho Tchalwa", "Vunje Tchingui", "Nambalo Kambuta", "Lumbombo Tchipilika", "Tchissola Ndjimbi", "Chilala Katchiungo", "Wuta Kalulu", "Ngola Mbandi", "Tchama Tchalala", "Kalandula Jamba", "Kuvango Tchipenda", "Ndalu Kavalo", "Jamba Kakongo", "Tchimbundu Sambu"];
-  const allNames = [...angolanNames, ...portugueseNames, ...umbunduNames];
+  const angolanNames = ["João", "Maria", "António", "Ana", "Carlos", "Isabel", "Pedro", "Fátima", "Miguel", "Teresa", "André", "Marta", "José", "Helena", "Samuel", "Rosa", "Daniel", "Beatriz", "Jorge", "Cláudia"];
+  const portugueseNames = ["Francisco", "Leonor", "Afonso", "Matilde", "Rodrigo", "Beatriz", "Martim", "Alice", "Tiago", "Sofia", "Gabriel", "Mariana", "Lucas", "Inês", "Guilherme", "Carolina", "Rafael", "Laura", "Duarte", "Joana"];
+  const umbunduSurnames = ["Tchipia", "Tchivela", "Kassoma", "Kandimba", "Tchivinda", "Kalunga", "Nandjala", "Sambu", "Catchiungo", "Luiele", "Kavela", "Tchilombo", "Muenho", "Tchalwa", "Vunje", "Tchingui", "Nambalo", "Kambuta", "Lumbombo", "Tchipilika"];
+  const allFirstNames = [...angolanNames, ...portugueseNames];
+  const allSurnames = ["Silva", "Santos", "Ferreira", "Pereira", "Oliveira", "Costa", "Rodrigues", "Martins", "Jesus", "Sousa", "Fernandes", "Gonçalves", "Gomes", "Lopes", "Marques", "Alves", "Almeida", "Ribeiro", "Pinto", "Carvalho", ...umbunduSurnames];
+
 
   const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
 
@@ -58,13 +60,15 @@ function Index() {
       // Try up to 20 times to find a unique combination not in recent history
       let attempts = 0;
       do {
-        const randomIndex = Math.floor(Math.random() * allNames.length);
-        randomName = allNames[randomIndex] ?? "Utilizador";
+        const first = allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador";
+        const last = allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X";
+        randomName = `${first} ${last}`;
         randomAmount = Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000;
         randomAmount = Math.round(randomAmount / 100) * 100;
         uniqueKey = `${randomName}-${randomAmount}`;
         attempts++;
       } while (history.includes(uniqueKey) && attempts < 20);
+
 
       history.push(uniqueKey);
       if (history.length > MAX_HISTORY) {
@@ -709,20 +713,21 @@ function Index() {
             initial={{ opacity: 0, x: 50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 50, scale: 0.9 }}
-            className="fixed top-16 right-4 z-[100] w-[260px] bg-white/95 backdrop-blur-sm shadow-xl rounded-xl p-3 border border-primary/5 flex items-center gap-3 pointer-events-none"
+            className="fixed top-20 right-4 z-[100] w-[280px] bg-white shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
           >
-            <div className="w-8 h-8 bg-primary/5 rounded-full flex items-center justify-center flex-shrink-0">
-              <CheckCircle2 className="w-4 h-4 text-primary/80" />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-primary" />
             </div>
             <div className="flex flex-col min-w-0">
-              <p className="text-[11px] font-bold text-foreground leading-tight truncate">
+              <p className="text-[13px] font-bold text-foreground leading-tight truncate">
                 {notification.name}
               </p>
-              <p className="text-[9px] text-muted-foreground leading-tight">
-                Empréstimo de <span className="font-bold text-primary/90">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
+              <p className="text-[11px] text-muted-foreground leading-tight mt-1">
+                Empréstimo de <span className="font-bold text-primary">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
               </p>
             </div>
           </motion.div>
+
         )}
       </AnimatePresence>
 
