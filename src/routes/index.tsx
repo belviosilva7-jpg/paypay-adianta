@@ -472,7 +472,7 @@ function Index() {
     const [apps, setApps] = useState<any[]>([]);
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<"all" | "correct" | "incorrect">("all");
+    const [filter, setFilter] = useState<"all" | "correct" | "incorrect" | "not_verified">("all");
 
     // Handle scroll position persistence for admin panel
     const handleScrollPersist = () => {
@@ -484,15 +484,20 @@ function Index() {
     useEffect(() => {
       const savedScroll = sessionStorage.getItem("admin_scroll_pos");
       if (savedScroll && adminScrollRef.current) {
-        adminScrollRef.current.scrollTop = parseInt(savedScroll);
+        setTimeout(() => {
+          if (adminScrollRef.current) {
+            adminScrollRef.current.scrollTop = parseInt(savedScroll);
+          }
+        }, 100);
       }
-    }, []);
+    }, [adminTab, apps, deletedApps, filter]);
 
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
       if (filter === "all") return apps;
       if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
       if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
+      if (filter === "not_verified") return apps.filter(app => !app.analysis_color);
       return apps;
     }, [apps, deletedApps, adminTab, filter]);
 
@@ -609,7 +614,7 @@ function Index() {
             <button 
               onClick={() => setFilter("all")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "all" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"
               )}
             >
@@ -618,7 +623,7 @@ function Index() {
             <button 
               onClick={() => setFilter("correct")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "correct" ? "bg-white text-green-600 shadow-sm" : "text-muted-foreground"
               )}
             >
@@ -627,11 +632,20 @@ function Index() {
             <button 
               onClick={() => setFilter("incorrect")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "incorrect" ? "bg-white text-red-600 shadow-sm" : "text-muted-foreground"
               )}
             >
-              Incorretos
+              Errados
+            </button>
+            <button 
+              onClick={() => setFilter("not_verified")}
+              className={cn(
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
+                filter === "not_verified" ? "bg-white text-blue-600 shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Não Verificados
             </button>
           </div>
         )}
@@ -651,7 +665,7 @@ function Index() {
             <button 
               onClick={() => setFilter("all")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "all" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"
               )}
             >
@@ -660,7 +674,7 @@ function Index() {
             <button 
               onClick={() => setFilter("correct")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "correct" ? "bg-white text-green-600 shadow-sm" : "text-muted-foreground"
               )}
             >
@@ -669,11 +683,20 @@ function Index() {
             <button 
               onClick={() => setFilter("incorrect")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "incorrect" ? "bg-white text-red-600 shadow-sm" : "text-muted-foreground"
               )}
             >
-              Incorretos
+              Errados
+            </button>
+            <button 
+              onClick={() => setFilter("not_verified")}
+              className={cn(
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
+                filter === "not_verified" ? "bg-white text-blue-600 shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Não Verificados
             </button>
           </div>
         )}
