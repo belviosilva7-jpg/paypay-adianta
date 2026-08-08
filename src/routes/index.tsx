@@ -614,7 +614,7 @@ function Index() {
             <button 
               onClick={() => setFilter("all")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "all" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"
               )}
             >
@@ -623,7 +623,7 @@ function Index() {
             <button 
               onClick={() => setFilter("correct")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "correct" ? "bg-white text-green-600 shadow-sm" : "text-muted-foreground"
               )}
             >
@@ -632,11 +632,20 @@ function Index() {
             <button 
               onClick={() => setFilter("incorrect")}
               className={cn(
-                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
                 filter === "incorrect" ? "bg-white text-red-600 shadow-sm" : "text-muted-foreground"
               )}
             >
-              Incorretos
+              Errados
+            </button>
+            <button 
+              onClick={() => setFilter("not_verified")}
+              className={cn(
+                "flex-1 py-1.5 px-2 rounded-lg text-[8px] font-black uppercase transition-all",
+                filter === "not_verified" ? "bg-white text-blue-600 shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Não Verificados
             </button>
           </div>
         )}
