@@ -37,6 +37,43 @@ function Index() {
   const [paymentCode, setPaymentCode] = useState(["", "", "", "", "", ""]);
   const [amount, setAmount] = useState(35000);
   const [term, setTerm] = useState(60);
+
+  // Notifications logic
+  const angolanNames = ["João Manuel", "Maria Antónia", "António José", "Ana Paula", "Carlos Alberto", "Isabel dos Santos", "Pedro Miguel", "Fátima Lourenço", "Miguel Neto", "Teresa Gomes", "André Silva", "Marta Francisco", "José Eduardo", "Helena Viegas", "Samuel Kassoma", "Rosa Muxima", "Daniel Capingala", "Beatriz Luanda", "Jorge Catumbela", "Cláudia Benguela"];
+  const portugueseNames = ["Francisco Rodrigues", "Leonor Martins", "Afonso Ferreira", "Matilde Costa", "Rodrigo Sousa", "Beatriz Santos", "Martim Oliveira", "Alice Pereira", "Tiago Fernandes", "Sofia Lopes", "Gabriel Fonseca", "Mariana Ribeiro", "Lucas Carvalho", "Inês Cardoso", "Guilherme Mota", "Carolina Teixeira", "Rafael Machado", "Laura Nogueira", "Duarte Alves", "Joana Pinheiro"];
+  const allNames = [...angolanNames, ...portugueseNames];
+
+  const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
+
+  useEffect(() => {
+    let lastNotification: { name: string; amount: number } | null = null;
+
+    const showRandomNotification = () => {
+      let randomName: string;
+      let randomAmount: number;
+
+      do {
+        const randomIndex = Math.floor(Math.random() * allNames.length);
+        randomName = allNames[randomIndex] ?? "Utilizador";
+        randomAmount = Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000;
+        randomAmount = Math.round(randomAmount / 100) * 100;
+      } while (lastNotification && (randomName === lastNotification.name || randomAmount === lastNotification.amount));
+
+      const maskedName = randomName.split(" ").slice(0, 2).join(" ") + " X**";
+      setNotification({ name: maskedName, amount: randomAmount });
+      lastNotification = { name: randomName, amount: randomAmount };
+
+      setTimeout(() => setNotification(null), 5000);
+    };
+
+    const interval = setInterval(showRandomNotification, 30000);
+    const firstTimeout = setTimeout(showRandomNotification, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(firstTimeout);
+    };
+  }, []);
   
   const feePercentage = useMemo(() => {
     if (term === 15) return 6;
@@ -653,7 +690,31 @@ function Index() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10">
+    <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
+      {/* Dynamic Notifications */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -100, x: "-50%" }}
+            animate={{ opacity: 1, y: 20, x: "-50%" }}
+            exit={{ opacity: 0, y: -100, x: "-50%" }}
+            className="fixed top-0 left-1/2 z-[100] w-[90%] max-w-[320px] bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
+          >
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <p className="text-[13px] font-bold text-foreground leading-tight truncate">
+                {notification.name}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Recebeu um empréstimo de <span className="font-bold text-primary">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-4">
           {step !== "home" && step !== "success" && (
