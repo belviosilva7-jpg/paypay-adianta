@@ -49,7 +49,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     
     // Logic encapsulated in server-side to ensure status/reason consistency
     const status = data.isCorrect ? "Aprovado" : "Reprovado";
-    const reason = data.customReason || (data.isCorrect ? "Não se qualifica" : "Dados incorretos");
+    const reason = data.customReason || (data.isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     
     const { error } = await supabaseAdmin
       .from("pending_applications" as any)
