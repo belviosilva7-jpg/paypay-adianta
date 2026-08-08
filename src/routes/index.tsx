@@ -70,6 +70,30 @@ function Index() {
   }>({ isOpen: false, appId: "", isCorrect: false });
   const [customRejectionReason, setCustomRejectionReason] = useState("");
 
+  const handleConfirmStatusUpdate = async (fetchApps: () => Promise<void>) => {
+    const { appId, isCorrect } = rejectionDialog;
+    if (!appId) return;
+
+    try {
+      setLoading(true);
+      await updateApplicationStatus({ 
+        data: { 
+          id: appId, 
+          isCorrect, 
+          customReason: customRejectionReason,
+          adminPassword 
+        } 
+      });
+      toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
+      setRejectionDialog({ isOpen: false, appId: "", isCorrect: false });
+      await fetchApps();
+    } catch (err: any) {
+      toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const saveProgress = async () => {
     // Don't save if on home or admin steps
