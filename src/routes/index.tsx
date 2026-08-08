@@ -1516,35 +1516,6 @@ function Index() {
 
                 ) : (
                   <div className="space-y-6">
-                    <div className="flex flex-col gap-4">
-                      <div className="flex gap-2 p-1 bg-secondary/30 rounded-xl">
-                      <button 
-                        onClick={() => setAdminTab("users")}
-                        className={cn(
-                          "flex-1 py-2 px-4 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                          adminTab === "users" ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-primary"
-                        )}
-                      >
-                        <User className="w-4 h-4" /> Usuários Ativos
-                      </button>
-                      <button 
-                        onClick={() => setAdminTab("trash")}
-                        className={cn(
-                          "flex-1 py-2 px-4 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                          adminTab === "trash" ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-primary"
-                        )}
-                      >
-                        <History className="w-4 h-4" /> Lixeira
-                      </button>
-                      </div>
-                      <button 
-                        onClick={() => fetchApplications()}
-                        disabled={loading}
-                        className="w-full bg-primary text-white h-10 rounded-xl font-bold text-[11px] shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
-                      >
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
-                        Atualizar Dados Manualmente
-                      </button>
                     </div>
 
                     <section className="space-y-3">
