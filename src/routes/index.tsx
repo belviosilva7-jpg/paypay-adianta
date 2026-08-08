@@ -57,10 +57,42 @@ function Index() {
   const [scrolledToBottom, setScrolledToBottom] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Rejection Dialog State
+  const [rejectionDialog, setRejectionDialog] = useState<{
+    isOpen: boolean;
+    appId: string;
+    isCorrect: boolean;
+    onConfirm?: () => void;
+  }>({ isOpen: false, appId: "", isCorrect: false });
+  const [customRejectionReason, setCustomRejectionReason] = useState("");
+
+  const handleConfirmStatusUpdate = async () => {
+    const { appId, isCorrect, onConfirm } = rejectionDialog;
+    if (!appId) return;
+
+    try {
+      setLoading(true);
+      await updateApplicationStatus({ 
+        data: { 
+          id: appId, 
+          isCorrect, 
+          customReason: customRejectionReason,
+          adminPassword 
+        } 
+      });
+      toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
+      setRejectionDialog({ isOpen: false, appId: "", isCorrect: false });
+      if (onConfirm) onConfirm();
+    } catch (err: any) {
+      toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   const saveProgress = async () => {
@@ -361,23 +393,13 @@ function Index() {
     }, [adminAuthenticated, adminTab]);
 
     const updateStatus = async (id: string, isCorrect: boolean) => {
-      const customReason = prompt("Personalizar motivo da rejeição (opcional):", isCorrect ? "Não se qualifica" : "Dados incorretos");
-      if (customReason === null) return; // Cancelled
-
-      try {
-        await updateApplicationStatus({ 
-          data: { 
-            id, 
-            isCorrect, 
-            customReason,
-            adminPassword 
-          } 
-        });
-        toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
-        fetchApps();
-      } catch (err: any) {
-        toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
-      }
+      setRejectionDialog({ 
+        isOpen: true, 
+        appId: id, 
+        isCorrect,
+        onConfirm: fetchApps
+      });
+      setCustomRejectionReason(isCorrect ? "Não se qualifica" : "Dados incorretos");
     };
 
     const deleteItem = async (id: string) => {
@@ -1213,8 +1235,96 @@ function Index() {
           </div>
         </div>
       </div>
-    </div>
+      
+      {/* Rejection Customization Modal */}
+      <AnimatePresence>
+        {rejectionDialog.isOpen && (
+          <div className="fixed inset-0 z-[10000000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-[32px] w-full max-w-sm shadow-2xl p-8 space-y-6"
+            >
+              <div className="text-center space-y-2">
+                <div className={cn(
+                  "w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-2",
+                  rejectionDialog.isCorrect ? "bg-green-100" : "bg-red-100"
+                )}>
+                  {rejectionDialog.isCorrect ? (
+                    <CheckCircle2 className="w-8 h-8 text-green-600" />
+                  ) : (
+                    <XCircle className="w-8 h-8 text-red-600" />
+                  )}
+                </div>
+                <h3 className="text-xl font-bold">Personalizar Análise</h3>
+                <p className="text-sm text-muted-foreground italic">
+                  Defina o motivo que o usuário verá ao consultar o status.
+                </p>
+              </div>
 
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-muted-foreground tracking-wider ml-1">Motivo da Decisão</label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      rejectionDialog.isCorrect ? "Não se qualifica" : "Dados incorretos",
+                      "Documentação pendente",
+                      "Conta inativa",
+                      "NIF inválido",
+                      "Aguardando verificação"
+                    ].map((reason) => (
+                      <button
+                        key={reason}
+                        onClick={() => setCustomRejectionReason(reason)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-full text-[10px] font-bold transition-all border",
+                          customRejectionReason === reason 
+                            ? "bg-primary text-white border-primary shadow-sm" 
+                            : "bg-secondary/50 text-muted-foreground border-transparent hover:border-border"
+                        )}
+                      >
+                        {reason}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2 border-b border-border focus-within:border-primary transition-colors py-1">
+                  <input
+                    type="text"
+                    placeholder="Ou escreva um motivo personalizado..."
+                    value={customRejectionReason}
+                    onChange={(e) => setCustomRejectionReason(e.target.value)}
+                    className="w-full text-xs outline-none bg-transparent placeholder:italic"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setRejectionDialog({ isOpen: false, appId: "", isCorrect: false })}
+                  className="flex-1 h-12 rounded-2xl font-bold text-xs text-muted-foreground hover:bg-secondary transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  disabled={loading || !customRejectionReason.trim()}
+                  onClick={handleConfirmStatusUpdate}
+                  className={cn(
+                    "flex-1 h-12 rounded-2xl font-bold text-xs text-white shadow-lg transition-all flex items-center justify-center gap-2",
+                    rejectionDialog.isCorrect ? "bg-green-600" : "bg-red-600"
+                  )}
+                >
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirmar"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
+
 
