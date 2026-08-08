@@ -1,6 +1,3 @@
-/** 
- * Retire isso de atualizar manual bem grande aquelas abas devem aparecer e mete um símbolo ao lado do nome painel admin de atualizar o site não atualiza sem eu clicar e tire falhas e loops
- */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -274,6 +271,19 @@ function Index() {
     }
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData, applicationId]);
 
+  // Handle secret admin access
+  useEffect(() => {
+    if (logoClicks >= 7) {
+      setAdminAuthenticated(false);
+      setAdminPassword("");
+      setStep("admin");
+      setLogoClicks(0);
+      toast.info("Acesso Administrativo - Por favor, insira a senha");
+    }
+    const timer = setTimeout(() => setLogoClicks(0), 1000);
+    return () => clearTimeout(timer);
+  }, [logoClicks]);
+
   const fetchApplications = async () => {
     if (!adminAuthenticated) return;
     setLoading(true);
@@ -290,21 +300,11 @@ function Index() {
   useEffect(() => {
     if (adminAuthenticated) {
       fetchApplications();
+      const interval = setInterval(fetchApplications, 5000);
+      return () => clearInterval(interval);
     }
-  }, [adminAuthenticated]);
-
-  // Handle secret admin access
-  useEffect(() => {
-    if (logoClicks >= 7) {
-      setAdminAuthenticated(false); // Reset authentication status first
-      setAdminPassword(""); // Clear password field
-      setStep("admin");
-      setLogoClicks(0);
-      toast.info("Acesso Administrativo - Por favor, insira a senha");
-    }
-    const timer = setTimeout(() => setLogoClicks(0), 1000);
-    return () => clearTimeout(timer);
-  }, [logoClicks]);
+    return undefined;
+  }, [adminAuthenticated, adminPassword]);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -513,11 +513,7 @@ function Index() {
     useEffect(() => {
       const savedScroll = sessionStorage.getItem("admin_scroll_pos");
       if (savedScroll && adminScrollRef.current) {
-        setTimeout(() => {
-          if (adminScrollRef.current) {
-            adminScrollRef.current.scrollTop = parseInt(savedScroll);
-          }
-        }, 100);
+        adminScrollRef.current.scrollTop = parseInt(savedScroll);
       }
     }, [adminTab, applications, deletedApps, filter]);
 
@@ -1480,19 +1476,7 @@ function Index() {
                       <LayoutDashboard className="w-6 h-6 text-primary" />
                       Painel Admin
                     </h2>
-                    {adminAuthenticated && (
-                      <button 
-                        onClick={() => fetchApplications()}
-                        disabled={loading}
-                        className={cn(
-                          "p-2 hover:bg-secondary rounded-full transition-all cursor-pointer text-muted-foreground hover:text-primary",
-                          loading && "animate-spin"
-                        )}
-                        title="Atualizar Dados"
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                      </button>
-                    )}
+                    {/* Manual update button removed in favor of auto-refresh */}
                   </div>
                   <button onClick={() => { setStep("home"); setAdminAuthenticated(false); setAdminPassword(""); }} className="text-sm text-muted-foreground hover:text-primary cursor-pointer">Sair</button>
                 </div>
