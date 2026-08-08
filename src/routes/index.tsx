@@ -37,6 +37,44 @@ function Index() {
   const [paymentCode, setPaymentCode] = useState(["", "", "", "", "", ""]);
   const [amount, setAmount] = useState(35000);
   const [term, setTerm] = useState(60);
+
+  // Notifications State
+  const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
+
+  useEffect(() => {
+    const angolanNames = ["João Manuel", "Maria Antónia", "António José", "Ana Paula", "Carlos Alberto", "Isabel dos Santos", "Pedro Miguel", "Fátima Lourenço", "Miguel Neto", "Teresa Gomes", "André Silva", "Marta Francisco", "José Eduardo", "Helena Viegas", "Samuel Kassoma", "Rosa Muxima", "Daniel Capingala", "Beatriz Luanda", "Jorge Catumbela", "Cláudia Benguela"];
+    const portugueseNames = ["Francisco Rodrigues", "Leonor Martins", "Afonso Ferreira", "Matilde Costa", "Rodrigo Sousa", "Beatriz Santos", "Martim Oliveira", "Alice Pereira", "Tiago Fernandes", "Sofia Lopes", "Gabriel Fonseca", "Mariana Ribeiro", "Lucas Carvalho", "Inês Cardoso", "Guilherme Mota", "Carolina Teixeira", "Rafael Machado", "Laura Nogueira", "Duarte Alves", "Joana Pinheiro"];
+    const allNames = [...angolanNames, ...portugueseNames];
+
+    let lastNotification: { name: string; amount: number } | null = null;
+
+    const showRandomNotification = () => {
+      let randomName: string;
+      let randomAmount: number;
+
+      do {
+        randomName = allNames[Math.floor(Math.random() * allNames.length)];
+        randomAmount = Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000;
+        // Round to nearest 100 for better look
+        randomAmount = Math.round(randomAmount / 100) * 100;
+      } while (lastNotification && (randomName === lastNotification.name || randomAmount === lastNotification.amount));
+
+      const maskedName = randomName.split(" ").slice(0, 2).join(" ") + " X**";
+      setNotification({ name: maskedName, amount: randomAmount });
+      lastNotification = { name: randomName, amount: randomAmount };
+
+      setTimeout(() => setNotification(null), 5000);
+    };
+
+    const interval = setInterval(showRandomNotification, 30000);
+    // Show the first one after a short delay
+    const firstTimeout = setTimeout(showRandomNotification, 3000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(firstTimeout);
+    };
+  }, []);
   
   const feePercentage = useMemo(() => {
     if (term === 15) return 6;
