@@ -434,7 +434,7 @@ function Index() {
         isCorrect,
         onConfirm: fetchApps
       });
-      setCustomRejectionReason(isCorrect ? "Não se qualifica" : "Dados incorretos");
+      setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     };
 
     const deleteItem = async (id: string) => {
