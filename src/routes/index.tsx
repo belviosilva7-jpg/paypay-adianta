@@ -1389,6 +1389,19 @@ function Index() {
                       <LayoutDashboard className="w-6 h-6 text-primary" />
                       Painel Admin
                     </h2>
+                    {adminAuthenticated && (
+                      <button 
+                        onClick={fetchApplications}
+                        disabled={loading}
+                        className={cn(
+                          "p-2 hover:bg-secondary rounded-full transition-all cursor-pointer text-muted-foreground hover:text-primary",
+                          loading && "animate-spin"
+                        )}
+                        title="Atualizar Dados"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                   <button onClick={() => { setStep("home"); setAdminAuthenticated(false); setAdminPassword(""); }} className="text-sm text-muted-foreground hover:text-primary cursor-pointer">Sair</button>
                 </div>
