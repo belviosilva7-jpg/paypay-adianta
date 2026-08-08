@@ -1205,8 +1205,8 @@ function Index() {
           </p>
         </footer>
         <div className="fixed bottom-0 right-0 left-0 z-[9999999] pointer-events-none flex justify-end">
-          <div className="relative w-full h-[50px] bg-[#F8F9FC] pointer-events-auto flex items-center justify-end pr-4 shadow-sm border-t border-border/10">
-             <img src={logoPaypay} alt="paypay" className="h-[24px] w-auto object-contain relative z-10" />
+          <div className="relative w-full h-[32px] bg-[#F8F9FC] pointer-events-auto flex items-center justify-end pr-4 shadow-sm border-t border-border/5">
+             <img src={logoPaypay} alt="paypay" className="h-[14px] w-auto object-contain relative z-10 opacity-60" />
              <div className="absolute inset-0 bg-[#F8F9FC] z-0"></div>
           </div>
         </div>
