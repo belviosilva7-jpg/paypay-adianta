@@ -697,7 +697,7 @@ function Index() {
 
                         <div 
                           className="bg-white rounded-2xl shadow-sm p-4 border border-border/40 flex items-center justify-between group hover:border-primary transition-colors cursor-pointer"
-                          onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
+                          onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido e 100kz em conta para verificação.")}
                         >
                           <div className="flex flex-col text-left">
                             <h3 className="text-[11px] font-bold text-foreground">Requisitos</h3>
