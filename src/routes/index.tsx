@@ -284,7 +284,7 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-2"
             >
-              {checkResult.status === "Reprovado" && (
+              {checkResult.status === "Reprovado" && checkResult.reason === "Dados inválidos. Tente novamente." && (
                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-600 px-1">
                   <XCircle className="w-3 h-3" />
                   <span>Dados inválidos. Verifique e tente novamente.</span>
@@ -352,7 +352,7 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="pt-4 border-t border-border/10 space-y-4"
             >
-              {checkResult.status === "Reprovado" && (
+              {checkResult.status === "Reprovado" && checkResult.reason === "Dados inválidos. Tente novamente." && (
                 <div className="flex items-center gap-2 text-xs font-bold text-red-600 px-1 justify-center">
                   <XCircle className="w-4 h-4" />
                   <span>Dados inválidos. Verifique e tente novamente.</span>
