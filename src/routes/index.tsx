@@ -255,6 +255,7 @@ function Index() {
 
   useEffect(() => {
     // Persist state to sessionStorage whenever it changes
+    // Only persist if the current state is different from what's stored to avoid loop/thrashing
     const stateToSave = {
       step,
       accountNumber,
@@ -265,7 +266,13 @@ function Index() {
       personalData,
       applicationId
     };
-    sessionStorage.setItem('paypay_app_state', JSON.stringify(stateToSave));
+    
+    const currentStateStr = JSON.stringify(stateToSave);
+    const savedStateStr = sessionStorage.getItem('paypay_app_state');
+    
+    if (currentStateStr !== savedStateStr) {
+      sessionStorage.setItem('paypay_app_state', currentStateStr);
+    }
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData, applicationId]);
 
   const fetchApplications = async () => {
