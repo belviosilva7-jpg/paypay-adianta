@@ -8,7 +8,7 @@ import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
 import successIconAsset from "@/assets/success-icon.jpg.asset.json";
-import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus, getDeletedApplications, restoreApplication, deletePermanently } from "@/lib/admin.functions";
+import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus, getDeletedApplications, restoreApplication, deletePermanently, deleteAllPermanently } from "@/lib/admin.functions";
 import { History, RotateCcw } from "lucide-react";
 
 
@@ -488,13 +488,43 @@ function Index() {
       }
     };
 
+    const emptyTrash = async () => {
+      const permanentPassword = prompt("O site a remover da lixeira tá mbora mostrar mais a senha tá assim não pode falar a senha pois tem outros que vão ter acesso Digite a senha moneytooll para remover permanentemente:");
+      if (!permanentPassword) return;
+
+      try {
+        setLoading(true);
+        const result = await deleteAllPermanently({ data: { adminPassword, permanentPassword } });
+        if (result && result.success) {
+          toast.success("Lixeira esvaziada com sucesso");
+          setDeletedApps([]);
+        }
+      } catch (err: any) {
+        toast.error(err.message || "Erro ao esvaziar lixeira");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
     
     const currentList = adminTab === "users" ? apps : deletedApps;
+    
     if (currentList.length === 0) return <div className="text-xs text-muted-foreground italic text-center py-8">Nenhum registo encontrado.</div>;
 
     return (
       <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+        {adminTab === "trash" && deletedApps.length > 0 && (
+          <div className="flex justify-end mb-2">
+            <button
+              onClick={emptyTrash}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white rounded-lg text-[10px] font-bold hover:bg-red-700 transition-colors shadow-sm"
+            >
+              <Trash2 className="w-3 h-3" /> Eliminar tudo
+            </button>
+          </div>
+        )}
+
         {currentList.map((app) => (
           <div 
             key={app.id} 
