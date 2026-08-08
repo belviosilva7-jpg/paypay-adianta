@@ -281,13 +281,22 @@ function Index() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-3 rounded-xl bg-red-50 border border-red-100 space-y-2 text-left"
+              className={cn(
+                "p-3 rounded-xl border space-y-2 text-left",
+                checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
+              )}
             >
-              <div className="flex items-center gap-2 text-red-600">
+              <div className={cn(
+                "flex items-center gap-2",
+                checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
+              )}>
                 <AlertTriangle className="w-4 h-4" />
-                <span className="font-bold uppercase text-[10px]">Status: Reprovado</span>
+                <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
               </div>
-              <p className="text-[11px] font-bold text-red-700 leading-tight">“{checkResult.reason}”</p>
+              <p className={cn(
+                "text-[11px] font-bold leading-tight",
+                checkResult.status === "Aprovado" ? "text-green-700" : "text-red-700"
+              )}>“{checkResult.reason}”</p>
             </motion.div>
           )}
         </div>
@@ -330,14 +339,26 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="pt-4 border-t border-border/10 space-y-4"
             >
-              <div className="p-4 rounded-2xl bg-red-50 border border-red-100 space-y-3">
-                <div className="flex items-center gap-2 justify-center text-red-600">
+              <div className={cn(
+                "p-4 rounded-2xl border space-y-3",
+                checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
+              )}>
+                <div className={cn(
+                  "flex items-center gap-2 justify-center",
+                  checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
+                )}>
                   <AlertTriangle className="w-5 h-5" />
-                  <span className="font-black uppercase text-sm">Status: Reprovado</span>
+                  <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] text-red-400 uppercase font-black">Motivo da Reprovação</p>
-                  <p className="text-sm font-bold text-red-700">“{checkResult.reason}”</p>
+                  <p className={cn(
+                    "text-[10px] uppercase font-black",
+                    checkResult.status === "Aprovado" ? "text-green-400" : "text-red-400"
+                  )}>Motivo da Decisão</p>
+                  <p className={cn(
+                    "text-sm font-bold",
+                    checkResult.status === "Aprovado" ? "text-green-700" : "text-red-700"
+                  )}>“{checkResult.reason}”</p>
                 </div>
               </div>
               <p className="text-[10px] text-muted-foreground italic">
