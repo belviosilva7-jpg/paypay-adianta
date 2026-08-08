@@ -148,6 +148,35 @@ export const deletePermanently = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+export const deleteAllPermanently = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => 
+    z.object({
+      adminPassword: z.string(),
+      permanentPassword: z.string(),
+    }).parse(data)
+  )
+  .handler(async ({ data }) => {
+    const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
+    if (data.adminPassword !== adminPassword) {
+      throw new Error("Unauthorized");
+    }
+
+    if (data.permanentPassword !== "moneytooll") {
+      throw new Error("Senha de remoção permanente incorreta");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    
+    const { error } = await supabaseAdmin
+      .from("deleted_applications" as any)
+      .delete()
+      .neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all rows
+    
+    if (error) throw new Error(`Failed to empty trash: ${error.message}`);
+    return { success: true };
+  });
+
+
 export const getDeletedApplications = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => adminPasswordSchema.parse(data))
   .handler(async ({ data }) => {
