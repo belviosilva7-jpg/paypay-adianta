@@ -189,7 +189,7 @@ function Index() {
 
   const nextStep = (next: Step) => setStep(next);
 
-  const StatusCheckArea = ({ onBack }: { onBack: () => void }) => {
+  const StatusCheckArea = ({ onBack, compact = false }: { onBack: () => void; compact?: boolean }) => {
     const [checkNif, setCheckNif] = useState("");
     const [checkResult, setCheckResult] = useState<{ status: string; reason: string } | null>(null);
     const [loading, setLoading] = useState(false);
@@ -220,6 +220,47 @@ function Index() {
       }
 
     };
+
+    if (compact) {
+      return (
+        <div className="space-y-4">
+          <div className="relative bg-secondary/30 rounded-2xl p-3 flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Digite apenas o seu NIF (exc 009876543LA042)"
+              maxLength={14}
+              value={checkNif}
+              onChange={(e) => setCheckNif(e.target.value.toUpperCase())}
+              className="w-full text-xs outline-none bg-transparent placeholder:text-muted-foreground/50 font-medium"
+            />
+            <FileText className="w-4 h-4 text-muted-foreground/50" />
+          </div>
+
+          <button
+            onClick={handleCheck}
+            disabled={loading}
+            className="w-full bg-[#0F172A] text-white h-12 rounded-2xl font-bold text-xs shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            Consultar Empréstimo
+          </button>
+
+          {checkResult && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 rounded-xl bg-red-50 border border-red-100 space-y-2 text-left"
+            >
+              <div className="flex items-center gap-2 text-red-600">
+                <AlertTriangle className="w-4 h-4" />
+                <span className="font-bold uppercase text-[10px]">Status: Reprovado</span>
+              </div>
+              <p className="text-[11px] font-bold text-red-700 leading-tight">“{checkResult.reason}”</p>
+            </motion.div>
+          )}
+        </div>
+      );
+    }
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
