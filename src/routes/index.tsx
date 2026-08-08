@@ -713,20 +713,21 @@ function Index() {
             initial={{ opacity: 0, x: 50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 50, scale: 0.9 }}
-            className="fixed top-16 right-4 z-[100] w-[260px] bg-white/95 backdrop-blur-sm shadow-xl rounded-xl p-3 border border-primary/5 flex items-center gap-3 pointer-events-none"
+            className="fixed top-20 right-4 z-[100] w-[280px] bg-white shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
           >
-            <div className="w-8 h-8 bg-primary/5 rounded-full flex items-center justify-center flex-shrink-0">
-              <CheckCircle2 className="w-4 h-4 text-primary/80" />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-primary" />
             </div>
             <div className="flex flex-col min-w-0">
-              <p className="text-[11px] font-bold text-foreground leading-tight truncate">
+              <p className="text-[13px] font-bold text-foreground leading-tight truncate">
                 {notification.name}
               </p>
-              <p className="text-[9px] text-muted-foreground leading-tight">
-                Empréstimo de <span className="font-bold text-primary/90">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
+              <p className="text-[11px] text-muted-foreground leading-tight mt-1">
+                Empréstimo de <span className="font-bold text-primary">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
               </p>
             </div>
           </motion.div>
+
         )}
       </AnimatePresence>
 
