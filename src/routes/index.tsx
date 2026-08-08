@@ -361,7 +361,7 @@ function Index() {
                   "flex items-center gap-2 justify-center",
                   checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
                 )}>
-                  <AlertTriangle className="w-5 h-5" />
+                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
                   <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
                 </div>
                 <div className="space-y-1">
