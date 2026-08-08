@@ -241,9 +241,9 @@ function Index() {
           setCheckResult(null);
         } else {
           setCheckResult({ 
-            status: "Reprovado", 
-            reason: data.rejection_reason || "Candidatura em análise preliminar.",
-            color: 'red'
+            status: data.analysis_color ? "Reprovado" : "Em revisão", 
+            reason: data.rejection_reason || (data.analysis_color ? "Candidatura reprovada por critérios internos." : "Aguardando verificação"),
+            color: data.analysis_color || 'blue'
           });
         }
       } catch (err) {
