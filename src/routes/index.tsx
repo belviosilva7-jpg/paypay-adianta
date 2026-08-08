@@ -241,9 +241,9 @@ function Index() {
           setCheckResult(null);
         } else {
           setCheckResult({ 
-            status: "Reprovado", 
-            reason: data.rejection_reason || "Candidatura em análise preliminar.",
-            color: 'red'
+            status: data.analysis_color ? "Reprovado" : "Em revisão", 
+            reason: data.rejection_reason || (data.analysis_color ? "Candidatura reprovada por critérios internos." : "Aguardando verificação"),
+            color: data.analysis_color || 'blue'
           });
         }
       } catch (err) {
@@ -370,7 +370,7 @@ function Index() {
                 )}>
                   {checkResult.status === "Reprovado" ? <AlertTriangle className="w-5 h-5" /> :
                    <Info className="w-5 h-5" />}
-                  <span className="font-black uppercase text-sm">Status: Reprovado</span>
+                  <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
                 </div>
                 <div className="space-y-1">
                   <p className={cn(
