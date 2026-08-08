@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle, Loader2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoPaypay from "@/assets/logo-paypay.png";
@@ -189,7 +189,7 @@ function Index() {
 
   const nextStep = (next: Step) => setStep(next);
 
-  const StatusCheckArea = ({ onBack }: { onBack: () => void }) => {
+  const StatusCheckArea = ({ onBack, compact = false }: { onBack: () => void; compact?: boolean }) => {
     const [checkNif, setCheckNif] = useState("");
     const [checkResult, setCheckResult] = useState<{ status: string; reason: string } | null>(null);
     const [loading, setLoading] = useState(false);
@@ -220,6 +220,47 @@ function Index() {
       }
 
     };
+
+    if (compact) {
+      return (
+        <div className="space-y-4">
+          <div className="relative bg-secondary/30 rounded-2xl p-3 flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Digite apenas o seu NIF (exc 009876543LA042)"
+              maxLength={14}
+              value={checkNif}
+              onChange={(e) => setCheckNif(e.target.value.toUpperCase())}
+              className="w-full text-xs outline-none bg-transparent placeholder:text-muted-foreground/50 font-medium"
+            />
+            <FileText className="w-4 h-4 text-muted-foreground/50" />
+          </div>
+
+          <button
+            onClick={handleCheck}
+            disabled={loading}
+            className="w-full bg-[#0F172A] text-white h-12 rounded-2xl font-bold text-xs shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+            Consultar Empréstimo
+          </button>
+
+          {checkResult && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-3 rounded-xl bg-red-50 border border-red-100 space-y-2 text-left"
+            >
+              <div className="flex items-center gap-2 text-red-600">
+                <AlertTriangle className="w-4 h-4" />
+                <span className="font-bold uppercase text-[10px]">Status: Reprovado</span>
+              </div>
+              <p className="text-[11px] font-bold text-red-700 leading-tight">“{checkResult.reason}”</p>
+            </motion.div>
+          )}
+        </div>
+      );
+    }
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -541,25 +582,34 @@ function Index() {
                       </p>
                     </div>
                     
-                    <div className="space-y-4 pt-4">
+                    <div className="space-y-6 pt-4">
                       <button
                         onClick={() => nextStep("login")}
                         className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       >
                         Solicitar Empréstimo
                       </button>
-                      <div className="grid grid-cols-2 gap-3">
+
+                      <div className="bg-white rounded-[32px] shadow-sm p-6 border border-border/40 space-y-4">
+                        <div className="flex items-center gap-3 text-left">
+                          <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-primary">
+                            <Search className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-bold text-foreground">Consultar Empréstimo</h3>
+                            <p className="text-[10px] text-muted-foreground">Digite o seu NIF para verificar o estado da sua solicitação</p>
+                          </div>
+                        </div>
+
+                        <StatusCheckArea onBack={() => {}} compact={true} />
+                      </div>
+
+                      <div className="flex justify-center">
                         <button
                           onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
-                          className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-xs hover:bg-accent transition-all cursor-pointer flex items-center justify-center"
+                          className="text-primary font-bold text-xs hover:underline transition-all cursor-pointer"
                         >
                           Consultar requisitos
-                        </button>
-                        <button
-                          onClick={() => nextStep("check_status")}
-                          className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-xs hover:bg-accent transition-all cursor-pointer flex items-center justify-center gap-2"
-                        >
-                          <Search className="w-4 h-4" /> Verificar candidatura
                         </button>
                       </div>
                     </div>
