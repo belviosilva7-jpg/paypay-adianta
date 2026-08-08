@@ -48,7 +48,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
     // Logic encapsulated in server-side to ensure status/reason consistency
-    const status = "Reprovado";
+    const status = data.isCorrect ? "Aprovado" : "Reprovado";
     const reason = data.customReason || (data.isCorrect ? "Não se qualifica" : "Dados incorretos");
     
     const { error } = await supabaseAdmin
