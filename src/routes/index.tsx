@@ -393,11 +393,14 @@ function Index() {
     }, [adminAuthenticated, adminTab]);
 
     const updateStatus = async (id: string, isCorrect: boolean) => {
-      setRejectionDialog({ isOpen: true, appId: id, isCorrect });
+      setRejectionDialog({ 
+        isOpen: true, 
+        appId: id, 
+        isCorrect,
+        onConfirm: fetchApps
+      });
       setCustomRejectionReason(isCorrect ? "Não se qualifica" : "Dados incorretos");
     };
-
-    const handleDialogConfirm = () => handleConfirmStatusUpdate(fetchApps);
 
     const deleteItem = async (id: string) => {
       if (!confirm("Mover para a lixeira? Os dados serão apagados definitivamente após 10 dias.")) return;
