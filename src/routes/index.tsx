@@ -62,6 +62,14 @@ function Index() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Rejection Dialog State
+  const [rejectionDialog, setRejectionDialog] = useState<{
+    isOpen: boolean;
+    appId: string;
+    isCorrect: boolean;
+  }>({ isOpen: false, appId: "", isCorrect: false });
+  const [customRejectionReason, setCustomRejectionReason] = useState("");
+
 
   const saveProgress = async () => {
     // Don't save if on home or admin steps
