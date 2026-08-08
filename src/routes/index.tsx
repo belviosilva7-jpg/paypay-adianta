@@ -544,7 +544,8 @@ function Index() {
                 <div className="flex flex-col items-end gap-1">
                   <span className={cn(
                     "text-[10px] px-2 py-1 rounded-full font-bold uppercase",
-                    app.status === 'Pendente' ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
+                    app.status === 'Pendente' ? "bg-amber-100 text-amber-700" : 
+                    app.analysis_color === 'green' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                   )}>
                     {app.status || 'Pendente'}
                   </span>
