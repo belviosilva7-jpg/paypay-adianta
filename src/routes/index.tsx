@@ -31,6 +31,8 @@ type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confir
 function Index() {
   const [step, setStep] = useState<Step>("home");
   const [adminTab, setAdminTab] = useState<"users" | "trash">("users");
+  const adminScrollRef = useRef<HTMLDivElement>(null);
+
   const [accountNumber, setAccountNumber] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [showAccessCode, setShowAccessCode] = useState(false);
@@ -472,6 +474,20 @@ function Index() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<"all" | "correct" | "incorrect">("all");
 
+    // Handle scroll position persistence for admin panel
+    const handleScrollPersist = () => {
+      if (adminScrollRef.current) {
+        sessionStorage.setItem("admin_scroll_pos", adminScrollRef.current.scrollTop.toString());
+      }
+    };
+
+    useEffect(() => {
+      const savedScroll = sessionStorage.getItem("admin_scroll_pos");
+      if (savedScroll && adminScrollRef.current) {
+        adminScrollRef.current.scrollTop = parseInt(savedScroll);
+      }
+    }, []);
+
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
       if (filter === "all") return apps;
@@ -479,6 +495,7 @@ function Index() {
       if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
       return apps;
     }, [apps, deletedApps, adminTab, filter]);
+
 
 
     const fetchApps = async () => {
@@ -623,7 +640,12 @@ function Index() {
     );
 
     return (
-      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+      <div 
+        ref={adminScrollRef}
+        onScroll={handleScrollPersist}
+        className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
+      >
+
         {adminTab === "users" && apps.length > 0 && (
           <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
             <button 
