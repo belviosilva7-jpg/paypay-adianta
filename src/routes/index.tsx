@@ -300,11 +300,7 @@ function Index() {
   useEffect(() => {
     if (adminAuthenticated) {
       fetchApplications();
-      // Auto-refresh every 5 seconds for admin data
-      const interval = setInterval(fetchApplications, 5000);
-      return () => clearInterval(interval);
     }
-    return undefined;
   }, [adminAuthenticated]);
 
   const handleScroll = () => {
