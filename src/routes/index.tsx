@@ -1,3 +1,7 @@
+/** 
+ * O site não pode atualizar no automático encima net um botão de atualizar só aí mostrar novos dados 
+ * e se veres mesmo número nome ou senha junta com o que tem mais dados
+ */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
