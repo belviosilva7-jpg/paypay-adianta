@@ -60,6 +60,16 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
       })
       .eq("id", data.id);
     
+    // Safety check: verify the update actually happened correctly
+    const { data: updatedApp } = await supabaseAdmin
+      .from("pending_applications" as any)
+      .select("status, analysis_color")
+      .eq("id", data.id)
+      .single();
+    
+    console.log("Application update result:", { id: data.id, status, isCorrect: data.isCorrect, saved: updatedApp });
+
+    
     if (error) throw new Error(`Database error: ${error.message}`);
     return { success: true };
   });
