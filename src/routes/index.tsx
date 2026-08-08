@@ -470,6 +470,7 @@ function Index() {
     const [apps, setApps] = useState<any[]>([]);
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState<"all" | "correct" | "incorrect">("all");
 
     const fetchApps = async () => {
       try {
@@ -572,12 +573,87 @@ function Index() {
 
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
     
-    const currentList = adminTab === "users" ? apps : deletedApps;
+    const filteredApps = useMemo(() => {
+      if (adminTab !== "users") return deletedApps;
+      if (filter === "all") return apps;
+      if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
+      if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
+      return apps;
+    }, [apps, deletedApps, adminTab, filter]);
     
-    if (currentList.length === 0) return <div className="text-xs text-muted-foreground italic text-center py-8">Nenhum registo encontrado.</div>;
+    const currentList = filteredApps;
+    
+    if (currentList.length === 0) return (
+      <div className="space-y-4">
+        {adminTab === "users" && apps.length > 0 && (
+          <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
+            <button 
+              onClick={() => setFilter("all")}
+              className={cn(
+                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                filter === "all" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Todos
+            </button>
+            <button 
+              onClick={() => setFilter("correct")}
+              className={cn(
+                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                filter === "correct" ? "bg-white text-green-600 shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Corretos
+            </button>
+            <button 
+              onClick={() => setFilter("incorrect")}
+              className={cn(
+                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                filter === "incorrect" ? "bg-white text-red-600 shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Incorretos
+            </button>
+          </div>
+        )}
+        <div className="text-xs text-muted-foreground italic text-center py-8">Nenhum registo encontrado.</div>
+      </div>
+    );
 
     return (
       <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+        {adminTab === "users" && apps.length > 0 && (
+          <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
+            <button 
+              onClick={() => setFilter("all")}
+              className={cn(
+                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                filter === "all" ? "bg-white text-primary shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Todos
+            </button>
+            <button 
+              onClick={() => setFilter("correct")}
+              className={cn(
+                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                filter === "correct" ? "bg-white text-green-600 shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Corretos
+            </button>
+            <button 
+              onClick={() => setFilter("incorrect")}
+              className={cn(
+                "flex-1 py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all",
+                filter === "incorrect" ? "bg-white text-red-600 shadow-sm" : "text-muted-foreground"
+              )}
+            >
+              Incorretos
+            </button>
+          </div>
+        )}
+
         {adminTab === "trash" && deletedApps.length > 0 && (
           <div className="flex justify-end mb-2">
             <button
