@@ -572,7 +572,7 @@ function Index() {
     };
 
     if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
-    
+    // Move useMemo to the top of the component to avoid hook count mismatch
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
       if (filter === "all") return apps;
@@ -580,6 +580,7 @@ function Index() {
       if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
       return apps;
     }, [apps, deletedApps, adminTab, filter]);
+    
     
     const currentList = filteredApps;
     
