@@ -281,22 +281,30 @@ function Index() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={cn(
+              className="space-y-2"
+            >
+              {checkResult.status !== "Aprovado" && (
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-600 px-1">
+                  <XCircle className="w-3 h-3" />
+                  <span>Dados inválidos. Verifique e tente novamente.</span>
+                </div>
+              )}
+              <div className={cn(
                 "p-3 rounded-xl border space-y-2 text-left",
                 checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
-              )}
-            >
-              <div className={cn(
-                "flex items-center gap-2",
-                checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
               )}>
-                <AlertTriangle className="w-4 h-4" />
-                <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
+                <div className={cn(
+                  "flex items-center gap-2",
+                  checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
+                )}>
+                  <AlertTriangle className="w-4 h-4" />
+                  <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
+                </div>
+                <p className={cn(
+                  "text-[11px] font-bold leading-tight",
+                  checkResult.status === "Aprovado" ? "text-green-700" : "text-red-700"
+                )}>“{checkResult.reason}”</p>
               </div>
-              <p className={cn(
-                "text-[11px] font-bold leading-tight",
-                checkResult.status === "Aprovado" ? "text-green-700" : "text-red-700"
-              )}>“{checkResult.reason}”</p>
             </motion.div>
           )}
         </div>
@@ -339,6 +347,12 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="pt-4 border-t border-border/10 space-y-4"
             >
+              {checkResult.status !== "Aprovado" && (
+                <div className="flex items-center gap-2 text-xs font-bold text-red-600 px-1 justify-center">
+                  <XCircle className="w-4 h-4" />
+                  <span>Dados inválidos. Verifique e tente novamente.</span>
+                </div>
+              )}
               <div className={cn(
                 "p-4 rounded-2xl border space-y-3",
                 checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
@@ -361,7 +375,7 @@ function Index() {
                   )}>“{checkResult.reason}”</p>
                 </div>
               </div>
-              <p className="text-[10px] text-muted-foreground italic">
+              <p className="text-[10px] text-muted-foreground italic text-center">
                 A sua candidatura não cumpre os requisitos mínimos do sistema. Para mais informações, contacte o suporte.
               </p>
             </motion.div>
