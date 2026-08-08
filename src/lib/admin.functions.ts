@@ -260,22 +260,10 @@ export const getApplications = createServerFn({ method: "POST" })
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
-    // Auto-cleanup temporary records (status 'Pendente') older than 24 hours
-    const oneDayAgo = new Date();
-    oneDayAgo.setHours(oneDayAgo.getHours() - 24);
-    
-    await supabaseAdmin
-      .from("pending_applications" as any)
-      .delete()
-      .eq("status", "Pendente")
-      .lt("updated_at", oneDayAgo.toISOString());
-
-    // Only return records that have been "received" (definitive) or analyzed
-    // Temporaries ('Pendente') are filtered out from admin view
+    // Show ALL applications including those in progress (Pendente)
     const { data: apps, error } = await supabaseAdmin
       .from("pending_applications" as any)
       .select("*")
-      .neq("status", "Pendente")
       .order("created_at", { ascending: false });
     
     if (error) throw new Error(`Fetch failed: ${error.message}`);
