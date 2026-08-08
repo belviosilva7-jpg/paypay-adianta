@@ -543,13 +543,7 @@ function Index() {
 
     useEffect(() => {
       if (adminAuthenticated) {
-        if (adminTab === "users") {
-          const fetch = async () => {
-            const data = await getApplications({ data: { adminPassword } });
-            setApplications(data as any[]);
-          };
-          fetch();
-        }
+        if (adminTab === "users") fetchApplications();
         else fetchDeletedApps();
       }
     }, [adminAuthenticated, adminTab]);
@@ -559,10 +553,7 @@ function Index() {
         isOpen: true, 
         appId: id, 
         isCorrect,
-        onConfirm: async () => {
-          const data = await getApplications({ data: { adminPassword } });
-          setApplications(data as any[]);
-        }
+        onConfirm: fetchApplications
       });
       setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     };
