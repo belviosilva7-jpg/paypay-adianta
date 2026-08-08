@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
-import successIconAsset from "@/assets/chat-logo.png";
+import successIconAsset from "@/assets/success-icon.jpg.asset.json";
 import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus, getDeletedApplications, restoreApplication, deletePermanently } from "@/lib/admin.functions";
 import { History, RotateCcw } from "lucide-react";
 
@@ -1122,8 +1122,8 @@ function Index() {
                 className="text-center space-y-8"
               >
                 <div className="flex flex-col items-center space-y-6">
-                  <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle2 className="w-12 h-12 text-green-600" />
+                  <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden">
+                    <img src={successIconAsset.url} alt="Sucesso" className="w-full h-full object-cover" />
                   </div>
                   <div className="space-y-2">
                     <h2 className="text-3xl font-black text-primary leading-tight">Submetido com sucesso!</h2>
