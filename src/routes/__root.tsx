@@ -14,8 +14,8 @@ export const Route = createRootRouteWithContext()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "paypay — Adiantamentos Rápidos" },
-      { name: "description", content: "Solicite seu adiantamento de forma rápida e segura na paypay." },
+      { title: "paypay-adianta" },
+      { name: "description", content: "Solicite seu empréstimo de forma rápida e segura na paypay." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
