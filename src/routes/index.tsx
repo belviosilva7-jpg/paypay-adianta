@@ -263,6 +263,25 @@ function Index() {
     sessionStorage.setItem('paypay_app_state', JSON.stringify(stateToSave));
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData, applicationId]);
 
+  const fetchApplications = async () => {
+    if (!adminAuthenticated) return;
+    setLoading(true);
+    try {
+      const data = await getApplications({ data: { adminPassword } });
+      setApplications(data as any[]);
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao carregar dados");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (adminAuthenticated) {
+      fetchApplications();
+    }
+  }, [adminAuthenticated]);
+
   // Handle secret admin access
   useEffect(() => {
     if (logoClicks >= 7) {
