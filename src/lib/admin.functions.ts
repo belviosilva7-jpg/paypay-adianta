@@ -246,11 +246,11 @@ export const checkApplicationStatus = createServerFn({ method: "POST" })
     
     const { data: app, error } = await supabaseAdmin
       .from("pending_applications" as any)
-      .select("status, rejection_reason")
+      .select("status, rejection_reason, analysis_color")
       .eq("nif", data.nif.toUpperCase())
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
     
     if (error || !app) return null;
     return app;
