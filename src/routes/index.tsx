@@ -31,6 +31,8 @@ type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confir
 function Index() {
   const [step, setStep] = useState<Step>("home");
   const [adminTab, setAdminTab] = useState<"users" | "trash">("users");
+  const adminScrollRef = useRef<HTMLDivElement>(null);
+
   const [accountNumber, setAccountNumber] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [showAccessCode, setShowAccessCode] = useState(false);
