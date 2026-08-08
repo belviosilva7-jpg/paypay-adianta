@@ -297,7 +297,7 @@ function Index() {
                   "flex items-center gap-2",
                   checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
                 )}>
-                  <AlertTriangle className="w-4 h-4" />
+                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
                   <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
                 </div>
                 <p className={cn(
@@ -361,7 +361,7 @@ function Index() {
                   "flex items-center gap-2 justify-center",
                   checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
                 )}>
-                  <AlertTriangle className="w-5 h-5" />
+                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
                   <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
                 </div>
                 <div className="space-y-1">
@@ -434,7 +434,7 @@ function Index() {
         isCorrect,
         onConfirm: fetchApps
       });
-      setCustomRejectionReason(isCorrect ? "Não se qualifica" : "Dados incorretos");
+      setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     };
 
     const deleteItem = async (id: string) => {
