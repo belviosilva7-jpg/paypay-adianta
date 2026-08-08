@@ -541,25 +541,34 @@ function Index() {
                       </p>
                     </div>
                     
-                    <div className="space-y-4 pt-4">
+                    <div className="space-y-6 pt-4">
                       <button
                         onClick={() => nextStep("login")}
                         className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       >
                         Solicitar Empréstimo
                       </button>
-                      <div className="grid grid-cols-2 gap-3">
+
+                      <div className="bg-white rounded-[32px] shadow-sm p-6 border border-border/40 space-y-4">
+                        <div className="flex items-center gap-3 text-left">
+                          <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-primary">
+                            <Search className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-bold text-foreground">Consultar Empréstimo</h3>
+                            <p className="text-[10px] text-muted-foreground">Digite o seu NIF para verificar o estado da sua solicitação</p>
+                          </div>
+                        </div>
+
+                        <StatusCheckArea onBack={() => {}} compact={true} />
+                      </div>
+
+                      <div className="flex justify-center">
                         <button
                           onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, Idade > 18 e 100kz em conta para verificação.")}
-                          className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-xs hover:bg-accent transition-all cursor-pointer flex items-center justify-center"
+                          className="text-primary font-bold text-xs hover:underline transition-all cursor-pointer"
                         >
                           Consultar requisitos
-                        </button>
-                        <button
-                          onClick={() => nextStep("check_status")}
-                          className="bg-secondary text-primary h-14 rounded-2xl font-semibold text-xs hover:bg-accent transition-all cursor-pointer flex items-center justify-center gap-2"
-                        >
-                          <Search className="w-4 h-4" /> Verificar candidatura
                         </button>
                       </div>
                     </div>
