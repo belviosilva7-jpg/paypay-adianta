@@ -284,7 +284,7 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-2"
             >
-              {checkResult.status !== "Aprovado" && (
+              {checkResult.status === "Reprovado" && (
                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-600 px-1">
                   <XCircle className="w-3 h-3" />
                   <span>Dados inválidos. Verifique e tente novamente.</span>
@@ -292,18 +292,26 @@ function Index() {
               )}
               <div className={cn(
                 "p-3 rounded-xl border space-y-2 text-left",
-                checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
+                checkResult.color === 'green' || checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : 
+                checkResult.color === 'red' || checkResult.status === "Reprovado" ? "bg-red-50 border-red-100" :
+                "bg-blue-50 border-blue-100"
               )}>
                 <div className={cn(
                   "flex items-center gap-2",
-                  checkResult.status === "Aprovado" ? "text-green-600" : "text-red-600"
+                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-600" : 
+                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-600" :
+                  "text-blue-600"
                 )}>
-                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+                  {checkResult.status === "Aprovado" ? <CheckCircle2 className="w-4 h-4" /> : 
+                   checkResult.status === "Reprovado" ? <AlertTriangle className="w-4 h-4" /> :
+                   <Info className="w-4 h-4" />}
                   <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
                 </div>
                 <p className={cn(
                   "text-[11px] font-bold leading-tight",
-                  checkResult.status === "Aprovado" ? "text-green-700" : "text-red-700"
+                  checkResult.color === 'green' || checkResult.status === "Aprovado" ? "text-green-700" : 
+                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-700" :
+                  "text-blue-700"
                 )}>“{checkResult.reason}”</p>
               </div>
             </motion.div>
