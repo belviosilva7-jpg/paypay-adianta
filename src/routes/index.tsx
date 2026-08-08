@@ -56,6 +56,7 @@ function Index() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [scrolledToBottom, setScrolledToBottom] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
