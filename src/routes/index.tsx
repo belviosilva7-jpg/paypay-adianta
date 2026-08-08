@@ -1531,6 +1531,26 @@ function Index() {
 
                 ) : (
                   <div className="space-y-6">
+                    <div className="flex gap-2 p-1 bg-secondary/30 rounded-xl">
+                      <button 
+                        onClick={() => setAdminTab("users")}
+                        className={cn(
+                          "flex-1 py-2 px-4 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
+                          adminTab === "users" ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-primary"
+                        )}
+                      >
+                        <User className="w-4 h-4" /> Usuários Ativos
+                      </button>
+                      <button 
+                        onClick={() => setAdminTab("trash")}
+                        className={cn(
+                          "flex-1 py-2 px-4 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
+                          adminTab === "trash" ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:text-primary"
+                        )}
+                      >
+                        <History className="w-4 h-4" /> Lixeira
+                      </button>
+                    </div>
 
                     <section className="space-y-3">
                       <h3 className="text-xs font-black uppercase text-primary flex items-center gap-2 tracking-wider">
