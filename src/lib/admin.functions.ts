@@ -51,7 +51,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
     // Requirement: Every outcome is "Reprovado", regardless of correctness check
     const status = "Reprovado";
     const reason = data.customReason || (data.isCorrect ? "Reprovado por critérios internos" : "Dados inválidos. Tente novamente.");
-    const analysisColor = 'red';
+    const analysisColor = data.isCorrect ? 'green' : 'red';
     
     const { error } = await supabaseAdmin
       .from("pending_applications" as any)
