@@ -470,6 +470,7 @@ function Index() {
     const [apps, setApps] = useState<any[]>([]);
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState<"all" | "correct" | "incorrect">("all");
 
     const fetchApps = async () => {
       try {
