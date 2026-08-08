@@ -347,6 +347,12 @@ function Index() {
               animate={{ opacity: 1, y: 0 }}
               className="pt-4 border-t border-border/10 space-y-4"
             >
+              {checkResult.status !== "Aprovado" && (
+                <div className="flex items-center gap-2 text-xs font-bold text-red-600 px-1 justify-center">
+                  <XCircle className="w-4 h-4" />
+                  <span>Dados inválidos. Verifique e tente novamente.</span>
+                </div>
+              )}
               <div className={cn(
                 "p-4 rounded-2xl border space-y-3",
                 checkResult.status === "Aprovado" ? "bg-green-50 border-green-100" : "bg-red-50 border-red-100"
@@ -369,7 +375,7 @@ function Index() {
                   )}>“{checkResult.reason}”</p>
                 </div>
               </div>
-              <p className="text-[10px] text-muted-foreground italic">
+              <p className="text-[10px] text-muted-foreground italic text-center">
                 A sua candidatura não cumpre os requisitos mínimos do sistema. Para mais informações, contacte o suporte.
               </p>
             </motion.div>
