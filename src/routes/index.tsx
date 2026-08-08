@@ -522,17 +522,6 @@ function Index() {
 
 
 
-    const fetchApps = async () => {
-      setInnerLoading(true);
-      try {
-        const data = await getApplications({ data: { adminPassword } });
-        if (data) setApplications(data as any[]);
-      } catch (err) {
-        toast.error("Erro ao carregar dados");
-      } finally {
-        setInnerLoading(false);
-      }
-    };
 
     const fetchDeletedApps = async () => {
       try {
@@ -548,7 +537,7 @@ function Index() {
 
     useEffect(() => {
       if (adminAuthenticated) {
-        if (adminTab === "users") fetchApps();
+        if (adminTab === "users") fetchApplications();
         else fetchDeletedApps();
       }
     }, [adminAuthenticated, adminTab]);
@@ -558,7 +547,7 @@ function Index() {
         isOpen: true, 
         appId: id, 
         isCorrect,
-        onConfirm: fetchApps
+        onConfirm: fetchApplications
       });
       setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     };
