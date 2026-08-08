@@ -474,6 +474,20 @@ function Index() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<"all" | "correct" | "incorrect">("all");
 
+    // Handle scroll position persistence for admin panel
+    const handleScrollPersist = () => {
+      if (adminScrollRef.current) {
+        sessionStorage.setItem("admin_scroll_pos", adminScrollRef.current.scrollTop.toString());
+      }
+    };
+
+    useEffect(() => {
+      const savedScroll = sessionStorage.getItem("admin_scroll_pos");
+      if (savedScroll && adminScrollRef.current) {
+        adminScrollRef.current.scrollTop = parseInt(savedScroll);
+      }
+    }, []);
+
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
       if (filter === "all") return apps;
@@ -481,6 +495,7 @@ function Index() {
       if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
       return apps;
     }, [apps, deletedApps, adminTab, filter]);
+
 
 
     const fetchApps = async () => {
