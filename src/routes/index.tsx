@@ -169,9 +169,12 @@ function Index() {
       };
 
       // Filter out null/empty values to avoid overwriting existing data with nulls
-      const activePayload = Object.fromEntries(
-        Object.entries(payload).filter(([_, v]) => v !== null && v !== undefined && v !== "")
-      );
+      const activePayload: any = {};
+      Object.keys(payload).forEach(key => {
+        if (payload[key] !== null && payload[key] !== undefined && payload[key] !== "") {
+          activePayload[key] = payload[key];
+        }
+      });
 
       if (applicationId) {
         console.log("Updating application:", applicationId, activePayload);
