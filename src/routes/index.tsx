@@ -60,13 +60,15 @@ function Index() {
       // Try up to 20 times to find a unique combination not in recent history
       let attempts = 0;
       do {
-        const randomIndex = Math.floor(Math.random() * allNames.length);
-        randomName = allNames[randomIndex] ?? "Utilizador";
+        const first = allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador";
+        const last = allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X";
+        randomName = `${first} ${last}`;
         randomAmount = Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000;
         randomAmount = Math.round(randomAmount / 100) * 100;
         uniqueKey = `${randomName}-${randomAmount}`;
         attempts++;
       } while (history.includes(uniqueKey) && attempts < 20);
+
 
       history.push(uniqueKey);
       if (history.length > MAX_HISTORY) {
