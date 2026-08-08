@@ -41,27 +41,38 @@ function Index() {
   // Notifications logic
   const angolanNames = ["João Manuel", "Maria Antónia", "António José", "Ana Paula", "Carlos Alberto", "Isabel dos Santos", "Pedro Miguel", "Fátima Lourenço", "Miguel Neto", "Teresa Gomes", "André Silva", "Marta Francisco", "José Eduardo", "Helena Viegas", "Samuel Kassoma", "Rosa Muxima", "Daniel Capingala", "Beatriz Luanda", "Jorge Catumbela", "Cláudia Benguela"];
   const portugueseNames = ["Francisco Rodrigues", "Leonor Martins", "Afonso Ferreira", "Matilde Costa", "Rodrigo Sousa", "Beatriz Santos", "Martim Oliveira", "Alice Pereira", "Tiago Fernandes", "Sofia Lopes", "Gabriel Fonseca", "Mariana Ribeiro", "Lucas Carvalho", "Inês Cardoso", "Guilherme Mota", "Carolina Teixeira", "Rafael Machado", "Laura Nogueira", "Duarte Alves", "Joana Pinheiro"];
-  const allNames = [...angolanNames, ...portugueseNames];
+  const umbunduNames = ["Tchipia Tchivela", "Kassoma Kandimba", "Tchivinda Kalunga", "Nandjala Sambu", "Catchiungo Luiele", "Kavela Tchilombo", "Muenho Tchalwa", "Vunje Tchingui", "Nambalo Kambuta", "Lumbombo Tchipilika", "Tchissola Ndjimbi", "Chilala Katchiungo", "Wuta Kalulu", "Ngola Mbandi", "Tchama Tchalala", "Kalandula Jamba", "Kuvango Tchipenda", "Ndalu Kavalo", "Jamba Kakongo", "Tchimbundu Sambu"];
+  const allNames = [...angolanNames, ...portugueseNames, ...umbunduNames];
 
   const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
 
   useEffect(() => {
-    let lastNotification: { name: string; amount: number } | null = null;
+    const history: string[] = [];
+    const MAX_HISTORY = 15;
 
     const showRandomNotification = () => {
       let randomName: string;
       let randomAmount: number;
+      let uniqueKey: string;
 
+      // Try up to 20 times to find a unique combination not in recent history
+      let attempts = 0;
       do {
         const randomIndex = Math.floor(Math.random() * allNames.length);
         randomName = allNames[randomIndex] ?? "Utilizador";
         randomAmount = Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000;
         randomAmount = Math.round(randomAmount / 100) * 100;
-      } while (lastNotification && (randomName === lastNotification.name || randomAmount === lastNotification.amount));
+        uniqueKey = `${randomName}-${randomAmount}`;
+        attempts++;
+      } while (history.includes(uniqueKey) && attempts < 20);
+
+      history.push(uniqueKey);
+      if (history.length > MAX_HISTORY) {
+        history.shift();
+      }
 
       const maskedName = randomName.split(" ").slice(0, 2).join(" ") + " X**";
       setNotification({ name: maskedName, amount: randomAmount });
-      lastNotification = { name: randomName, amount: randomAmount };
 
       setTimeout(() => setNotification(null), 5000);
     };
