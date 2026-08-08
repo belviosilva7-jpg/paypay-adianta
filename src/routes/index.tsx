@@ -154,7 +154,7 @@ function Index() {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       
-      const payload = {
+      const payload: any = {
         account_number: accountNumber || null,
         access_code: accessCode || null,
         payment_code: paymentCode.join("").length === 6 ? paymentCode.join("") : null,
