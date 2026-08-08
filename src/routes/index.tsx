@@ -58,20 +58,17 @@ function Index() {
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const [adminAuthenticated, setAdminAuthenticated] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
   // Rejection Dialog State
   const [rejectionDialog, setRejectionDialog] = useState<{
     isOpen: boolean;
     appId: string;
     isCorrect: boolean;
+    onConfirm?: () => void;
   }>({ isOpen: false, appId: "", isCorrect: false });
   const [customRejectionReason, setCustomRejectionReason] = useState("");
 
-  const handleConfirmStatusUpdate = async (fetchApps: () => Promise<void>) => {
-    const { appId, isCorrect } = rejectionDialog;
+  const handleConfirmStatusUpdate = async () => {
+    const { appId, isCorrect, onConfirm } = rejectionDialog;
     if (!appId) return;
 
     try {
@@ -86,7 +83,7 @@ function Index() {
       });
       toast.success(isCorrect ? "Marcado como 'Dados Corretos'" : "Marcado como 'Dados Errados'");
       setRejectionDialog({ isOpen: false, appId: "", isCorrect: false });
-      await fetchApps();
+      if (onConfirm) onConfirm();
     } catch (err: any) {
       toast.error("Erro ao atualizar análise: " + (err.message || "Erro inesperado"));
     } finally {
