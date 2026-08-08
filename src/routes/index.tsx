@@ -216,6 +216,7 @@ function Index() {
       }, 300); // Higher frequency for 100% precision
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
   // Persistence logic to prevent "reset" on inactivity
