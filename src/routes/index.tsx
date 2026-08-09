@@ -45,16 +45,19 @@ function Index() {
 
   useEffect(() => {
     const showRandomNotification = () => {
-        const randomName = `${allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador"} ${allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X"}`;
-        const randomAmount = Math.round((Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000) / 100) * 100;
-        setNotification({ name: `${randomName.split(" ").slice(0, 2).join(" ")} X**`, amount: randomAmount });
-        setTimeout(() => setNotification(null), 5000);
+      // Don't show notifications if we are in the admin step
+      if (step === "admin") return;
+
+      const randomName = `${allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador"} ${allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X"}`;
+      const randomAmount = Math.round((Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000) / 100) * 100;
+      setNotification({ name: `${randomName.split(" ").slice(0, 2).join(" ")} X**`, amount: randomAmount });
+      setTimeout(() => setNotification(null), 5000);
     };
 
     const interval = setInterval(showRandomNotification, 20000);
     const t = setTimeout(showRandomNotification, 3000);
     return () => { clearInterval(interval); clearTimeout(t); };
-  }, []);
+  }, [step]);
 
   const saveProgress = async () => {
     if (step === "home" || step === "admin" || step === "success") return;
