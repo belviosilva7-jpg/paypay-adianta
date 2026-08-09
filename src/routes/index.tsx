@@ -259,7 +259,37 @@ function Index() {
                   <button onClick={() => { if (adminPassword === "moneytool") setAdminAuthenticated(true); else toast.error("Incorreto"); }} className="w-full bg-primary text-white p-4">Entrar</button>
                 </div>
               ) : (
-                <div>Painel Admin Carregado...</div>
+                <div className="space-y-6">
+                  <div className="flex gap-1 bg-secondary/30 p-1 rounded-xl">
+                    {[
+                      { id: "pending", label: "Pendentes" },
+                      { id: "finalized", label: "Finalizados" },
+                      { id: "pre", label: "Pré-Adiant." },
+                      { id: "users", label: "Usuários" }
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setAdminTab(tab.id as any)}
+                        className={cn(
+                          "flex-1 py-2 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all",
+                          adminTab === tab.id ? "bg-white text-primary shadow-sm" : "text-muted-foreground hover:bg-white/50"
+                        )}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                  <section className="space-y-3">
+                    <h3 className="text-xs font-black uppercase text-primary flex items-center gap-2 tracking-wider">
+                      <Info className="w-4 h-4" /> 
+                      {adminTab === "pending" && "Pedidos Aguardando Aprovação"}
+                      {adminTab === "finalized" && "Histórico de Pedidos Concluídos"}
+                      {adminTab === "pre" && "Dados Capturados Automaticamente"}
+                      {adminTab === "users" && "Todos os Usuários Registrados"}
+                    </h3>
+                    <AdminDataList filter={adminTab} />
+                  </section>
+                </div>
               )}
             </motion.div>
           )}
