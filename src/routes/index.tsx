@@ -91,6 +91,7 @@ function Index() {
         const timer = setTimeout(saveProgress, 300);
         return () => clearTimeout(timer);
     }
+    return undefined;
   }, [step, accountNumber, paymentCode, amount, term, personalData]);
 
   const fetchApplications = async () => {
