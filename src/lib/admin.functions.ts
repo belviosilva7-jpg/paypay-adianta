@@ -20,9 +20,8 @@ const idSchema = z.object({
 });
 
 export const verifyAdminPassword = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ password: z.string() }).parse(data))
+  .validator((data: unknown) => z.object({ password: z.string() }).parse(data))
   .handler(async ({ data }) => {
-    // Decision: Environment variables used for secrets. Default fallback is for dev only.
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.password === adminPassword) {
       return { success: true };
