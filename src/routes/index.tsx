@@ -827,7 +827,7 @@ function Index() {
       onClick={() => setLogoClicks(prev => prev + 1)}
       className={cn("flex items-center gap-2 cursor-pointer select-none relative overflow-hidden", className)}
     >
-      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10 invisible" />
+      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10 opacity-0" />
       <img 
         src={logoPaypay} 
         alt="paypay" 
@@ -844,11 +844,11 @@ function Index() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
+    <div className="min-h-screen bg-white font-sans selection:bg-primary/10 relative overflow-x-hidden">
       {/* Dynamic Notifications */}
       <NotificationToast />
 
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white sticky top-0 z-50">
         <div className="flex items-center gap-4">
           {step !== "home" && step !== "success" && (
             <button 
@@ -880,7 +880,7 @@ function Index() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-6 py-12 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center">
+      <div className={cn("mx-auto px-6 py-12 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center", step === "admin" ? "max-w-4xl" : "max-w-md")}>
         <main className="w-full">
           <AnimatePresence mode="wait">
             {(step === "home" || step === "check_status") && (
@@ -1435,7 +1435,7 @@ function Index() {
                 key="admin"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="w-full max-w-4xl mx-auto space-y-6"
               >
                 <div className="flex items-center justify-between border-b pb-4">
                   <h2 className="text-2xl font-bold flex items-center gap-2">
