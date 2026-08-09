@@ -329,7 +329,10 @@ function StatusCheckContent() {
     const [loading, setLoading] = useState(false);
 
     const handleCheck = async () => {
-        if (nif.length < 9) return toast.error("NIF inválido");
+        if (nif.length < 9) {
+            toast.error("NIF inválido");
+            return;
+        }
         setLoading(true);
         try {
             const data = await checkApplicationStatus({ data: { nif } }) as any;
