@@ -186,7 +186,7 @@ function Index() {
       // Requirement: The application should only be saved and visible in the admin panel 
       // from the moment the user reaches the payment code stage (step2).
       // We skip saving if they are on 'home' or 'login' steps.
-      if (step === "home" || step === "login") return;
+      if (step === ("home" as any) || step === ("login" as any)) return;
 
       const payload: any = {
         account_number: accountNumber || null,
