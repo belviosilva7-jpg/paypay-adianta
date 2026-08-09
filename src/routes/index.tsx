@@ -497,8 +497,38 @@ function Index() {
               </button>
             </motion.div>
           )}
-          {step === "confirm" && <motion.div key="confirm" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Processando...</motion.div>}
-          {step === "success" && <motion.div key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Sucesso!</motion.div>}
+          {step === "confirm" && (
+            <motion.div key="confirm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-border/40 text-center space-y-8">
+              <div className="relative">
+                <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto animate-pulse">
+                  <ShieldCheck className="w-10 h-10 text-primary" />
+                </div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-20 border-4 border-primary/30 border-t-primary rounded-3xl animate-spin" />
+              </div>
+              <div className="space-y-4">
+                <h2 className="text-2xl font-black uppercase italic tracking-tighter">Processando <span className="text-primary">Análise</span></h2>
+                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest animate-pulse">Verificando elegibilidade em tempo real...</p>
+              </div>
+              {/* Simulate transition to success after a few seconds */}
+              {useEffect(() => {
+                const t = setTimeout(() => setStep("success"), 3500);
+                return () => clearTimeout(t);
+              }, [])}
+            </motion.div>
+          )}
+
+          {step === "success" && (
+            <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-border/40 text-center space-y-8">
+              <div className="bg-green-500 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-green-500/30">
+                <Check className="w-10 h-10 text-white" />
+              </div>
+              <div className="space-y-4">
+                <h2 className="text-3xl font-black uppercase italic tracking-tighter">Pedido <span className="text-green-600">Submetido</span></h2>
+                <p className="text-sm font-bold text-muted-foreground leading-relaxed">Sua candidatura foi recebida com sucesso. Você receberá uma notificação via SMS em instantes.</p>
+              </div>
+              <button onClick={() => setStep("home")} className="w-full bg-secondary text-foreground h-14 rounded-2xl font-black uppercase tracking-widest">Voltar ao Início</button>
+            </motion.div>
+          )}
           {step === "admin" && (
             <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
               {!adminAuthenticated ? (
