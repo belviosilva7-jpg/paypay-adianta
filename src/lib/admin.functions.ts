@@ -250,7 +250,7 @@ export const restoreApplication = createServerFn({ method: "POST" })
   });
 
 export const getApplications = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => adminPasswordSchema.parse(data))
+  .validator((data: unknown) => adminPasswordSchema.parse(data))
   .handler(async ({ data }) => {
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.adminPassword !== adminPassword) {
