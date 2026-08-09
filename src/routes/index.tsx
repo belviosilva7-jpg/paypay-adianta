@@ -844,7 +844,7 @@ function Index() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
+    <div className="min-h-screen bg-white font-sans selection:bg-primary/10 relative overflow-x-hidden">
       {/* Dynamic Notifications */}
       <NotificationToast />
 
