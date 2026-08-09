@@ -827,7 +827,7 @@ function Index() {
       onClick={() => setLogoClicks(prev => prev + 1)}
       className={cn("flex items-center gap-2 cursor-pointer select-none relative overflow-hidden", className)}
     >
-      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10 invisible" />
+      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10 opacity-0" />
       <img 
         src={logoPaypay} 
         alt="paypay" 
