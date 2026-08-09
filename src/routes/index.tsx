@@ -176,7 +176,7 @@ function Index() {
 
   const saveProgress = async (immediate = false) => {
     // Don't save if on home or admin steps
-    if (step === "home" || step === "admin" || step === "success") return;
+    if (step === ("home" as any) || step === ("admin" as any) || step === ("success" as any)) return;
     
     try {
       const { supabase } = await import("@/integrations/supabase/client");
