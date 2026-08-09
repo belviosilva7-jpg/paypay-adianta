@@ -150,6 +150,25 @@ function Index() {
                 {step === "check_status" && <StatusCheckArea onBack={() => setStep("home")} />}
             </AnimatePresence>
         </main>
+        <AnimatePresence>
+          {notification && (
+            <motion.div
+              initial={{ opacity: 0, x: 50, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 50, scale: 0.9 }}
+              className="fixed top-4 right-4 z-50 bg-white border border-primary/20 shadow-xl rounded-2xl p-4 flex items-center gap-4 max-w-[280px]"
+            >
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">Empréstimo Aprovado</p>
+                <p className="text-xs font-bold truncate">{notification.name}</p>
+                <p className="text-[10px] text-muted-foreground">Recebeu {notification.amount.toLocaleString()} Kz</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
     </div>
   );
 }
