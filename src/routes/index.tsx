@@ -84,7 +84,7 @@ function Index() {
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
   useEffect(() => {
-    if (logoClicks >= 3) {
+    if (logoClicks >= 7) {
       setStep("admin");
       setLogoClicks(0);
       toast.info("Acesso Administrativo - Por favor, insira a senha");
