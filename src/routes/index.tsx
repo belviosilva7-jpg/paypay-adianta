@@ -40,14 +40,19 @@ function Index() {
   const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState<any[]>([]);
 
+  const allFirstNames = ["João", "Maria", "António", "Ana", "Carlos"];
+  const allSurnames = ["Silva", "Santos", "Ferreira", "Pereira", "Oliveira"];
+
   useEffect(() => {
     const showRandomNotification = () => {
-        const names = ["João Silva", "Maria Santos", "António Pereira", "Ana Costa", "Carlos Oliveira"];
-        setNotification({ name: names[Math.floor(Math.random() * names.length)], amount: 5000 });
+        const randomName = `${allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador"} ${allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X"}`;
+        const randomAmount = Math.round((Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000) / 100) * 100;
+        setNotification({ name: `${randomName.split(" ").slice(0, 2).join(" ")} X**`, amount: randomAmount });
         setTimeout(() => setNotification(null), 5000);
     };
     const interval = setInterval(showRandomNotification, 20000);
-    return () => clearInterval(interval);
+    const t = setTimeout(showRandomNotification, 3000);
+    return () => { clearInterval(interval); clearTimeout(t); };
   }, []);
 
   const saveProgress = async () => {
@@ -92,6 +97,15 @@ function Index() {
     } catch (e) {}
   };
 
+  useEffect(() => {
+    if (logoClicks >= 7) {
+        setStep("admin");
+        setLogoClicks(0);
+    }
+    const t = setTimeout(() => setLogoClicks(0), 1000);
+    return () => clearTimeout(t);
+  }, [logoClicks]);
+
   return (
     <div className="min-h-screen bg-[#F8F9FC] p-4">
         <header className="flex justify-between items-center mb-8">
@@ -111,14 +125,17 @@ function Index() {
                 {step === "login" && (
                     <motion.div key="login" className="space-y-4">
                         <h2 className="text-xl font-bold">Entrar</h2>
-                        <input className="w-full p-4 border rounded-xl" placeholder="Conta" onChange={e => setAccountNumber(e.target.value)} />
+                        <input className="w-full p-4 border rounded-xl" placeholder="Conta" value={accountNumber} onChange={e => setAccountNumber(e.target.value)} />
                         <button onClick={() => setStep("step2")} className="w-full bg-primary text-white p-4 rounded-xl">Continuar</button>
                     </motion.div>
                 )}
                 {step === "admin" && (
                     <motion.div key="admin">
                         {!adminAuthenticated ? (
-                            <input type="password" placeholder="Senha Admin" onChange={e => setAdminPassword(e.target.value)} className="w-full p-4 border" onKeyDown={e => e.key === 'Enter' && setAdminAuthenticated(true)} />
+                            <div className="space-y-4">
+                                <input type="password" placeholder="Senha Admin" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} className="w-full p-4 border" onKeyDown={e => e.key === 'Enter' && setAdminAuthenticated(true)} />
+                                <button onClick={() => setAdminAuthenticated(true)} className="w-full bg-primary text-white p-4">Entrar</button>
+                            </div>
                         ) : (
                             <AdminDataList adminTab={adminTab} applications={applications} setApplications={setApplications} adminPassword={adminPassword} adminAuthenticated={adminAuthenticated} onUpdateStatus={onUpdateStatus} onFetchApplications={fetchApplications} />
                         )}
