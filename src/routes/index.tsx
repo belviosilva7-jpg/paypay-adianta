@@ -244,7 +244,7 @@ function Index() {
 
   // Auto-save application progress with high sensitivity
   useEffect(() => {
-    if (step !== "home" && step !== "admin") {
+    if (step !== ("home" as any) && step !== ("admin" as any)) {
       const timer = setTimeout(() => {
         saveProgress();
       }, 300); // Higher frequency for 100% precision
