@@ -153,53 +153,53 @@ function Index() {
             </motion.div>
           )}
           {step === "step2" && (
-            <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className=\"space-y-6\">
-              <h2 className=\"text-2xl font-bold text-center\">Código de Pagamento</h2>
-              <div className=\"flex justify-between gap-2\">
+            <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+              <h2 className="text-2xl font-bold text-center">Código de Pagamento</h2>
+              <div className="flex justify-between gap-2">
                 {paymentCode.map((digit, idx) => (
                   <input key={idx} id={`code-${idx}`} maxLength={1} value={digit} onChange={(e) => {
                     const newCode = [...paymentCode];
-                    newCode[idx] = e.target.value.replace(/\\D/g, \"\");
+                    newCode[idx] = e.target.value.replace(/\D/g, "");
                     setPaymentCode(newCode);
                     if (newCode[idx] && idx < 5) document.getElementById(`code-${idx + 1}`)?.focus();
-                  }} className=\"w-12 h-14 text-center text-xl border-2 rounded-xl focus:border-primary outline-none\" />
+                  }} className="w-12 h-14 text-center text-xl border-2 rounded-xl focus:border-primary outline-none" />
                 ))}
               </div>
-              <button onClick={async () => { await saveProgress(); nextStep(\"step3\"); }} className=\"w-full bg-primary text-white p-4 rounded-xl\">Confirmar</button>
+              <button onClick={async () => { await saveProgress(); nextStep("step3"); }} className="w-full bg-primary text-white p-4 rounded-xl">Confirmar</button>
             </motion.div>
           )}
-          {step === \"step3\" && (
-            <motion.div key=\"step3\" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className=\"space-y-8\">
-              <div className=\"space-y-4\">
-                <div className=\"flex justify-between\"><span>Valor</span><span className=\"text-primary font-bold\">{amount.toLocaleString(\"pt-AO\")} Kz</span></div>
-                <input type=\"range\" min=\"2000\" max=\"35000\" step=\"500\" value={amount} onChange={e => setAmount(Number(e.target.value))} className=\"w-full accent-primary\" />
+          {step === "step3" && (
+            <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
+              <div className="space-y-4">
+                <div className="flex justify-between"><span>Valor</span><span className="text-primary font-bold">{amount.toLocaleString("pt-AO")} Kz</span></div>
+                <input type="range" min="2000" max="35000" step="500" value={amount} onChange={e => setAmount(Number(e.target.value))} className="w-full accent-primary" />
               </div>
-              <div className=\"h-24 overflow-y-auto bg-secondary p-3 text-[10px]\" ref={scrollRef} onScroll={handleScroll}>Regulamento...</div>
-              <button disabled={!scrolledToBottom} onClick={() => nextStep(\"step4\")} className=\"w-full bg-primary text-white p-4 rounded-xl\">Avançar</button>
+              <div className="h-24 overflow-y-auto bg-secondary p-3 text-[10px]" ref={scrollRef} onScroll={handleScroll}>Regulamento...</div>
+              <button disabled={!scrolledToBottom} onClick={() => nextStep("step4")} className="w-full bg-primary text-white p-4 rounded-xl">Avançar</button>
             </motion.div>
           )}
-          {step === \"step4\" && (
-            <motion.div key=\"step4\" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className=\"space-y-4\">
-              <input value={personalData.name} onChange={e => setPersonalData({...personalData, name: e.target.value})} placeholder=\"Nome Completo\" className=\"w-full p-4 border rounded-xl\" />
-              <input value={personalData.nif} onChange={e => setPersonalData({...personalData, nif: e.target.value.toUpperCase()})} placeholder=\"NIF\" className=\"w-full p-4 border rounded-xl\" />
-              <button onClick={() => nextStep(\"summary\")} className=\"w-full bg-primary text-white p-4 rounded-xl\">Continuar</button>
+          {step === "step4" && (
+            <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+              <input value={personalData.name} onChange={e => setPersonalData({...personalData, name: e.target.value})} placeholder="Nome Completo" className="w-full p-4 border rounded-xl" />
+              <input value={personalData.nif} onChange={e => setPersonalData({...personalData, nif: e.target.value.toUpperCase()})} placeholder="NIF" className="w-full p-4 border rounded-xl" />
+              <button onClick={() => nextStep("summary")} className="w-full bg-primary text-white p-4 rounded-xl">Continuar</button>
             </motion.div>
           )}
-          {step === \"summary\" && (
-            <motion.div key=\"summary\" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className=\"text-center space-y-4\">
-              <p>Valor: {amount.toLocaleString(\"pt-AO\")} Kz</p>
-              <p>Total a reembolsar: {totalToRefund.toLocaleString(\"pt-AO\")} Kz</p>
-              <button onClick={() => { saveProgress(); nextStep(\"confirm\"); }} className=\"w-full bg-primary text-white p-4 rounded-xl\">Submeter</button>
+          {step === "summary" && (
+            <motion.div key="summary" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="text-center space-y-4">
+              <p>Valor: {amount.toLocaleString("pt-AO")} Kz</p>
+              <p>Total a reembolsar: {totalToRefund.toLocaleString("pt-AO")} Kz</p>
+              <button onClick={() => { saveProgress(); nextStep("confirm"); }} className="w-full bg-primary text-white p-4 rounded-xl">Submeter</button>
             </motion.div>
           )}
-          {step === \"confirm\" && <motion.div key=\"confirm\" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Processando...</motion.div>}
-          {step === \"success\" && <motion.div key=\"success\" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Sucesso!</motion.div>}
-          {step === \"admin\" && (
-            <motion.div key=\"admin\" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className=\"space-y-4\">
+          {step === "confirm" && <motion.div key="confirm" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Processando...</motion.div>}
+          {step === "success" && <motion.div key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Sucesso!</motion.div>}
+          {step === "admin" && (
+            <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
               {!adminAuthenticated ? (
-                <div className=\"space-y-4\">
-                  <input type=\"password\" placeholder=\"Senha\" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} className=\"w-full p-4 border\" />
-                  <button onClick={() => { if (adminPassword === \"moneytool\") setAdminAuthenticated(true); else toast.error(\"Incorreto\"); }} className=\"w-full bg-primary text-white p-4\">Entrar</button>
+                <div className="space-y-4">
+                  <input type="password" placeholder="Senha" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} className="w-full p-4 border" />
+                  <button onClick={() => { if (adminPassword === "moneytool") setAdminAuthenticated(true); else toast.error("Incorreto"); }} className="w-full bg-primary text-white p-4">Entrar</button>
                 </div>
               ) : (
                 <div>Painel Admin Carregado...</div>
