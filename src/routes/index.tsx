@@ -848,7 +848,7 @@ function Index() {
       {/* Dynamic Notifications */}
       <NotificationToast />
 
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white sticky top-0 z-50">
         <div className="flex items-center gap-4">
           {step !== "home" && step !== "success" && (
             <button 
