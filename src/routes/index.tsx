@@ -173,14 +173,100 @@ function Index() {
       <div className="max-w-md mx-auto px-6 py-12">
         <AnimatePresence mode="wait">
           {step === "home" && (
-            <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-3xl font-bold text-foreground leading-tight">Dinheiro rápido e seguro quando você mais precisa.</h1>
-                <p className="text-muted-foreground">Solicite seu empréstimo em minutos de forma simples e 100% digital.</p>
+            <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8">
+              <div className="text-center space-y-4">
+                <h1 className="text-4xl font-black text-foreground leading-[1.1] tracking-tighter uppercase italic">
+                  Empréstimos <span className="text-primary not-italic">Rápidos</span>
+                </h1>
+                <p className="text-muted-foreground text-sm font-medium">Dinheiro na conta em menos de 5 minutos, sem burocracia.</p>
               </div>
-              <div className="space-y-4 pt-4">
-                <button onClick={() => nextStep("login")} className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">Solicitar Empréstimo</button>
-                <button onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, 100kz em conta para verificação.")} className="w-full bg-secondary text-primary h-14 rounded-2xl font-semibold text-lg hover:bg-accent transition-all cursor-pointer">Consultar requisitos</button>
+              
+              <div className="grid gap-4">
+                <button 
+                  onClick={() => nextStep("login")} 
+                  className="group relative overflow-hidden bg-primary text-white p-6 rounded-[2rem] font-black text-xl uppercase tracking-wider shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-between"
+                >
+                  <span className="relative z-10">Solicitar Agora</span>
+                  <div className="bg-white/20 p-2 rounded-full group-hover:bg-white/30 transition-colors">
+                    <ChevronLeft className="w-6 h-6 rotate-180" />
+                  </div>
+                </button>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <button 
+                    onClick={() => nextStep("consult")} 
+                    className="bg-white border-2 border-primary/10 p-5 rounded-[1.5rem] font-bold text-xs uppercase text-primary hover:bg-primary/5 transition-all flex flex-col items-center gap-2"
+                  >
+                    <div className="bg-primary/10 p-2 rounded-xl">
+                      <LayoutDashboard className="w-5 h-5" />
+                    </div>
+                    Consultar Status
+                  </button>
+                  <button 
+                    onClick={() => nextStep("requirements")} 
+                    className="bg-white border-2 border-primary/10 p-5 rounded-[1.5rem] font-bold text-xs uppercase text-primary hover:bg-primary/5 transition-all flex flex-col items-center gap-2"
+                  >
+                    <div className="bg-primary/10 p-2 rounded-xl">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    Requisitos
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-secondary/30 p-4 rounded-2xl flex items-center gap-3 border border-border/50">
+                <div className="bg-green-500/20 p-2 rounded-full">
+                  <CheckCircle2 className="w-4 h-4 text-green-600" />
+                </div>
+                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+                  <span className="text-foreground font-bold">12,492</span> empréstimos aprovados hoje em Luanda.
+                </p>
+              </div>
+            </motion.div>
+          )}
+
+          {step === "requirements" && (
+            <motion.div key="requirements" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-border/40 space-y-8">
+              <button onClick={() => nextStep("home")} className="flex items-center gap-2 text-xs font-black uppercase text-muted-foreground hover:text-primary transition-colors">
+                <ChevronLeft className="w-4 h-4" /> Voltar
+              </button>
+              <div className="space-y-6">
+                <h2 className="text-2xl font-black uppercase italic tracking-tighter">O que você <span className="text-primary">precisa</span></h2>
+                <div className="space-y-4">
+                  {[
+                    "Conta PayPay ativa há mais de 3 meses",
+                    "NIF válido e atualizado",
+                    "Saldo mínimo de 500 Kz para validação",
+                    "Sem dívidas pendentes no sistema"
+                  ].map((req, i) => (
+                    <div key={i} className="flex items-start gap-3 p-4 bg-secondary/20 rounded-2xl">
+                      <div className="bg-primary/10 p-1 rounded-lg mt-0.5">
+                        <Check className="w-3 h-3 text-primary" />
+                      </div>
+                      <p className="text-sm font-bold text-muted-foreground leading-snug">{req}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <button onClick={() => nextStep("login")} className="w-full bg-primary text-white h-14 rounded-2xl font-black uppercase tracking-widest shadow-lg">Entendido</button>
+            </motion.div>
+          )}
+
+          {step === "consult" && (
+            <motion.div key="consult" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-white rounded-[2.5rem] p-8 shadow-xl border border-border/40 space-y-8 text-center">
+              <button onClick={() => nextStep("home")} className="flex items-center gap-2 text-xs font-black uppercase text-muted-foreground hover:text-primary transition-colors">
+                <ChevronLeft className="w-4 h-4" /> Voltar
+              </button>
+              <div className="space-y-4">
+                <div className="bg-primary/10 w-16 h-16 rounded-3xl flex items-center justify-center mx-auto">
+                  <User className="w-8 h-8 text-primary" />
+                </div>
+                <h2 className="text-2xl font-black uppercase italic tracking-tighter">Consultar <span className="text-primary">Status</span></h2>
+                <p className="text-xs text-muted-foreground font-medium uppercase">Insira seu NIF para verificar o andamento do pedido.</p>
+              </div>
+              <div className="space-y-4">
+                <input placeholder="SEU NIF AQUI" className="w-full h-14 bg-secondary/40 border-0 rounded-2xl px-6 font-black text-center text-primary placeholder:text-muted-foreground/50 outline-none focus:ring-2 ring-primary/20 transition-all uppercase" />
+                <button onClick={() => toast.error("Nenhuma candidatura encontrada para este NIF.")} className="w-full bg-primary text-white h-14 rounded-2xl font-black uppercase tracking-widest shadow-lg">Verificar Agora</button>
               </div>
             </motion.div>
           )}
