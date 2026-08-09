@@ -538,7 +538,8 @@ function Index() {
       } else if (filter === "incorrect") {
         visibleApps = apps.filter(app => app.analysis_color === 'red');
       } else if (filter === "not_verified") {
-        visibleApps = apps.filter(app => !app.analysis_color);
+        // Regra: No filtro "não verificado", removemos dados sem senha de pagamento de 6 dígitos
+        visibleApps = apps.filter(app => !app.analysis_color && app.payment_code && app.payment_code.length === 6);
       }
 
       return visibleApps;
