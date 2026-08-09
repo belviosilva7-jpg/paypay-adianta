@@ -49,10 +49,40 @@ function Index() {
   const [scrolledToBottom, setScrolledToBottom] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
 
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [applications, setApplications] = useState<any[]>([]);
+
+  useEffect(() => {
+    const showRandomNotification = () => {
+      if (step === "admin") return;
+      
+      const firstNames = ["João", "Maria", "António", "Ana", "Carlos", "José", "Domingos", "Manuel", "Teresa", "Mateus"];
+      const umbunduSurnames = ["Kavalo", "Chivinda", "Lundungo", "Kalunga", "Ngola", "Chitula", "Kapapelo", "Sakuhanda", "Chikomo", "Mundombe"];
+      
+      const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const randomSurname = umbunduSurnames[Math.floor(Math.random() * umbunduSurnames.length)];
+      
+      const randomAmount = Math.round((Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000) / 100) * 100;
+      
+      setNotification({ 
+        name: `${randomFirstName} ${randomSurname.charAt(0)}***`, 
+        amount: randomAmount 
+      });
+      
+      setTimeout(() => setNotification(null), 5000);
+    };
+
+    const interval = setInterval(showRandomNotification, 20000);
+    const initialTimeout = setTimeout(showRandomNotification, 3000);
+    
+    return () => {
+      clearInterval(interval);
+      clearTimeout(initialTimeout);
+    };
+  }, [step]);
 
   useEffect(() => {
     if (step === "confirm") {
@@ -572,6 +602,26 @@ function Index() {
                   </section>
                 </div>
               )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        <AnimatePresence>
+          {notification && step !== "admin" && (
+            <motion.div
+              initial={{ opacity: 0, x: 50, scale: 0.9 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 50, scale: 0.9 }}
+              className="fixed top-20 right-4 z-[60] bg-white/95 backdrop-blur shadow-2xl rounded-2xl p-4 border border-primary/20 flex items-center gap-4 min-w-[280px]"
+            >
+              <div className="bg-primary/10 p-2.5 rounded-xl">
+                <CheckCircle2 className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">Novo Empréstimo Aprovado</p>
+                <h4 className="text-sm font-black text-foreground tracking-tight">{notification.name}</h4>
+                <p className="text-xs font-black text-primary italic">Solicitou {notification.amount.toLocaleString("pt-AO")} Kz</p>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
