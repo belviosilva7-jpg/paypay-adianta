@@ -1,15 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle, Loader2, FileText } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle, Loader2, FileText, History, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoPaypay from "@/assets/logo-paypay.png";
 import keyIconAsset from "@/assets/key-icon.png";
 import userIconAsset from "@/assets/chat-logo.png";
 import successIconAsset from "@/assets/success-icon.jpg.asset.json";
-import { verifyAdminPassword, updateApplicationStatus, deleteApplication, getApplications, checkApplicationStatus, getDeletedApplications, restoreApplication, deletePermanently, deleteAllPermanently } from "@/lib/admin.functions";
-import { History, RotateCcw } from "lucide-react";
+import { verifyAdminPassword, updateApplicationStatus, getApplications, deleteApplication, checkApplicationStatus, getDeletedApplications, restoreApplication, deletePermanently, deleteAllPermanently } from "@/lib/admin.functions";
+import { Logo } from "@/components/shared";
+import { StatusCheckArea } from "@/components/StatusCheckArea";
+import { AdminDataList } from "@/components/AdminDataList";
+
 
 
 export const Route = createFileRoute("/")({
