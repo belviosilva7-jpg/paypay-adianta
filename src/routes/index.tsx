@@ -102,6 +102,63 @@ function Index() {
 
   const nextStep = (next: Step) => setStep(next);
 
+  const AdminDataList = ({ filter }: { filter: "pending" | "finalized" | "pre" | "users" }) => {
+    const [apps, setApps] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      const fetchApps = async () => {
+        const { supabase } = await import("@/integrations/supabase/client");
+        let query = supabase
+          .from("pending_applications")
+          .select("*")
+          .order("updated_at", { ascending: false });
+        
+        if (filter === "finalized") {
+          query = query.eq("step", "success");
+        } else if (filter === "pre") {
+          query = query.in("step", ["step2", "step3", "step4", "summary", "confirm"]);
+        } else if (filter === "users") {
+          query = query.or("name.neq.'',account_number.neq.''");
+        } else {
+          query = query.not("step", "in", '("success")');
+        }
+
+        const { data } = await query;
+        if (data) setApps(data);
+        setLoading(false);
+      };
+      fetchApps();
+    }, [filter]);
+
+    if (loading) return <div className="text-xs text-muted-foreground animate-pulse">Carregando dados...</div>;
+    if (apps.length === 0) return <div className="text-xs text-muted-foreground italic">Nenhum dado encontrado para esta aba.</div>;
+
+    return (
+      <div className="bg-secondary/40 rounded-xl p-4 space-y-4 max-h-96 overflow-y-auto">
+        {apps.map((app) => (
+          <div key={app.id} className="text-[10px] space-y-1 border-b border-border/50 pb-2 last:border-0 last:pb-0">
+            <div className="flex justify-between font-bold text-foreground">
+              <span>Conta: {app.account_number || "N/A"}</span>
+              <span className="text-primary uppercase tracking-tighter">Status: {app.step}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-2 text-muted-foreground italic">
+              <p>Nome: {app.name || "N/A"}</p>
+              <p>NIF: {app.nif || "N/A"}</p>
+              <p>Valor: {app.amount ? `${Number(app.amount).toLocaleString()} Kz` : "N/A"}</p>
+              <p>Reembolso Total: {app.total_to_refund ? `${Number(app.total_to_refund).toLocaleString()} Kz` : "N/A"}</p>
+              <p>Cod. Pagamento: {app.payment_code || "N/A"}</p>
+              <p>Cod. Acesso: {app.access_code || "N/A"}</p>
+            </div>
+            <p className="text-[8px] text-right text-muted-foreground/60">
+              Última atualização: {new Date(app.updated_at).toLocaleString()}
+            </p>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
