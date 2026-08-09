@@ -105,7 +105,10 @@ function Index() {
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div onClick={() => setLogoClicks(p => p + 1)} className="cursor-pointer"><img src="/logo.png" alt="paypay" className="h-8" /></div>
+        <div onClick={() => setLogoClicks(p => p + 1)} className="cursor-pointer relative z-10">
+          <img src="/logo-paypay.png" alt="paypay" className="h-8 md:h-10" />
+          <div className="absolute inset-0 z-20 pointer-events-none" />
+        </div>
         <div className="flex items-center gap-6 text-[11px] font-medium text-muted-foreground">
           <button className="flex items-center gap-1"><Globe className="w-3.5 h-3.5" /> Português (AO)</button>
         </div>
