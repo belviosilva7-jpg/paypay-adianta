@@ -50,6 +50,7 @@ function Index() {
         setNotification({ name: `${randomName.split(" ").slice(0, 2).join(" ")} X**`, amount: randomAmount });
         setTimeout(() => setNotification(null), 5000);
     };
+
     const interval = setInterval(showRandomNotification, 20000);
     const t = setTimeout(showRandomNotification, 3000);
     return () => { clearInterval(interval); clearTimeout(t); };
