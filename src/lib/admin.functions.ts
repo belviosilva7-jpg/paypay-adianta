@@ -270,7 +270,7 @@ export const getApplications = createServerFn({ method: "POST" })
   });
 
 export const checkApplicationStatus = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ nif: z.string().min(9) }).parse(data))
+  .validator((data: unknown) => z.object({ nif: z.string().min(9) }).parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
