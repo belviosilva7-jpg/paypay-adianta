@@ -54,6 +54,13 @@ function Index() {
   const [adminPassword, setAdminPassword] = useState("");
   const [applications, setApplications] = useState<any[]>([]);
 
+  useEffect(() => {
+    if (step === "confirm") {
+      const t = setTimeout(() => setStep("success"), 3500);
+      return () => clearTimeout(t);
+    }
+  }, [step]);
+
   const saveProgress = async () => {
     if (step === "home" || step === "admin" || step === "success") return;
     try {
