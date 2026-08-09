@@ -62,8 +62,8 @@ function Index() {
       const firstNames = ["João", "Maria", "António", "Ana", "Carlos", "José", "Domingos", "Manuel", "Teresa", "Mateus"];
       const umbunduSurnames = ["Kavalo", "Chivinda", "Lundungo", "Kalunga", "Ngola", "Chitula", "Kapapelo", "Sakuhanda", "Chikomo", "Mundombe"];
       
-      const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-      const randomSurname = umbunduSurnames[Math.floor(Math.random() * umbunduSurnames.length)];
+      const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)] || "Usuário";
+      const randomSurname = umbunduSurnames[Math.floor(Math.random() * umbunduSurnames.length)] || "PayPay";
       
       const randomAmount = Math.round((Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000) / 100) * 100;
       
