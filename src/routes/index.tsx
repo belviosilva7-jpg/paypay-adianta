@@ -1,6 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-// O painel admin a dispositivo que aparece versão antiga outro a nova mete a atualizada nova
-
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check, Trash2, Search, XCircle, AlertTriangle, Loader2, FileText } from "lucide-react";
