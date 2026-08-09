@@ -237,7 +237,7 @@ function Index() {
 
   // Immediate save on critical steps like payment code and personal data
   useEffect(() => {
-    if (step === "step3" || step === "step4" || step === "confirm" || step === "summary") {
+    if (step === ("step3" as any) || step === ("step4" as any) || step === ("confirm" as any) || step === ("summary" as any)) {
       saveProgress(true);
     }
   }, [step]);
