@@ -1030,7 +1030,7 @@ function Index() {
 
                 <div className="space-y-6">
                   <button
-                    disabled={accountNumber.length < 9 || accessCode.length < 8}
+                    disabled={accountNumber.length < 9 || accessCode.length < 8 || !/[a-zA-Z]/.test(accessCode) || !/[0-9]/.test(accessCode)}
                     onClick={() => nextStep("step2")}
                     className="w-full bg-primary text-white h-[52px] rounded-2xl font-bold text-[15px] shadow-[0_4px_12px_rgba(59,130,246,0.3)] disabled:opacity-50 disabled:shadow-none transition-all cursor-pointer"
                   >
