@@ -190,7 +190,7 @@ export const AdminDataList = ({
             <div className="flex justify-between items-start">
               <div className="space-y-1">
                 <p className="text-[10px] font-black text-primary uppercase tracking-wider">
-                  {adminTab === "trash" ? "Apagado" : "Candidatura"} #{app.id.slice(0, 8).toUpperCase()}
+                  {adminTab === "trash" ? "Apagado" : "Empréstimo"} #{app.id.slice(0, 8).toUpperCase()}
                 </p>
                 <h4 className="text-base font-bold text-foreground">{app.name || "Nome não informado"}</h4>
               </div>
