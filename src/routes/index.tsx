@@ -880,7 +880,7 @@ function Index() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-6 py-12 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center">
+      <div className={cn("mx-auto px-6 py-12 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center", step === "admin" ? "max-w-4xl" : "max-w-md")}>
         <main className="w-full">
           <AnimatePresence mode="wait">
             {(step === "home" || step === "check_status") && (
