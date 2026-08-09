@@ -102,7 +102,7 @@ export const StatusCheckArea = ({ onBack, compact = false }: { onBack: () => voi
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">Consultar Empréstimo</h2>
+        <h2 className="text-2xl font-bold">Verificar Candidatura</h2>
         <p className="text-muted-foreground text-sm">Insira o seu NIF para consultar o estado do seu pedido.</p>
       </div>
 

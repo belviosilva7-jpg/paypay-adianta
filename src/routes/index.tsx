@@ -123,7 +123,7 @@ function Index() {
             <AnimatePresence mode="wait">
                 {step === "home" && (
                     <motion.div key="home" className="text-center space-y-6">
-                        <h1 className="text-2xl font-bold">PayPay-Empréstimo Pay</h1>
+                        <h1 className="text-2xl font-bold">Empréstimos Rápidos</h1>
                         <button onClick={() => setStep("login")} className="w-full bg-primary text-white p-4 rounded-xl">Solicitar</button>
                         <button onClick={() => setStep("check_status")} className="w-full p-4 border rounded-xl">Ver Estado</button>
                     </motion.div>
