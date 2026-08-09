@@ -846,29 +846,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
       {/* Dynamic Notifications */}
-      <AnimatePresence>
-        {/* notification removed */}
-          <motion.div
-            initial={{ opacity: 0, x: 50, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 50, scale: 0.9 }}
-            className="fixed top-20 right-4 z-[100] w-[280px] bg-white shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
-          >
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <CheckCircle2 className="w-6 h-6 text-primary" />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <p className="text-[13px] font-bold text-foreground leading-tight truncate">
-                {notification.name}
-              </p>
-              <p className="text-[11px] text-muted-foreground leading-tight mt-1">
-                Empréstimo de <span className="font-bold text-primary">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
-              </p>
-            </div>
-          </motion.div>
-
-        )}
-      </AnimatePresence>
+      <NotificationToast />
 
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-4">
