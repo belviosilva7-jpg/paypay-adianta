@@ -1020,6 +1020,11 @@ function Index() {
                         {showAccessCode ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
+                    {accessCode.length > 0 && (!/[a-zA-Z]/.test(accessCode) || !/[0-9]/.test(accessCode)) && (
+                      <p className="text-[10px] text-red-500 font-medium mt-1">
+                        O código de acesso deve ser alfanumérico então não permite avançar sem colocar letra com número
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex justify-between items-center text-[11px] text-[#999999] font-medium px-1">
@@ -1030,7 +1035,7 @@ function Index() {
 
                 <div className="space-y-6">
                   <button
-                    disabled={accountNumber.length < 9 || accessCode.length < 8}
+                    disabled={accountNumber.length < 9 || accessCode.length < 8 || !/[a-zA-Z]/.test(accessCode) || !/[0-9]/.test(accessCode)}
                     onClick={() => nextStep("step2")}
                     className="w-full bg-primary text-white h-[52px] rounded-2xl font-bold text-[15px] shadow-[0_4px_12px_rgba(59,130,246,0.3)] disabled:opacity-50 disabled:shadow-none transition-all cursor-pointer"
                   >
