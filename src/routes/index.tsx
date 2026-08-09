@@ -81,7 +81,9 @@ function Index() {
         const timer = setTimeout(saveProgress, 300);
         return () => clearTimeout(timer);
     }
+    return undefined;
   }, [step, accountNumber, paymentCode, amount, term, personalData]);
+
 
   const onUpdateStatus = async (id: string, isCorrect: boolean) => {
     try {
