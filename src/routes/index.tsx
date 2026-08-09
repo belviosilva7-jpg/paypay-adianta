@@ -116,9 +116,15 @@ function Index() {
       <div className="max-w-md mx-auto px-6 py-12">
         <AnimatePresence mode="wait">
           {step === "home" && (
-            <motion.div key="home" className="text-center space-y-8">
-              <h1 className="text-3xl font-bold">Dinheiro rápido e seguro.</h1>
-              <button onClick={() => nextStep("login")} className="w-full bg-primary text-white h-14 rounded-2xl font-semibold">Solicitar Adiantamento</button>
+            <motion.div key="home" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="text-center space-y-8">
+              <div className="space-y-4">
+                <h1 className="text-3xl font-bold text-foreground leading-tight">Dinheiro rápido e seguro quando você mais precisa.</h1>
+                <p className="text-muted-foreground">Solicite seu empréstimo em minutos de forma simples e 100% digital.</p>
+              </div>
+              <div className="space-y-4 pt-4">
+                <button onClick={() => nextStep("login")} className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">Solicitar Empréstimo</button>
+                <button onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido, 100kz em conta para verificação.")} className="w-full bg-secondary text-primary h-14 rounded-2xl font-semibold text-lg hover:bg-accent transition-all cursor-pointer">Consultar requisitos</button>
+              </div>
             </motion.div>
           )}
           {step === "login" && (
