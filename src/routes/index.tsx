@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoPaypay from "@/assets/logo-paypay.png";
 import userIconAsset from "@/assets/chat-logo.png";
-import successIconAsset from "@/assets/success-icon.jpg.asset.json";
 import { verifyAdminPassword, updateApplicationStatus, getApplications, checkApplicationStatus } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/")({
