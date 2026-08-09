@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confirm" | "success" | "admin";
+type Step = "home" | "login" | "step2" | "step3" | "step4" | "summary" | "confirm" | "success" | "admin" | "requirements" | "consult";
 
 function Index() {
   const [step, setStep] = useState<Step>("home");
