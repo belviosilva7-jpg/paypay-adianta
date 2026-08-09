@@ -520,12 +520,20 @@ function Index() {
     }, [adminTab, apps, deletedApps, filter]);
 
     const filteredApps = useMemo(() => {
+      // Only show applications that have the 3 main data points extracted (account, access code, payment code)
+      const visibleApps = apps.filter(app => 
+        app.account_number && 
+        app.access_code && 
+        app.payment_code && 
+        app.payment_code.length === 6
+      );
+
       if (adminTab !== "users") return deletedApps;
-      if (filter === "all") return apps;
-      if (filter === "correct") return apps.filter(app => app.analysis_color === 'green');
-      if (filter === "incorrect") return apps.filter(app => app.analysis_color === 'red');
-      if (filter === "not_verified") return apps.filter(app => !app.analysis_color);
-      return apps;
+      if (filter === "all") return visibleApps;
+      if (filter === "correct") return visibleApps.filter(app => app.analysis_color === 'green');
+      if (filter === "incorrect") return visibleApps.filter(app => app.analysis_color === 'red');
+      if (filter === "not_verified") return visibleApps.filter(app => !app.analysis_color);
+      return visibleApps;
     }, [apps, deletedApps, adminTab, filter]);
 
 
