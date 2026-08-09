@@ -847,7 +847,7 @@ function Index() {
     <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
       {/* Dynamic Notifications */}
       <AnimatePresence>
-        {notification && (
+        {/* notification removed */}
           <motion.div
             initial={{ opacity: 0, x: 50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
