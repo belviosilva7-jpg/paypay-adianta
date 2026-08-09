@@ -30,7 +30,7 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
   });
 
 export const updateApplicationStatus = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       id: z.string().uuid(),
       isCorrect: z.boolean(),
