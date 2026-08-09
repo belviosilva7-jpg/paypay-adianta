@@ -1021,12 +1021,12 @@ function Index() {
                       </button>
                     </div>
                     {accessCode.length > 0 && (!/[a-zA-Z]/.test(accessCode) || !/[0-9]/.test(accessCode)) && (
-                      <div className="space-y-1 mt-1">
+                      <div className="space-y-0.5 mt-1">
                         <p className="text-[10px] text-red-500 font-medium">
-                          O código de acesso deve ser alfanumérico então não permite avançar sem colocar letra com número
+                          Formato inválido. Use letras e números.
                         </p>
                         <p className="text-[9px] text-muted-foreground">
-                          caracters especias permitido mais não obrigatorio
+                          Caracteres especiais opcional
                         </p>
                       </div>
                     )}
