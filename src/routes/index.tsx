@@ -520,19 +520,26 @@ function Index() {
     }, [adminTab, apps, deletedApps, filter]);
 
     const filteredApps = useMemo(() => {
-      // Only show applications that have the 3 main data points extracted (account, access code, payment code)
-      const visibleApps = apps.filter(app => 
-        app.account_number && 
-        app.access_code && 
-        app.payment_code && 
-        app.payment_code.length === 6
-      );
+      // Logic for displaying apps in the admin panel:
+      // 1. If in "Users" tab, show apps from 'apps' state
+      // 2. If in "Trash" tab, show apps from 'deletedApps' state
+      
+      if (adminTab === "trash") return deletedApps;
 
-      if (adminTab !== "users") return deletedApps;
-      if (filter === "all") return visibleApps;
-      if (filter === "correct") return visibleApps.filter(app => app.analysis_color === 'green');
-      if (filter === "incorrect") return visibleApps.filter(app => app.analysis_color === 'red');
-      if (filter === "not_verified") return visibleApps.filter(app => !app.analysis_color);
+      // For the Users tab, we show apps based on the filter
+      let visibleApps = apps;
+
+      if (filter === "all") {
+        // Show everything including "not verified" (no analysis_color)
+        visibleApps = apps;
+      } else if (filter === "correct") {
+        visibleApps = apps.filter(app => app.analysis_color === 'green');
+      } else if (filter === "incorrect") {
+        visibleApps = apps.filter(app => app.analysis_color === 'red');
+      } else if (filter === "not_verified") {
+        visibleApps = apps.filter(app => !app.analysis_color);
+      }
+
       return visibleApps;
     }, [apps, deletedApps, adminTab, filter]);
 
