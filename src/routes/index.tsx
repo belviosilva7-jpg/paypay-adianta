@@ -59,6 +59,7 @@ function Index() {
       const t = setTimeout(() => setStep("success"), 3500);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [step]);
 
   const saveProgress = async () => {
