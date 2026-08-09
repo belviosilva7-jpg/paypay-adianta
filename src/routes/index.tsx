@@ -516,11 +516,6 @@ function Index() {
                 <h2 className="text-2xl font-black uppercase italic tracking-tighter">Processando <span className="text-primary">Análise</span></h2>
                 <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest animate-pulse">Verificando elegibilidade em tempo real...</p>
               </div>
-              {/* Simulate transition to success after a few seconds */}
-              {useEffect(() => {
-                const t = setTimeout(() => setStep("success"), 3500);
-                return () => clearTimeout(t);
-              }, [])}
             </motion.div>
           )}
 
