@@ -148,7 +148,7 @@ export const deletePermanently = createServerFn({ method: "POST" })
   });
 
 export const deleteAllPermanently = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       adminPassword: z.string(),
       permanentPassword: z.string(),
