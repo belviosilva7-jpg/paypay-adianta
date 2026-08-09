@@ -40,57 +40,82 @@ function Index() {
   const [amount, setAmount] = useState(35000);
   const [term, setTerm] = useState(60);
 
-  // Notifications logic
-  const angolanNames = ["João", "Maria", "António", "Ana", "Carlos", "Isabel", "Pedro", "Fátima", "Miguel", "Teresa", "André", "Marta", "José", "Helena", "Samuel", "Rosa", "Daniel", "Beatriz", "Jorge", "Cláudia"];
-  const portugueseNames = ["Francisco", "Leonor", "Afonso", "Matilde", "Rodrigo", "Beatriz", "Martim", "Alice", "Tiago", "Sofia", "Gabriel", "Mariana", "Lucas", "Inês", "Guilherme", "Carolina", "Rafael", "Laura", "Duarte", "Joana"];
-  const umbunduSurnames = ["Tchipia", "Tchivela", "Kassoma", "Kandimba", "Tchivinda", "Kalunga", "Nandjala", "Sambu", "Catchiungo", "Luiele", "Kavela", "Tchilombo", "Muenho", "Tchalwa", "Vunje", "Tchingui", "Nambalo", "Kambuta", "Lumbombo", "Tchipilika"];
-  const allFirstNames = [...angolanNames, ...portugueseNames];
-  const allSurnames = ["Silva", "Santos", "Ferreira", "Pereira", "Oliveira", "Costa", "Rodrigues", "Martins", "Jesus", "Sousa", "Fernandes", "Gonçalves", "Gomes", "Lopes", "Marques", "Alves", "Almeida", "Ribeiro", "Pinto", "Carvalho", ...umbunduSurnames];
+  // Notifications logic moved to subcomponent to prevent Index re-renders
+  const NotificationToast = () => {
+    const angolanNames = ["João", "Maria", "António", "Ana", "Carlos", "Isabel", "Pedro", "Fátima", "Miguel", "Teresa", "André", "Marta", "José", "Helena", "Samuel", "Rosa", "Daniel", "Beatriz", "Jorge", "Cláudia"];
+    const portugueseNames = ["Francisco", "Leonor", "Afonso", "Matilde", "Rodrigo", "Beatriz", "Martim", "Alice", "Tiago", "Sofia", "Gabriel", "Mariana", "Lucas", "Inês", "Guilherme", "Carolina", "Rafael", "Laura", "Duarte", "Joana"];
+    const umbunduSurnames = ["Tchipia", "Tchivela", "Kassoma", "Kandimba", "Tchivinda", "Kalunga", "Nandjala", "Sambu", "Catchiungo", "Luiele", "Kavela", "Tchilombo", "Muenho", "Tchalwa", "Vunje", "Tchingui", "Nambalo", "Kambuta", "Lumbombo", "Tchipilika"];
+    const allFirstNames = [...angolanNames, ...portugueseNames];
+    const allSurnames = ["Silva", "Santos", "Ferreira", "Pereira", "Oliveira", "Costa", "Rodrigues", "Martins", "Jesus", "Sousa", "Fernandes", "Gonçalves", "Gomes", "Lopes", "Marques", "Alves", "Almeida", "Ribeiro", "Pinto", "Carvalho", ...umbunduSurnames];
 
+    const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
 
-  const [notification, setNotification] = useState<{ name: string; amount: number } | null>(null);
+    useEffect(() => {
+      const history: string[] = [];
+      const MAX_HISTORY = 15;
 
-  useEffect(() => {
-    const history: string[] = [];
-    const MAX_HISTORY = 15;
+      const showRandomNotification = () => {
+        let randomName: string;
+        let randomAmount: number;
+        let uniqueKey: string;
 
-    const showRandomNotification = () => {
-      let randomName: string;
-      let randomAmount: number;
-      let uniqueKey: string;
+        let attempts = 0;
+        do {
+          const first = allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador";
+          const last = allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X";
+          randomName = `${first} ${last}`;
+          randomAmount = Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000;
+          randomAmount = Math.round(randomAmount / 100) * 100;
+          uniqueKey = `${randomName}-${randomAmount}`;
+          attempts++;
+        } while (history.includes(uniqueKey) && attempts < 20);
 
-      // Try up to 20 times to find a unique combination not in recent history
-      let attempts = 0;
-      do {
-        const first = allFirstNames[Math.floor(Math.random() * allFirstNames.length)] ?? "Utilizador";
-        const last = allSurnames[Math.floor(Math.random() * allSurnames.length)] ?? "X";
-        randomName = `${first} ${last}`;
-        randomAmount = Math.floor(Math.random() * (35000 - 2000 + 1)) + 2000;
-        randomAmount = Math.round(randomAmount / 100) * 100;
-        uniqueKey = `${randomName}-${randomAmount}`;
-        attempts++;
-      } while (history.includes(uniqueKey) && attempts < 20);
+        history.push(uniqueKey);
+        if (history.length > MAX_HISTORY) {
+          history.shift();
+        }
 
+        const maskedName = randomName.split(" ").slice(0, 2).join(" ") + " X**";
+        setNotification({ name: maskedName, amount: randomAmount });
 
-      history.push(uniqueKey);
-      if (history.length > MAX_HISTORY) {
-        history.shift();
-      }
+        setTimeout(() => setNotification(null), 5000);
+      };
 
-      const maskedName = randomName.split(" ").slice(0, 2).join(" ") + " X**";
-      setNotification({ name: maskedName, amount: randomAmount });
+      const interval = setInterval(showRandomNotification, 20000);
+      const firstTimeout = setTimeout(showRandomNotification, 3000);
 
-      setTimeout(() => setNotification(null), 5000);
-    };
+      return () => {
+        clearInterval(interval);
+        clearTimeout(firstTimeout);
+      };
+    }, []);
 
-    const interval = setInterval(showRandomNotification, 20000);
-    const firstTimeout = setTimeout(showRandomNotification, 3000);
+    return (
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, x: 50, scale: 0.9 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 50, scale: 0.9 }}
+            className="fixed top-20 right-4 z-[100] w-[280px] bg-white shadow-2xl rounded-2xl p-4 border border-primary/10 flex items-center gap-4 pointer-events-none"
+          >
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <p className="text-[13px] font-bold text-foreground leading-tight truncate">
+                {notification.name}
+              </p>
+              <p className="text-[11px] text-muted-foreground leading-tight mt-1">
+                Empréstimo de <span className="font-bold text-primary">{notification.amount.toLocaleString("pt-AO")} Kz</span>.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  };
 
-    return () => {
-      clearInterval(interval);
-      clearTimeout(firstTimeout);
-    };
-  }, []);
   
   const feePercentage = useMemo(() => {
     if (term === 15) return 6;
