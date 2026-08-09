@@ -1435,7 +1435,7 @@ function Index() {
                 key="admin"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
+                className="w-full max-w-4xl mx-auto space-y-6"
               >
                 <div className="flex items-center justify-between border-b pb-4">
                   <h2 className="text-2xl font-bold flex items-center gap-2">
