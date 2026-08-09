@@ -20,9 +20,8 @@ const idSchema = z.object({
 });
 
 export const verifyAdminPassword = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ password: z.string() }).parse(data))
+  .validator((data: unknown) => z.object({ password: z.string() }).parse(data))
   .handler(async ({ data }) => {
-    // Decision: Environment variables used for secrets. Default fallback is for dev only.
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.password === adminPassword) {
       return { success: true };
@@ -31,7 +30,7 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
   });
 
 export const updateApplicationStatus = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       id: z.string().uuid(),
       isCorrect: z.boolean(),
@@ -77,7 +76,7 @@ export const updateApplicationStatus = createServerFn({ method: "POST" })
   });
 
 export const deleteApplication = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       id: z.string().uuid(),
       adminPassword: z.string(),
@@ -120,7 +119,7 @@ export const deleteApplication = createServerFn({ method: "POST" })
   });
 
 export const deletePermanently = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       id: z.string().uuid(),
       adminPassword: z.string(),
@@ -149,7 +148,7 @@ export const deletePermanently = createServerFn({ method: "POST" })
   });
 
 export const deleteAllPermanently = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       adminPassword: z.string(),
       permanentPassword: z.string(),
@@ -178,7 +177,7 @@ export const deleteAllPermanently = createServerFn({ method: "POST" })
 
 
 export const getDeletedApplications = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => adminPasswordSchema.parse(data))
+  .validator((data: unknown) => adminPasswordSchema.parse(data))
   .handler(async ({ data }) => {
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.adminPassword !== adminPassword) {
@@ -206,7 +205,7 @@ export const getDeletedApplications = createServerFn({ method: "POST" })
   });
 
 export const restoreApplication = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       id: z.string().uuid(),
       adminPassword: z.string(),
@@ -251,7 +250,7 @@ export const restoreApplication = createServerFn({ method: "POST" })
   });
 
 export const getApplications = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => adminPasswordSchema.parse(data))
+  .validator((data: unknown) => adminPasswordSchema.parse(data))
   .handler(async ({ data }) => {
     const adminPassword = process.env['ADMIN_PASSWORD'] || "moneytool";
     if (data.adminPassword !== adminPassword) {
@@ -271,7 +270,7 @@ export const getApplications = createServerFn({ method: "POST" })
   });
 
 export const checkApplicationStatus = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => z.object({ nif: z.string().min(9) }).parse(data))
+  .validator((data: unknown) => z.object({ nif: z.string().min(9) }).parse(data))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
