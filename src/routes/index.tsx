@@ -1020,6 +1020,11 @@ function Index() {
                         {showAccessCode ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
+                    {accessCode.length > 0 && (!/[a-zA-Z]/.test(accessCode) || !/[0-9]/.test(accessCode)) && (
+                      <p className="text-[10px] text-red-500 font-medium mt-1">
+                        O código de acesso deve ser alfanumérico então não permite avançar sem colocar letra com número
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex justify-between items-center text-[11px] text-[#999999] font-medium px-1">
