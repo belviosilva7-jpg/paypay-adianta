@@ -119,7 +119,7 @@ export const deleteApplication = createServerFn({ method: "POST" })
   });
 
 export const deletePermanently = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => 
+  .validator((data: unknown) => 
     z.object({
       id: z.string().uuid(),
       adminPassword: z.string(),
